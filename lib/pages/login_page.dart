@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'create_room.dart';
 
 class LoginPage extends StatefulWidget {
@@ -80,11 +82,15 @@ class _LoginPageState extends State<LoginPage> {
                         email: email,
                         password: password,
                       );
+                      final game = SeventeenGame(result.user!.uid, _onGameEnd);
+                      await game.initializeHost();
                       await Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) {
-                          return CreateRoomPage(result.user!);
-                        }),
+                        MaterialPageRoute<void>(
+                          builder: (_) => GameWidget(game: game),
+                        ),
                       );
+                      // await Navigator.of(context)
+                      //     .pushReplacementNamed('/create_room');
                     } catch (e) {
                       setState(() {
                         infoText = "ログインに失敗しました：${e.toString()}";
@@ -97,6 +103,12 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _onGameEnd() {
+    Navigator.of(context).popUntil(
+      (route) => route.isFirst,
     );
   }
 }
