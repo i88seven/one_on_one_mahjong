@@ -67,7 +67,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> initializeHost() async {
-    int _count = 0;
     DocumentReference roomDoc =
         _firestoreReference.collection('preparationRooms').doc(_roomId);
     DocumentSnapshot roomSnapshot = await roomDoc.get();
@@ -81,10 +80,11 @@ class SeventeenGame extends FlameGame with TapDetector {
     List<QueryDocumentSnapshot<Map<String, dynamic>>> membersDoc =
         List<QueryDocumentSnapshot<Map<String, dynamic>>>.from(
             membersSnapshot.docs);
-    for (var memberDoc in membersDoc) {
+    for (QueryDocumentSnapshot<Map<String, dynamic>> memberDoc in membersDoc) {
+      final memberData = memberDoc.data();
       Member member = Member(
-        uid: memberDoc['uid'],
-        name: memberDoc['name'],
+        uid: memberDoc.id,
+        name: memberData['name'],
       );
       _members.add(member);
     }
@@ -106,6 +106,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     //   'hostId': _hostUid,
     //   'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
     // });
+    // TODO Slave に伝えた後で room を削除する
   }
 
   Future<void> initializeSlave({hostUid: String}) async {

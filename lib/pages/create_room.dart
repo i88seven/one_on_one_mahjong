@@ -9,7 +9,7 @@ class CreateRoomPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('チャット'),
+        title: const Text('ユーザー作成'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout),
