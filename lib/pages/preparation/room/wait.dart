@@ -119,9 +119,16 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
   }
 
   void _onChangeRoom(DocumentSnapshot snapshot) {
+    if (_isHost) {
+      return;
+    }
     if (!snapshot.exists) {
       Navigator.of(context).pop(false);
       return;
+    }
+    final roomData = snapshot.data()! as Map<String, dynamic>;
+    if (roomData['status'] == 'start') {
+      _startGame();
     }
   }
 
@@ -145,8 +152,17 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       final game = SeventeenGame(widget.roomId, _onGameEnd);
       if (_isHost) {
         await game.initializeHost();
-        // TODO room の情報を介して game が始まったことを Slave に伝える
+        _roomDoc.update({
+          'status': 'start',
+          'updatedAt': Timestamp.now(),
+        });
       } else {
+        QuerySnapshot membersSnapshot =
+            await _roomDoc.collection('members').get();
+        for (QueryDocumentSnapshot element in membersSnapshot.docs) {
+          element.reference.delete();
+        }
+        _roomDoc.delete();
         await game.initializeSlave(hostUid: _hostMember!.uid);
       }
 

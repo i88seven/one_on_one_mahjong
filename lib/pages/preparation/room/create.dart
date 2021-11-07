@@ -97,6 +97,9 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
       roomRef.set({
         'hostUid': _myUid,
         'hostName': widget.myName,
+        'status': 'wait',
+        'createdAt': Timestamp.now(),
+        'updatedAt': Timestamp.now(),
       });
       roomRef.collection('members').doc(_myUid).set({'name': widget.myName});
       _storage.setItem('myRoomId', _roomIdController.text);

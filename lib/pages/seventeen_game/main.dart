@@ -102,30 +102,30 @@ class SeventeenGame extends FlameGame with TapDetector {
       );
       _gamePlayers.add(gamePlayer);
     });
-    // await _gameDoc.set({
-    //   'hostId': _hostUid,
-    //   'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
-    // });
-    // TODO Slave に伝えた後で room を削除する
+    await _gameDoc.set({
+      'hostId': _hostUid,
+      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+    });
+    for (GamePlayer gamePlayer in _gamePlayers) {
+      _gameDoc
+          .collection('players')
+          .doc(gamePlayer.uid)
+          .set({'name': gamePlayer.name});
+    }
   }
 
-  Future<void> initializeSlave({hostUid: String}) async {
+  Future<void> initializeSlave({hostUid = String}) async {
     _hostUid = hostUid;
     _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
     _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
 
-    DocumentSnapshot gameSnapShot = await _gameDoc.get();
-    final gameData = gameSnapShot.data()! as Map<String, dynamic>;
-    List snapshotPlayers = List.from(gameData['players'] ?? []);
-    snapshotPlayers.asMap().forEach((index, snapshotPlayer) {
-      String uid = snapshotPlayer['uid'];
-      String name = snapshotPlayer['name'];
-      if (uid == _myUid) {
-        _isParent = true;
-      }
-      Member member = Member(uid: uid, name: name);
-      _members.add(member);
-    });
+    QuerySnapshot playersSnapshot = await _gameDoc.collection('players').get();
+    final _members = playersSnapshot.docs.map((QueryDocumentSnapshot doc) {
+      final memberData = doc.data()! as Map<String, dynamic>;
+      Member member = Member(uid: doc.id, name: memberData['name']);
+      return member;
+    }).toList();
+    // TODO _isParent;
     _members.asMap().forEach((index, member) {
       GamePlayer gamePlayer = GamePlayer(
         this,
@@ -135,8 +135,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       );
       _gamePlayers.add(gamePlayer);
     });
-
-    _isReadyGame = true;
   }
 
   @override
