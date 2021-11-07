@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:one_on_one_mahjong/components/candidates.dart';
@@ -24,6 +25,7 @@ import 'package:one_on_one_mahjong/types/game_data.dart';
 import 'package:one_on_one_mahjong/types/player_tile.dart';
 
 class SeventeenGame extends FlameGame with TapDetector {
+  Images gameImages = Images();
   late String _myUid;
   final String _roomId;
   bool _isReadyGame = false;
@@ -139,6 +141,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   @override
   Future<void>? onLoad() async {
+    await gameImages.loadAll(['tile.png', 'tile-back.png']);
     await super.onLoad();
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.render();

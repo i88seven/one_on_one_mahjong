@@ -21,7 +21,7 @@ class Trashes {
   }
 
   void _render(AllTileKinds tileKind, int length) {
-    _game.add(FrontTile(tileKind, TileState.trash)
+    _game.add(FrontTile(_game.gameImages, tileKind, TileState.trash)
       ..x = tileSize.width * length
       ..y = _isMe ? 250 : 550);
   }

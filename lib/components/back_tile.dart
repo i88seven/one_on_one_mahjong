@@ -8,21 +8,21 @@ import 'package:one_on_one_mahjong/constants/tile_size.dart';
 // 裏向きのカード描画
 class BackTile extends PositionComponent {
   late Sprite _tileImage;
+  final Images _gameImages;
 
-  BackTile() {
-    Images().load("tile-back.png").then((image) {
-      _tileImage = Sprite(image);
-    });
+  BackTile(this._gameImages) {
+    final image = _gameImages.fromCache('tile-back.png');
+    _tileImage = Sprite(image);
   }
 
   @override
   void render(Canvas canvas) {
     super.render(canvas);
 
-    renderTile(canvas);
+    _renderTile(canvas);
   }
 
-  renderTile(Canvas c) {
+  _renderTile(Canvas c) {
     Rect rect = Rect.fromLTWH(0, 0, tileSize.width, tileSize.height);
     _tileImage.renderRect(c, rect);
   }

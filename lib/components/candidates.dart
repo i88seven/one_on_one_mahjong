@@ -24,7 +24,8 @@ class Candidates {
 
   void _render() {
     tiles.asMap().forEach((index, tile) {
-      FrontTile tileObject = FrontTile(tile, TileState.candidate);
+      FrontTile tileObject =
+          FrontTile(_game.gameImages, tile, TileState.candidate);
       _game.add(tileObject
         ..width = index < tiles.length - 1 ? tileSize.width / 2 : tileSize.width
         ..height = tileSize.height

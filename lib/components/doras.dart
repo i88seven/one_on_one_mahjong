@@ -16,13 +16,13 @@ class Doras {
   }
 
   void _render() {
-    FrontTile dora = FrontTile(tiles[0], TileState.dora);
+    FrontTile dora = FrontTile(_game.gameImages, tiles[0], TileState.dora);
     _game.add(dora
       ..width = tileSize.width
       ..height = tileSize.height
       ..x = 200
       ..y = _game.size.y - tileSize.height - 300);
-    FrontTile uraDora = FrontTile(tiles[1], TileState.dora);
+    FrontTile uraDora = FrontTile(_game.gameImages, tiles[1], TileState.dora);
     _game.add(uraDora
       ..width = tileSize.width
       ..height = tileSize.height

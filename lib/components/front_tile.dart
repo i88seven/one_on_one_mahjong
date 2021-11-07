@@ -10,16 +10,16 @@ import 'package:one_on_one_mahjong/constants/tile_state.dart';
 
 // 表向きのカード描画
 class FrontTile extends PositionComponent {
+  final Images _gameImages;
   final AllTileKinds tileKind;
   double time = 0;
   final TileState state;
   int lightIntensity = 0;
   late Sprite _tileImage;
 
-  FrontTile(this.tileKind, this.state) {
-    Images().load("tile.png").then((image) {
-      _tileImage = Sprite(image);
-    });
+  FrontTile(this._gameImages, this.tileKind, this.state) {
+    final image = _gameImages.fromCache('tile.png');
+    _tileImage = Sprite(image);
   }
 
   @override

@@ -34,7 +34,7 @@ class Hands {
     }
     _tileObjects = [];
     tiles.asMap().forEach((index, tile) {
-      FrontTile tileObject = FrontTile(tile, TileState.hand);
+      FrontTile tileObject = FrontTile(_game.gameImages, tile, TileState.hand);
       _game.add(tileObject
         ..width = tileSize.width
         ..height = tileSize.height

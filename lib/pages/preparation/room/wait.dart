@@ -145,10 +145,6 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
 
   void _startGame() async {
     try {
-      Flame.images.loadAll(<String>[
-        'tile.png',
-        'tile-back.png',
-      ]);
       final game = SeventeenGame(widget.roomId, _onGameEnd);
       if (_isHost) {
         await game.initializeHost();

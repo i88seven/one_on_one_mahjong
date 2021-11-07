@@ -34,7 +34,7 @@ class Dealts {
     }
     _tileObjects = [];
     tiles.asMap().forEach((index, tile) {
-      FrontTile tileObject = FrontTile(tile, TileState.dealt);
+      FrontTile tileObject = FrontTile(_game.gameImages, tile, TileState.dealt);
       _game.add(tileObject
         ..width = tileSize.width
         ..height = tileSize.height
