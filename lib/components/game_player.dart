@@ -15,7 +15,6 @@ class GamePlayer {
 
   GamePlayer(this._game, this.uid, this.name, this.isMe) {
     _points = 0;
-    render();
   }
 
   void set(int points) {

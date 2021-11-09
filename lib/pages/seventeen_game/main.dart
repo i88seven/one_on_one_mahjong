@@ -188,6 +188,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     //   _currentOrder = e.snapshot.value;
     //   for (var gamePlayer in _gamePlayers) {
     //     gamePlayer.updateTurn((_currentOrder == 1) ^ _isParent);
+    //     gamePlayer.render();
     //   }
     //   return;
     // }
@@ -195,6 +196,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     //   e.snapshot.value.asMap().forEach((index, gamePlayer) {
     //     if (_gamePlayers.isNotEmpty) {
     //       _gamePlayers[index].set(gamePlayer['points']);
+    // TODO render
     //     }
     //   });
     //   if (_isGameEnd) {
@@ -231,6 +233,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       int points = 10000; // TODO 得点計算
       gamePlayer.addPoints(points);
+      gamePlayer.render();
     });
     // _isGameEnd の状態を一旦 False にしないと何度も得点が加算される
     Map<String, List<dynamic>> playerStatus = {
