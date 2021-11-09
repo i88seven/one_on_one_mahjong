@@ -6,6 +6,7 @@ import 'package:flame/input.dart';
 import 'package:flame/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/candidates.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
@@ -25,6 +26,7 @@ import 'package:one_on_one_mahjong/types/player_tile.dart';
 
 class SeventeenGame extends FlameGame with TapDetector {
   Images gameImages = Images();
+  final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
   late String _myUid;
   final String _roomId;
   bool _isTapping = false;
@@ -51,7 +53,6 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   static const playerCount = 2;
 
-    _myUid = 'user123'; // TODO
   SeventeenGame(this._roomId, this.screenSize, this.onGameEnd) {
     _gameResult = GameResult(this, _gamePlayers);
     _dealtsMe = Dealts(this);
@@ -67,6 +68,8 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> initializeHost() async {
+    await _storage.ready;
+    _myUid = _storage.getItem('myUid');
     DocumentReference roomDoc =
         _firestoreReference.collection('preparationRooms').doc(_roomId);
     DocumentSnapshot roomSnapshot = await roomDoc.get();
@@ -115,6 +118,8 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> initializeSlave({hostUid = String}) async {
+    await _storage.ready;
+    _myUid = _storage.getItem('myUid');
     _hostUid = hostUid;
     _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
     _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
