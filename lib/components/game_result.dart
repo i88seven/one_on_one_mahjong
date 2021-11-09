@@ -19,8 +19,8 @@ class GameResult {
     // _game.add(_background);
 
     _endButton = GameEndButton()
-      ..x = _game.size.x / 2 - 40
-      ..y = _game.size.y - 110;
+      ..x = _game.screenSize.x / 2 - 40
+      ..y = _game.screenSize.y - 110;
     _game.add(_endButton);
 
     _gamePlayers.sort((a, b) => b.points - a.points);
@@ -28,7 +28,7 @@ class GameResult {
       GamePlayerResult gamePlayerResult = GamePlayerResult(gamePlayer)
         ..x = 30
         ..y = (index * 50 + 50).toDouble()
-        ..width = _game.size.x - 60;
+        ..width = _game.screenSize.x - 60;
       _game.add(gamePlayerResult);
       _gamePlayerResults.add(gamePlayerResult);
     });

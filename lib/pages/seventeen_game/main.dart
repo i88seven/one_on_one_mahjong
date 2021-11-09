@@ -30,6 +30,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   final String _roomId;
   bool _isReadyGame = false;
   bool _isTapping = false;
+  Vector2 screenSize;
   final List<Member> _members = [];
   final List<GamePlayer> _gamePlayers = [];
   late Dealts _dealtsMe;
@@ -53,8 +54,8 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   static const playerCount = 2;
 
-  SeventeenGame(this._roomId, this.onGameEnd) {
     _myUid = 'user123'; // TODO
+  SeventeenGame(this._roomId, this.screenSize, this.onGameEnd) {
     _gameResult = GameResult(this, _gamePlayers);
     _dealtsMe = Dealts(this);
     _dealtsOther = Dealts(this);
@@ -245,6 +246,12 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (var stream in _streams) {
       stream.cancel();
     }
+  }
+
+  @override
+  void onGameResize(Vector2 canvasSize) {
+    super.onGameResize(canvasSize);
+    screenSize = canvasSize;
   }
 
   @override

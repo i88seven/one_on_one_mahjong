@@ -145,7 +145,12 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
 
   void _startGame() async {
     try {
-      final game = SeventeenGame(widget.roomId, _onGameEnd);
+      Size screenSize = MediaQuery.of(context).size;
+      final game = SeventeenGame(
+        widget.roomId,
+        Vector2(screenSize.width, screenSize.height),
+        _onGameEnd,
+      );
       if (_isHost) {
         await game.initializeHost();
         _roomDoc.update({

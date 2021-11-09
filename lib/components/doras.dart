@@ -21,12 +21,12 @@ class Doras {
       ..width = tileSize.width
       ..height = tileSize.height
       ..x = 200
-      ..y = _game.size.y - tileSize.height - 300);
+      ..y = _game.screenSize.y - tileSize.height - 300);
     FrontTile uraDora = FrontTile(_game.gameImages, tiles[1], TileState.dora);
     _game.add(uraDora
       ..width = tileSize.width
       ..height = tileSize.height
       ..x = 200 + tileSize.width
-      ..y = _game.size.y - tileSize.height - 300);
+      ..y = _game.screenSize.y - tileSize.height - 300);
   }
 }

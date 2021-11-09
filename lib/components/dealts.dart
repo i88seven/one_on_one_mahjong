@@ -39,7 +39,7 @@ class Dealts {
         ..width = tileSize.width
         ..height = tileSize.height
         ..x = index * tileSize.width
-        ..y = _game.size.y - tileSize.height - 300);
+        ..y = _game.screenSize.y - tileSize.height - 300);
       _tileObjects.add(tileObject);
     });
   }

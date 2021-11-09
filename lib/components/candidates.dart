@@ -30,7 +30,7 @@ class Candidates {
         ..width = index < tiles.length - 1 ? tileSize.width / 2 : tileSize.width
         ..height = tileSize.height
         ..x = index * tileSize.width
-        ..y = _game.size.y - tileSize.height - 42);
+        ..y = _game.screenSize.y - tileSize.height - 42);
     });
   }
 }

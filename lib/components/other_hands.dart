@@ -11,7 +11,7 @@ class OtherHands {
   }
 
   void _render() {
-    double padding = (_game.size.x - 24) / 13;
+    double padding = (_game.screenSize.x - 24) / 13;
     for (int i = 0; i < 13; i++) {
       BackTile tileObject = BackTile(_game.gameImages);
       _game.add(tileObject

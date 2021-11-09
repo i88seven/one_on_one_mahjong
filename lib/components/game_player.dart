@@ -39,7 +39,7 @@ class GamePlayer {
     }
     double posY;
     if (isMe) {
-      posY = _game.size.y - 30;
+      posY = _game.screenSize.y - 30;
     } else {
       posY = 30.0;
     }
