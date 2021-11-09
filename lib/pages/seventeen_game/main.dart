@@ -13,7 +13,6 @@ import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
-import 'package:one_on_one_mahjong/components/game_start_button.dart';
 
 import 'package:one_on_one_mahjong/components/hands.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
@@ -28,7 +27,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   Images gameImages = Images();
   late String _myUid;
   final String _roomId;
-  bool _isReadyGame = false;
   bool _isTapping = false;
   Vector2 screenSize;
   final List<Member> _members = [];
@@ -49,7 +47,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   String _hostUid = '';
   bool _isParent = false;
   int _currentOrder = 0; // 0:親, 1:子
-  late GameStartButton _gameStartButton;
   Function onGameEnd;
 
   static const playerCount = 2;
@@ -149,6 +146,9 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
     OtherHands otherHands = OtherHands(this);
     otherHands.initialize();
+    if (_myUid == _hostUid) {
+      await _deal();
+    }
   }
 
   Future<void> _onChangeGame(
@@ -256,20 +256,6 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   @override
   Future<void> onTapUp(info) async {
-    if (!_isReadyGame) {
-      for (final t in children) {
-        if (t is GameStartButton &&
-            t.toRect().contains(info.eventPosition.global.toOffset())) {
-          _isReadyGame = true;
-          remove(_gameStartButton);
-          if (_myUid == _hostUid) {
-            await _deal();
-          }
-        }
-      }
-      return;
-    }
-
     if (_isGameEnd) {
       for (final t in children) {
         if (t is GameEndButton &&
