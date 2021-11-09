@@ -213,14 +213,14 @@ class SeventeenGame extends FlameGame with TapDetector {
   Future<void> _deal() async {
     List<AllTileKinds> stocks = [...allTiles];
     stocks.shuffle();
-    _candidatesMe.initialize(stocks.sublist(0, 34));
+    _dealtsMe.initialize(stocks.sublist(0, 34));
     stocks.removeRange(0, 34);
-    _candidatesOther.initialize(stocks.sublist(0, 34));
+    _dealtsOther.initialize(stocks.sublist(0, 34));
     stocks.removeRange(0, 34);
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
 
-    await _setTilesAtDatabase();
+    await _setTilesAtDatabase(_dealtsOther.tiles);
   }
 
   Future<void> _processRoundEnd() async {
@@ -302,9 +302,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<bool> _discard(FrontTile tile) async {
-    _handsMe.discard(tile.tileKind);
+    _candidatesMe.discard(tile);
     _trashesMe.add(tile.tileKind);
-    await _setTilesAtDatabase();
+    await _setTilesAtDatabase(null);
 
     // await _gameDoc.set({'current': (_currentOrder + 1) % 2});
 
@@ -320,17 +320,37 @@ class SeventeenGame extends FlameGame with TapDetector {
     return _gamePlayers.indexWhere((gamePlayer) => gamePlayer.isGameOver) >= 0;
   }
 
-  Future<void> _setTilesAtDatabase() async {
-    Map<String, List<AllTileKinds>> myTiles = {
-      'candidates': _candidatesMe.tiles,
-      'trashs': _trashesMe.tiles,
-      'hands': _handsMe.tiles,
+  Future<void> _setTilesAtDatabase(List<AllTileKinds>? dealtsOther) async {
+    Map<String, List<String>> myTiles = {
+      'dealts': _dealtsMe.tiles.map((e) => e.name).toList(),
+      'candidates': _candidatesMe.tiles.map((e) => e.name).toList(),
+      'trashs': _trashesMe.tiles.map((e) => e.name).toList(),
+      'hands': _handsMe.tiles.map((e) => e.name).toList(),
     };
-    await _gameDoc.update(myTiles);
+    await _gameDoc.collection('player_tiles').doc(_myUid).set(myTiles);
+    if (dealtsOther is List<AllTileKinds>) {
+      Map<String, List<String>> otherTiles = {
+        'dealts': dealtsOther.map((e) => e.name).toList(),
+        'candidates': [],
+        'trashs': [],
+        'hands': [],
+      };
+      Member otherMember =
+          _members.firstWhere((member) => member.uid != _myUid);
+      await _gameDoc
+          .collection('player_tiles')
+          .doc(otherMember.uid)
+          .set(otherTiles);
+    }
   }
 
   Future<void> _gameEnd() async {
     if (_myUid == _hostUid) {
+      QuerySnapshot playerTilesSnapshot =
+          await _gameDoc.collection('player_tiles').get();
+      for (QueryDocumentSnapshot element in playerTilesSnapshot.docs) {
+        element.reference.delete();
+      }
       await _gameDoc.delete();
     }
     onGameEnd();

@@ -13,7 +13,7 @@ class Dealts {
 
   void initialize(List<AllTileKinds> tiles) {
     this.tiles = tiles;
-    this.tiles.sort();
+    sortTiles(this.tiles);
     _render();
   }
 
@@ -24,7 +24,7 @@ class Dealts {
 
   void unselect(AllTileKinds tileKind) {
     tiles.add(tileKind);
-    tiles.sort();
+    sortTiles(tiles);
     _render();
   }
 

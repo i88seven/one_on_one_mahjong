@@ -12,7 +12,7 @@ class Candidates {
 
   void initialize(List<AllTileKinds> tiles) {
     this.tiles = tiles;
-    this.tiles.sort();
+    sortTiles(this.tiles);
     _render();
   }
 
