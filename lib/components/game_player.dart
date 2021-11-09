@@ -1,7 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
-
-import 'package:flame/palette.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 
 class GamePlayer {

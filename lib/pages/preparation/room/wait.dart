@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:flame/flame.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';

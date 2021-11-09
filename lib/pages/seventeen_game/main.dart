@@ -21,8 +21,6 @@ import 'package:one_on_one_mahjong/components/other_hands.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
-import 'package:one_on_one_mahjong/types/game_data.dart';
-import 'package:one_on_one_mahjong/types/player_tile.dart';
 
 class SeventeenGame extends FlameGame with TapDetector {
   Images gameImages = Images();

@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flame/assets.dart';
 import 'package:flame/components.dart';
-import 'package:flame/sprite.dart';
 import 'package:one_on_one_mahjong/constants/tile_size.dart';
 
 // 裏向きのカード描画
