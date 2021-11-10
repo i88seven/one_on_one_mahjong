@@ -103,7 +103,20 @@ class SeventeenGame extends FlameGame with TapDetector {
         member.uid == _myUid,
       );
       _gamePlayers.add(gamePlayer);
-    });
+      await _gameDoc.collection('player_tiles').doc(member.uid).set({
+        'dealts': [],
+        'candidates': [],
+        'trashs': [],
+        'hands': [],
+      });
+      if (member.uid != _myUid) {
+        _streams.add(_gameDoc
+            .collection('player_tiles')
+            .doc(member.uid)
+            .snapshots()
+            .listen(_onChangeOtherTiles));
+      }
+    }
     await _gameDoc.set({
       'hostId': _hostUid,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
@@ -212,6 +225,15 @@ class SeventeenGame extends FlameGame with TapDetector {
     //   }
     //   return;
     // }
+  }
+
+  Future<void> _onChangeOtherTiles(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) async {
+    Map<String, dynamic>? data = snapshot.data();
+    print({'data': data});
+    if (data == null) {
+      return;
+    }
   }
 
   Future<void> _deal() async {
