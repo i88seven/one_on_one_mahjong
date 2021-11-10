@@ -238,6 +238,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
 
+    await _gameDoc.update({'doras': _doras.tiles.map((e) => e.name).toList()});
     await _setTilesAtDatabase(dealtsOther);
   }
 
