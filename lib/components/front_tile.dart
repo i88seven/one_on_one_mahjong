@@ -17,7 +17,7 @@ class FrontTile extends PositionComponent {
   late Sprite _tileImage;
 
   FrontTile(this._gameImages, this.tileKind, this.state) {
-    final image = _gameImages.fromCache('tile.png');
+    final image = _gameImages.fromCache("${tileKind.name}.png");
     _tileImage = Sprite(image);
   }
 

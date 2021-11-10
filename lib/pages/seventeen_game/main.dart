@@ -142,7 +142,12 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   @override
   Future<void>? onLoad() async {
-    await gameImages.loadAll(['tile.png', 'tile-back.png']);
+    List<String> allTileImageName =
+        allTileKinds.values.map((tileName) => "$tileName.png").toList();
+    await gameImages.loadAll([
+      'tile-back.png',
+      ...allTileImageName,
+    ]);
     await super.onLoad();
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.render();
