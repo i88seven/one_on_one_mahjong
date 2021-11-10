@@ -2,10 +2,10 @@
   m: 萬子
   p: 筒子
   s: 索子
-  j: 字牌
-  東:j1, 南:j2, 西:j3, 北:j4, 白:j5, 發:j6, 中:j7
+  z: 字牌 ※アルファベット順でソートできるので、字牌は z
+  東:z1, 南:z2, 西:z3, 北:z4, 白:z5, 發:z6, 中:z7
 */
-const tileKind = ['m', 'p', 's', 'j'];
+const tileKind = ['m', 'p', 's', 'z'];
 enum AllTileKinds {
   m1,
   m2,
