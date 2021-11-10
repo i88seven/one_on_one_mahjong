@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:async';
 
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/assets.dart';
@@ -67,6 +68,12 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> initializeHost() async {
+    List<String> allTileImageName =
+        allTileKinds.values.map((tileName) => "$tileName.png").toList();
+    await gameImages.loadAll([
+      'tile-back.png',
+      ...allTileImageName,
+    ]);
     await _storage.ready;
     _myUid = _storage.getItem('myUid');
     DocumentReference roomDoc =
@@ -118,12 +125,18 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     }
     await _gameDoc.set({
-      'hostId': _hostUid,
+      'hostUid': _hostUid,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
     });
   }
 
   Future<void> initializeSlave({hostUid = String}) async {
+    List<String> allTileImageName =
+        allTileKinds.values.map((tileName) => "$tileName.png").toList();
+    await gameImages.loadAll([
+      'tile-back.png',
+      ...allTileImageName,
+    ]);
     await _storage.ready;
     _myUid = _storage.getItem('myUid');
     _hostUid = hostUid;
@@ -147,12 +160,6 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   @override
   Future<void>? onLoad() async {
-    List<String> allTileImageName =
-        allTileKinds.values.map((tileName) => "$tileName.png").toList();
-    await gameImages.loadAll([
-      'tile-back.png',
-      ...allTileImageName,
-    ]);
     await super.onLoad();
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.render();
@@ -166,56 +173,28 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _onChangeGame(
       DocumentSnapshot<Map<String, dynamic>> snapshot) async {
-    Map<String, dynamic>? data = snapshot.data();
-    if (data == null) {
+    Map<String, dynamic>? gameData = snapshot.data();
+    if (gameData == null) {
       return;
     }
-    // if (data == 'cards') {
-    //   List<List<dynamic>> playersTiles =
-    //       List<List<dynamic>>.from(data.players);
 
-    //   // hands の initialize の前に trash を initialize する
-    //   _trashesMe.initialize(
-    //     List<AllTileKinds>.from(e.snapshot.value['trashes'] ?? []),
-    //   );
+    final players = gameData['players'];
+    for (var gamePlayerJson in players) {
+      GamePlayer gamePlayer = GamePlayer.fromJson(
+          this, gamePlayerJson['uid'] == _myUid, gamePlayerJson);
+      _gamePlayers.clear();
+      _gamePlayers.add(gamePlayer);
+    }
 
-    //   playersTiles.asMap().forEach((i, playerTiles) {
-    //     if (i == _currentOrder) {
-    //       _handsMe.initialize(List<AllTileKinds>.from(playerTiles));
-    //       return;
-    //     }
-    //   });
-
-    //   if (_isRoundEnd) {
-    //     await _processRoundEnd();
-    //     return;
-    //   }
-    //   return;
-    // }
-    // if (e.snapshot.key == 'current') {
-    //   _currentOrder = e.snapshot.value;
-    //   for (var gamePlayer in _gamePlayers) {
-    //     gamePlayer.updateTurn((_currentOrder == 1) ^ _isParent);
-    //     gamePlayer.render();
-    //   }
-    //   return;
-    // }
-    // if (e.snapshot.key == 'players') {
-    //   e.snapshot.value.asMap().forEach((index, gamePlayer) {
-    //     if (_gamePlayers.isNotEmpty) {
-    //       _gamePlayers[index].set(gamePlayer['points']);
-    // TODO render
-    //     }
-    //   });
-    //   if (_isGameEnd) {
-    //     _processGameEnd();
-    //     return;
-    //   }
-    //   if (_isRoundEnd) {
-    //     await _processRoundEnd();
-    //   }
-    //   return;
-    // }
+    final dorasJson = gameData['doras'] as List<dynamic>?;
+    if (dorasJson is List<dynamic>) {
+      List<AllTileKinds> doras = dorasJson
+          .map((doraString) =>
+              EnumToString.fromString(AllTileKinds.values, doraString) ??
+              AllTileKinds.m1)
+          .toList();
+      _doras.initialize(doras);
+    }
   }
 
   Future<void> _onChangeOtherTiles(
@@ -233,6 +212,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _dealtsMe.initialize(stocks.sublist(0, 34));
     stocks.removeRange(0, 34);
     List<AllTileKinds> dealtsOther = stocks.sublist(0, 34);
+    sortTiles(dealtsOther);
     _dealtsOther.initialize(dealtsOther.length);
     stocks.removeRange(0, 34);
     _doras.initialize(stocks.sublist(0, 2));
@@ -325,7 +305,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _trashesMe.add(tile.tileKind);
     await _setTilesAtDatabase(null);
 
-    // await _gameDoc.set({'current': (_currentOrder + 1) % 2});
+    // await _gameDoc.update({'current': (_currentOrder + 1) % 2});
 
     return true;
   }
@@ -346,6 +326,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       'trashs': _trashesMe.tiles.map((e) => e.name).toList(),
       'hands': _handsMe.tiles.map((e) => e.name).toList(),
     };
+    // player_tiles 単位での更新は手間がかかるので、 collection にする
     await _gameDoc.collection('player_tiles').doc(_myUid).set(myTiles);
     if (dealtsOther is List<AllTileKinds>) {
       Map<String, List<String>> otherTiles = {
