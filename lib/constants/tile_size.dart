@@ -1,3 +1,3 @@
 import 'dart:ui';
 
-const Size tileSize = Size(90, 127);
+const Size tileSize = Size(24, 36);

@@ -34,12 +34,16 @@ class Dealts {
     }
     _tileObjects = [];
     tiles.asMap().forEach((index, tile) {
+      double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;
+      double x = tileSize.width * index;
+      int tileRowCount = x ~/ tileAreaWidth;
+      x -= tileAreaWidth * tileRowCount;
       FrontTile tileObject = FrontTile(_game.gameImages, tile, TileState.dealt);
       _game.add(tileObject
         ..width = tileSize.width
         ..height = tileSize.height
-        ..x = index * tileSize.width
-        ..y = _game.screenSize.y - tileSize.height - 300);
+        ..x = x + tileSize.width * 0.7
+        ..y = _game.screenSize.y - 280 + tileRowCount * tileSize.height * 1.3);
       _tileObjects.add(tileObject);
     });
   }

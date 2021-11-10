@@ -17,6 +17,7 @@ import 'package:one_on_one_mahjong/components/game_result.dart';
 
 import 'package:one_on_one_mahjong/components/hands.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
+import 'package:one_on_one_mahjong/components/other_dealts.dart';
 import 'package:one_on_one_mahjong/components/other_hands.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
@@ -32,7 +33,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   final List<Member> _members = [];
   final List<GamePlayer> _gamePlayers = [];
   late Dealts _dealtsMe;
-  late Dealts _dealtsOther;
+  late OtherDeals _dealtsOther;
   late Candidates _candidatesMe;
   late Candidates _candidatesOther;
   late Doras _doras;
@@ -54,7 +55,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   SeventeenGame(this._roomId, this.screenSize, this.onGameEnd) {
     _gameResult = GameResult(this, _gamePlayers);
     _dealtsMe = Dealts(this);
-    _dealtsOther = Dealts(this);
+    _dealtsOther = OtherDeals(this);
     _candidatesMe = Candidates(this);
     _candidatesOther = Candidates(this);
     _doras = Doras(this);
@@ -218,12 +219,13 @@ class SeventeenGame extends FlameGame with TapDetector {
     stocks.shuffle();
     _dealtsMe.initialize(stocks.sublist(0, 34));
     stocks.removeRange(0, 34);
-    _dealtsOther.initialize(stocks.sublist(0, 34));
+    List<AllTileKinds> dealtsOther = stocks.sublist(0, 34);
+    _dealtsOther.initialize(dealtsOther.length);
     stocks.removeRange(0, 34);
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
 
-    await _setTilesAtDatabase(_dealtsOther.tiles);
+    await _setTilesAtDatabase(dealtsOther);
   }
 
   Future<void> _processRoundEnd() async {
