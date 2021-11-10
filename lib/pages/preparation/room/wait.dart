@@ -117,7 +117,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
     super.dispose();
   }
 
-  void _onChangeRoom(DocumentSnapshot snapshot) {
+  Future<void> _onChangeRoom(DocumentSnapshot snapshot) async {
     if (_isHost) {
       return;
     }
@@ -127,7 +127,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
     }
     final roomData = snapshot.data()! as Map<String, dynamic>;
     if (roomData['status'] == 'start') {
-      _startGame();
+      await _startGame();
     }
   }
 
@@ -142,7 +142,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
     });
   }
 
-  void _startGame() async {
+  Future<void> _startGame() async {
     try {
       Size screenSize = MediaQuery.of(context).size;
       final game = SeventeenGame(
@@ -157,6 +157,8 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
           'updatedAt': Timestamp.now(),
         });
       } else {
+        await _changeSubscription.cancel();
+        await _changeMember.cancel();
         QuerySnapshot membersSnapshot =
             await _roomDoc.collection('members').get();
         for (QueryDocumentSnapshot element in membersSnapshot.docs) {
