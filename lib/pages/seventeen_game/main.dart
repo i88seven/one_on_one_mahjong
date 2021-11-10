@@ -95,7 +95,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         _currentOrder = index;
       }
     });
-    _members.asMap().forEach((index, member) {
+    for (var member in _members) {
       GamePlayer gamePlayer = GamePlayer(
         this,
         member.uid,
@@ -121,12 +121,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       'hostId': _hostUid,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
     });
-    for (GamePlayer gamePlayer in _gamePlayers) {
-      _gameDoc
-          .collection('players')
-          .doc(gamePlayer.uid)
-          .set({'name': gamePlayer.name});
-    }
   }
 
   Future<void> initializeSlave({hostUid = String}) async {
@@ -136,22 +130,19 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
     _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
 
-    QuerySnapshot playersSnapshot = await _gameDoc.collection('players').get();
-    final _members = playersSnapshot.docs.map((QueryDocumentSnapshot doc) {
-      final memberData = doc.data()! as Map<String, dynamic>;
-      Member member = Member(uid: doc.id, name: memberData['name']);
-      return member;
-    }).toList();
-    // TODO _isParent;
-    _members.asMap().forEach((index, member) {
-      GamePlayer gamePlayer = GamePlayer(
-        this,
-        member.uid,
-        member.name,
-        member.uid == _myUid,
-      );
+    DocumentSnapshot gameSnapshot = await _gameDoc.get();
+
+    final gameData = gameSnapshot.data()! as Map<String, dynamic>;
+    final players = gameData['players'];
+    for (var gamePlayerJson in players) {
+      GamePlayer gamePlayer = GamePlayer.fromJson(
+          this, gamePlayerJson['uid'] == _myUid, gamePlayerJson);
       _gamePlayers.add(gamePlayer);
-    });
+
+      Member member = Member(uid: gamePlayer.uid, name: gamePlayer.name);
+      _members.add(member);
+    }
+    // TODO _isParent;
   }
 
   @override

@@ -5,14 +5,21 @@ class GamePlayer {
   String uid;
   String name;
   late int _points;
-  bool isMe;
+  bool _isMe;
   bool _isOnesTurn = false;
   TextComponent? _textObject;
   final SeventeenGame _game;
 
-  GamePlayer(this._game, this.uid, this.name, this.isMe) {
+  GamePlayer(this._game, this.uid, this.name, this._isMe) {
     _points = 0;
   }
+
+  GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)
+      : _game = game,
+        uid = json['uid'],
+        name = json['name'],
+        _points = json['points'] ?? 0,
+        _isMe = isMe;
 
   void set(int points) {
     _points = points;
@@ -34,14 +41,14 @@ class GamePlayer {
       _game.remove(_textObject!);
     }
     double posY;
-    if (isMe) {
+    if (_isMe) {
       posY = _game.screenSize.y - 30;
     } else {
       posY = 30.0;
     }
     _textObject = TextComponent(
       "$name: $_points",
-      size: Vector2(100.0, isMe ? 24.0 : 12.0),
+      size: Vector2(100.0, _isMe ? 24.0 : 12.0),
     );
     if (_game.isLoaded) {
       _game.add(_textObject!
