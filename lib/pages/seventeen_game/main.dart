@@ -369,6 +369,18 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (final t in children) {
       if (t is FrontTile) {
         if (t.toRect().overlaps(touchArea)) {
+          if (t.state == TileState.dealt) {
+            bool success = await _selectTile(t);
+            if (success) {
+              break;
+            }
+          }
+          if (t.state == TileState.hand) {
+            bool success = await _unselectTile(t);
+            if (success) {
+              break;
+            }
+          }
           if (t.state == TileState.candidate) {
             bool success = await _discard(t);
             if (success) {
@@ -379,6 +391,23 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     }
     _isTapping = false;
+  }
+
+  Future<bool> _selectTile(FrontTile tile) async {
+    if (_handsMe.tiles.length >= 13) {
+      return true;
+    }
+    _dealtsMe.select(tile.tileKind);
+    _handsMe.add(tile.tileKind);
+
+    return true;
+  }
+
+  Future<bool> _unselectTile(FrontTile tile) async {
+    _dealtsMe.unselect(tile.tileKind);
+    _handsMe.discard(tile.tileKind);
+
+    return true;
   }
 
   Future<bool> _discard(FrontTile tile) async {
