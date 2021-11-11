@@ -147,27 +147,12 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       Size screenSize = MediaQuery.of(context).size;
       final game = SeventeenGame(
         widget.roomId,
+        _hostMember!.uid,
         Vector2(screenSize.width, screenSize.height),
         _onGameEnd,
       );
-      if (_isHost) {
-        await game.initializeHost();
-        _roomDoc.update({
-          'status': 'start',
-          'updatedAt': Timestamp.now(),
-        });
-      } else {
-        await _changeSubscription.cancel();
-        await _changeMember.cancel();
-        QuerySnapshot membersSnapshot =
-            await _roomDoc.collection('members').get();
-        for (QueryDocumentSnapshot element in membersSnapshot.docs) {
-          element.reference.delete();
-        }
-        _roomDoc.delete();
-        await game.initializeSlave(hostUid: _hostMember!.uid);
-      }
-
+      await _changeSubscription.cancel();
+      await _changeMember.cancel();
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => GameWidget(game: game),
