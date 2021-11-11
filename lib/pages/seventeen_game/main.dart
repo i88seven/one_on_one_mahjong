@@ -82,7 +82,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     final roomData = roomSnapshot.data()! as Map<String, dynamic>;
     _hostUid = roomData['hostUid'];
     _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
-    // await _gameDoc.delete();
+    await deleteGame();
     _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
     final membersSnapshot = await roomDoc.collection('members').get();
 
@@ -344,14 +344,18 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
   }
 
+  Future<void> deleteGame() async {
+    QuerySnapshot playerTilesSnapshot =
+        await _gameDoc.collection('player_tiles').get();
+    for (QueryDocumentSnapshot element in playerTilesSnapshot.docs) {
+      element.reference.delete();
+    }
+    await _gameDoc.delete();
+  }
+
   Future<void> _gameEnd() async {
     if (_myUid == _hostUid) {
-      QuerySnapshot playerTilesSnapshot =
-          await _gameDoc.collection('player_tiles').get();
-      for (QueryDocumentSnapshot element in playerTilesSnapshot.docs) {
-        element.reference.delete();
-      }
-      await _gameDoc.delete();
+      await deleteGame();
     }
     onGameEnd();
   }
