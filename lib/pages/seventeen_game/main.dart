@@ -11,6 +11,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/candidates.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
+import 'package:one_on_one_mahjong/components/fix_hands_button.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
@@ -22,6 +23,7 @@ import 'package:one_on_one_mahjong/components/other_dealts.dart';
 import 'package:one_on_one_mahjong/components/other_hands.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
+import 'package:one_on_one_mahjong/constants/tile_size.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 
 class SeventeenGame extends FlameGame with TapDetector {
@@ -47,6 +49,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   final List<StreamSubscription> _streams = [];
   final String _hostUid;
   bool _isParent = false;
+  FixHandsButton? _fixHandsButton;
   int _currentOrder = 0; // 0:親, 1:子
   Function onGameEnd;
 
@@ -355,7 +358,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       return;
     }
 
-    if (_isTapping || _currentOrder != _currentOrder || _isRoundEnd) {
+    if (_isTapping || _isRoundEnd) {
       return;
     }
     _isTapping = true;
@@ -366,27 +369,37 @@ class SeventeenGame extends FlameGame with TapDetector {
       height: 2,
     );
 
-    for (final t in children) {
-      if (t is FrontTile) {
-        if (t.toRect().overlaps(touchArea)) {
-          if (t.state == TileState.dealt) {
-            bool success = await _selectTile(t);
+    for (final c in children) {
+      if (c is FrontTile) {
+        if (c.toRect().overlaps(touchArea)) {
+          print({'state': c.state});
+          if (c.state == TileState.dealt) {
+            bool success = await _selectTile(c);
             if (success) {
               break;
             }
           }
-          if (t.state == TileState.hand) {
-            bool success = await _unselectTile(t);
+          if (c.state == TileState.hand) {
+            bool success = await _unselectTile(c);
             if (success) {
               break;
             }
           }
-          if (t.state == TileState.candidate) {
-            bool success = await _discard(t);
+          if (c.state == TileState.candidate) {
+            bool success = await _discard(c);
             if (success) {
               break;
             }
           }
+        }
+      }
+      if (_canFixHands) {
+        if (c is FixHandsButton &&
+            c.toRect().contains(info.eventPosition.global.toOffset())) {
+          remove(c);
+          _candidatesMe.initialize([..._dealtsMe.tiles]);
+          await _setTilesAtDatabase(null);
+          break;
         }
       }
     }
@@ -399,11 +412,21 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
     _dealtsMe.select(tile.tileKind);
     _handsMe.add(tile.tileKind);
+    if (_canFixHands) {
+      _fixHandsButton = FixHandsButton()
+        ..x = (screenSize.x - FixHandsButton.buttonSize.x - tileSize.width)
+        ..y =
+            (screenSize.y - FixHandsButton.buttonSize.y - tileSize.height * 3);
+      add(_fixHandsButton!);
+    }
 
     return true;
   }
 
   Future<bool> _unselectTile(FrontTile tile) async {
+    if (_canFixHands) {
+      remove(_fixHandsButton!);
+    }
     _dealtsMe.unselect(tile.tileKind);
     _handsMe.discard(tile.tileKind);
 
@@ -418,6 +441,11 @@ class SeventeenGame extends FlameGame with TapDetector {
     // await _gameDoc.update({'current': (_currentOrder + 1) % 2});
 
     return true;
+  }
+
+  bool get _canFixHands {
+    // TODO status == selectHands
+    return _handsMe.tiles.length == 13;
   }
 
   bool get _isRoundEnd {
