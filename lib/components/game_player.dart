@@ -1,16 +1,19 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/components.dart';
+import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 
 class GamePlayer {
   String uid;
   String name;
   late int _points;
+  GamePlayerStatus status;
   bool _isMe;
   bool _isOnesTurn = false;
   TextComponent? _textObject;
   final SeventeenGame _game;
 
-  GamePlayer(this._game, this.uid, this.name, this._isMe) {
+  GamePlayer(this._game, this.uid, this.name, this.status, this._isMe) {
     _points = 0;
   }
 
@@ -19,9 +22,17 @@ class GamePlayer {
         uid = json['uid'],
         name = json['name'],
         _points = json['points'] ?? 0,
+        status =
+            EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
+                GamePlayerStatus.ready,
         _isMe = isMe;
 
-  void set(int points) {
+  void setStatus(GamePlayerStatus status) {
+    this.status = status;
+    render();
+  }
+
+  void setPoint(int points) {
     _points = points;
     render();
   }
@@ -65,6 +76,7 @@ class GamePlayer {
     return {
       'uid': uid,
       'name': name,
+      'status': status.name,
       'points': _points,
     };
   }

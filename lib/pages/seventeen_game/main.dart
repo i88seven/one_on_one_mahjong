@@ -22,6 +22,8 @@ import 'package:one_on_one_mahjong/components/other_dealts.dart';
 import 'package:one_on_one_mahjong/components/other_hands.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
+import 'package:one_on_one_mahjong/constants/game_player_status.dart';
+import 'package:one_on_one_mahjong/constants/game_status.dart';
 import 'package:one_on_one_mahjong/constants/tile_size.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 
@@ -45,6 +47,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late DocumentReference<Map<String, dynamic>> _gameDoc;
   final List<StreamSubscription> _streams = [];
   final String _hostUid;
+  GameStatus _gameStatus = GameStatus.selectHands;
   bool _isParent = false;
   FixHandsButton? _fixHandsButton;
   int _currentOrder = 0; // 0:親, 1:子
@@ -94,6 +97,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         this,
         member.uid,
         member.name,
+        GamePlayerStatus.selectHands,
         member.uid == _myUid,
       );
       _gamePlayers.add(gamePlayer);
@@ -112,7 +116,8 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
     await _gameDoc.set({
       'hostUid': _hostUid,
-      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
+      'status': _gameStatus.name,
     });
     await _deal();
     roomDoc.update({
@@ -190,6 +195,10 @@ class SeventeenGame extends FlameGame with TapDetector {
           this, gamePlayerJson['uid'] == _myUid, gamePlayerJson);
       _gamePlayers.add(gamePlayer);
     }
+    if (gameData['status'] != null && _gameStatus.name != gameData['status']) {
+      _gameStatus =
+          EnumToString.fromString(GameStatus.values, gameData['status'])!;
+    }
 
     final dorasJson = gameData['doras'] as List<dynamic>?;
     if (dorasJson is List<dynamic>) {
@@ -199,6 +208,24 @@ class SeventeenGame extends FlameGame with TapDetector {
               AllTileKinds.m1)
           .toList();
       _doras.initialize(doras);
+    }
+
+    if (_myUid == _hostUid && _gameStatus == GameStatus.selectHands) {
+      bool playersSelected = _gamePlayers.fold(
+          true,
+          (previous, gamePlayer) =>
+              previous && gamePlayer.status == GamePlayerStatus.fixedHands);
+      if (playersSelected) {
+        for (GamePlayer gamePlayer in _gamePlayers) {
+          gamePlayer.setStatus(GamePlayerStatus.selectTrash);
+        }
+        _gameStatus = GameStatus.selectTrash;
+        await _gameDoc.update({
+          'status': _gameStatus.name,
+          'players':
+              _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+        });
+      }
     }
   }
 
@@ -346,24 +373,29 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (c is FrontTile) {
         if (c.toRect().overlaps(touchArea)) {
           print({'state': c.state});
-          if (c.state == TileState.dealt) {
+          if (c.state == TileState.dealt &&
+              _gameStatus == GameStatus.selectHands &&
+              _me.status == GamePlayerStatus.selectHands) {
             bool success = await _selectTile(c);
             if (success) {
               break;
             }
           }
-          if (c.state == TileState.hand) {
+          if (c.state == TileState.hand &&
+              _gameStatus == GameStatus.selectHands &&
+              _me.status == GamePlayerStatus.selectHands) {
             bool success = await _unselectTile(c);
             if (success) {
               break;
             }
           }
-          if (c.state == TileState.dealt) {
-            // TODO GameStatus.selectHands
-            // bool success = await _discard(c);
-            // if (success) {
-            //   break;
-            // }
+          if (c.state == TileState.dealt &&
+              _gameStatus == GameStatus.selectTrash &&
+              _me.status == GamePlayerStatus.selectTrash) {
+            bool success = await _discard(c);
+            if (success) {
+              break;
+            }
           }
         }
       }
@@ -372,6 +404,8 @@ class SeventeenGame extends FlameGame with TapDetector {
             c.toRect().contains(info.eventPosition.global.toOffset())) {
           remove(c);
           await _setTilesAtDatabase(null);
+          _me.setStatus(GamePlayerStatus.fixedHands);
+          _updateGamePlayers();
           break;
         }
       }
@@ -407,13 +441,17 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<bool> _discard(FrontTile tile) async {
-    _candidatesMe.discard(tile);
+    _dealtsMe.discard(tile);
     _trashesMe.add(tile.tileKind);
     await _setTilesAtDatabase(null);
 
     // await _gameDoc.update({'current': (_currentOrder + 1) % 2});
 
     return true;
+  }
+
+  GamePlayer get _me {
+    return _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid == _myUid);
   }
 
   bool get _canFixHands {
@@ -428,6 +466,12 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   bool get _isGameEnd {
     return _gamePlayers.indexWhere((gamePlayer) => gamePlayer.isGameOver) >= 0;
+  }
+
+  Future<void> _updateGamePlayers() async {
+    await _gameDoc.update({
+      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+    });
   }
 
   Future<void> _setTilesAtDatabase(List<AllTileKinds>? dealtsOther) async {
