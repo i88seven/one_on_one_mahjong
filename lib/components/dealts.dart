@@ -28,6 +28,12 @@ class Dealts {
     _render();
   }
 
+  void discard(FrontTile tile) {
+    _game.remove(tile);
+    tiles.remove(tile.tileKind);
+    _tileObjects.remove(tile);
+  }
+
   void _render() {
     _game.removeAll(_tileObjects);
     _tileObjects = [];

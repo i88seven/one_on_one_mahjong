@@ -8,7 +8,6 @@ import 'package:flame/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:one_on_one_mahjong/components/candidates.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/fix_hands_button.dart';
@@ -36,8 +35,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   final List<GamePlayer> _gamePlayers = [];
   late Dealts _dealtsMe;
   late OtherDeals _dealtsOther;
-  late Candidates _candidatesMe;
-  late Candidates _candidatesOther;
   late Doras _doras;
   late Hands _handsMe;
   late OtherHands _handsOther;
@@ -59,8 +56,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gameResult = GameResult(this, _gamePlayers);
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(this);
-    _candidatesMe = Candidates(this);
-    _candidatesOther = Candidates(this);
     _doras = Doras(this);
     _handsMe = Hands(this);
     _handsOther = OtherHands(this);
@@ -103,7 +98,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       );
       _gamePlayers.add(gamePlayer);
       await _gameDoc.collection('player_tiles').doc(member.uid).set({
-        'candidates': [],
         'dealts': [],
         'hands': [],
         'trashs': [],
@@ -215,17 +209,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       return;
     }
 
-    final candidatesJson = otherTilesData['candidates'] as List<dynamic>?;
-    if (candidatesJson is List<dynamic>) {
-      List<AllTileKinds> candidates = candidatesJson
-          .map((tileString) =>
-              EnumToString.fromString(AllTileKinds.values, tileString) ??
-              AllTileKinds.m1)
-          .toList();
-      _candidatesOther.initialize(candidates);
-      // TODO candidatesOther は隠す
-    }
-
     final dealtsJson = otherTilesData['dealts'] as List<dynamic>?;
     if (dealtsJson is List<dynamic>) {
       _dealtsOther.initialize(dealtsJson.length);
@@ -247,16 +230,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     Map<String, dynamic>? myTilesData = snapshot.data();
     if (myTilesData == null) {
       return;
-    }
-
-    final candidatesJson = myTilesData['candidates'] as List<dynamic>?;
-    if (candidatesJson is List<dynamic>) {
-      List<AllTileKinds> candidates = candidatesJson
-          .map((tileString) =>
-              EnumToString.fromString(AllTileKinds.values, tileString) ??
-              AllTileKinds.m1)
-          .toList();
-      _candidatesMe.initialize(candidates);
     }
 
     final handsJson = myTilesData['hands'] as List<dynamic>?;
@@ -385,11 +358,12 @@ class SeventeenGame extends FlameGame with TapDetector {
               break;
             }
           }
-          if (c.state == TileState.candidate) {
-            bool success = await _discard(c);
-            if (success) {
-              break;
-            }
+          if (c.state == TileState.dealt) {
+            // TODO GameStatus.selectHands
+            // bool success = await _discard(c);
+            // if (success) {
+            //   break;
+            // }
           }
         }
       }
@@ -397,7 +371,6 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (c is FixHandsButton &&
             c.toRect().contains(info.eventPosition.global.toOffset())) {
           remove(c);
-          _candidatesMe.initialize([..._dealtsMe.tiles]);
           await _setTilesAtDatabase(null);
           break;
         }
@@ -459,7 +432,6 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _setTilesAtDatabase(List<AllTileKinds>? dealtsOther) async {
     Map<String, List<String>> myTiles = {
-      'candidates': _candidatesMe.tiles.map((e) => e.name).toList(),
       'dealts': _dealtsMe.tiles.map((e) => e.name).toList(),
       'hands': _handsMe.tiles.map((e) => e.name).toList(),
       'trashs': _trashesMe.tiles.map((e) => e.name).toList(),
@@ -468,7 +440,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _gameDoc.collection('player_tiles').doc(_myUid).set(myTiles);
     if (dealtsOther is List<AllTileKinds>) {
       Map<String, List<String>> otherTiles = {
-        'candidates': [],
         'dealts': dealtsOther.map((e) => e.name).toList(),
         'hands': [],
         'trashs': [],
