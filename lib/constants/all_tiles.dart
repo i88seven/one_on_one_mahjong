@@ -2,8 +2,8 @@
   m: 萬子
   p: 筒子
   s: 索子
-  z: 字牌 ※アルファベット順でソートできるので、字牌は z
-  東:z1, 南:z2, 西:z3, 北:z4, 白:z5, 發:z6, 中:z7
+  j: 字牌
+  東:j1, 南:j2, 西:j3, 北:j4, 白:j5, 發:j6, 中:j7
 */
 const tileKind = ['m', 'p', 's', 'z'];
 enum AllTileKinds {
@@ -12,42 +12,44 @@ enum AllTileKinds {
   m3,
   m4,
   m5,
+  mr,
   m6,
   m7,
   m8,
   m9,
-  mr,
   p1,
   p2,
   p3,
   p4,
   p5,
+  pr,
   p6,
   p7,
   p8,
   p9,
-  pr,
   s1,
   s2,
   s3,
   s4,
   s5,
+  sr,
   s6,
   s7,
   s8,
   s9,
-  sr,
-  z1,
-  z2,
-  z3,
-  z4,
-  z5,
-  z6,
-  z7,
+  j1,
+  j2,
+  j3,
+  j4,
+  j5,
+  j6,
+  j7,
 }
 
 void sortTiles(List<AllTileKinds> tiles) {
-  tiles.sort((a, b) => a.name.compareTo(b.name));
+  tiles.sort((a, b) {
+    return AllTileKinds.values.indexOf(a) - AllTileKinds.values.indexOf(b);
+  });
 }
 
 final Map<AllTileKinds, String> allTileKinds = Map.fromIterables(
