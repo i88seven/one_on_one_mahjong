@@ -20,9 +20,7 @@ class OtherDeals {
   }
 
   void _render() {
-    for (var tileObject in _tileObjects) {
-      _game.remove(tileObject);
-    }
+    _game.removeAll(_tileObjects);
     _tileObjects = [];
 
     for (int index = 0; index < tileCount; index++) {

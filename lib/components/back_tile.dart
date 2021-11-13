@@ -25,10 +25,4 @@ class BackTile extends PositionComponent {
     Rect rect = Rect.fromLTWH(0, 0, tileSize.width, tileSize.height);
     _tileImage.renderRect(c, rect);
   }
-
-  @override
-  void onMount() {
-    width = tileSize.width;
-    height = tileSize.height;
-  }
 }

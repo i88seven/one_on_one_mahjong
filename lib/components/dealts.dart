@@ -29,9 +29,7 @@ class Dealts {
   }
 
   void _render() {
-    for (var tileObject in _tileObjects) {
-      _game.remove(tileObject);
-    }
+    _game.removeAll(_tileObjects);
     _tileObjects = [];
     tiles.asMap().forEach((index, tile) {
       double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;

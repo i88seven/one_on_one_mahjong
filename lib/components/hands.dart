@@ -29,9 +29,7 @@ class Hands {
   }
 
   void _render() {
-    for (var tileObject in _tileObjects) {
-      _game.remove(tileObject);
-    }
+    _game.removeAll(_tileObjects);
     _tileObjects = [];
     tiles.asMap().forEach((index, tile) {
       FrontTile tileObject = FrontTile(_game.gameImages, tile, TileState.hand);
