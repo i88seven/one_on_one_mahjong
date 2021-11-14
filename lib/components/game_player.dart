@@ -8,8 +8,7 @@ class GamePlayer {
   String name;
   late int _points;
   GamePlayerStatus status;
-  bool _isMe;
-  bool _isOnesTurn = false;
+  final bool _isMe;
   TextComponent? _textObject;
   final SeventeenGame _game;
 
@@ -34,11 +33,6 @@ class GamePlayer {
 
   void setPoint(int points) {
     _points = points;
-    render();
-  }
-
-  void updateTurn(bool isOnesTurn) {
-    _isOnesTurn = isOnesTurn;
     render();
   }
 
@@ -67,8 +61,6 @@ class GamePlayer {
         ..y = posY);
     }
   }
-
-  bool get isGameOver => _points >= 40;
 
   int get points => _points;
 

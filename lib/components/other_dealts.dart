@@ -5,17 +5,17 @@ import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 class OtherDeals {
   final SeventeenGame _game;
   List<BackTile> _tileObjects = [];
-  int tileCount = 0;
+  int _tileCount = 0;
 
   OtherDeals(this._game);
 
-  void initialize(int _tileCount) {
-    tileCount = _tileCount;
+  void initialize(int tileCount) {
+    _tileCount = tileCount;
     _render();
   }
 
   void select() {
-    tileCount -= 1;
+    _tileCount -= 1;
     _render();
   }
 
@@ -23,7 +23,7 @@ class OtherDeals {
     _game.removeAll(_tileObjects);
     _tileObjects = [];
 
-    for (int index = 0; index < tileCount; index++) {
+    for (int index = 0; index < _tileCount; index++) {
       double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;
       double x = tileSize.width * index;
       int tileRowCount = x ~/ tileAreaWidth;

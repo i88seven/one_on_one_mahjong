@@ -5,24 +5,32 @@ import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 
 class Trashes {
-  List<AllTileKinds> tiles = [];
+  List<AllTileKinds> _tiles = [];
   final SeventeenGame _game;
   final bool _isMe;
 
   Trashes(this._game, this._isMe);
 
   void initialize(List<AllTileKinds> tiles) {
-    this.tiles = tiles;
+    _tiles = tiles;
   }
 
   void add(AllTileKinds tileKind) {
-    tiles.add(tileKind);
-    _render(tileKind, tiles.length);
+    _tiles.add(tileKind);
+    _render(tileKind);
   }
 
-  void _render(AllTileKinds tileKind, int length) {
+  void _render(AllTileKinds tileKind) {
     _game.add(FrontTile(_game.gameImages, tileKind, TileState.trash)
-      ..x = tileSize.width * length
-      ..y = _isMe ? 250 : 550);
+      ..x = tileSize.width * tileCount
+      ..y = _isMe ? 550 : 250);
+  }
+
+  int get tileCount {
+    return _tiles.length;
+  }
+
+  List<String> get jsonValue {
+    return _tiles.map((e) => e.name).toList();
   }
 }

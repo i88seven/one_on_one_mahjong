@@ -11,9 +11,7 @@ import 'package:one_on_one_mahjong/constants/tile_state.dart';
 class FrontTile extends PositionComponent {
   final Images _gameImages;
   final AllTileKinds tileKind;
-  double time = 0;
   final TileState state;
-  int lightIntensity = 0;
   late Sprite _tileImage;
 
   FrontTile(this._gameImages, this.tileKind, this.state) {

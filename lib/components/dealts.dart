@@ -5,39 +5,39 @@ import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'front_tile.dart';
 
 class Dealts {
-  List<AllTileKinds> tiles = [];
+  List<AllTileKinds> _tiles = [];
   List<FrontTile> _tileObjects = [];
   final SeventeenGame _game;
 
   Dealts(this._game);
 
   void initialize(List<AllTileKinds> tiles) {
-    this.tiles = tiles;
-    sortTiles(this.tiles);
+    _tiles = tiles;
+    sortTiles(_tiles);
     _render();
   }
 
   void select(AllTileKinds tileKind) {
-    tiles.remove(tileKind);
+    _tiles.remove(tileKind);
     _render();
   }
 
   void unselect(AllTileKinds tileKind) {
-    tiles.add(tileKind);
-    sortTiles(tiles);
+    _tiles.add(tileKind);
+    sortTiles(_tiles);
     _render();
   }
 
   void discard(FrontTile tile) {
     _game.remove(tile);
-    tiles.remove(tile.tileKind);
+    _tiles.remove(tile.tileKind);
     _tileObjects.remove(tile);
   }
 
   void _render() {
     _game.removeAll(_tileObjects);
     _tileObjects = [];
-    tiles.asMap().forEach((index, tile) {
+    _tiles.asMap().forEach((index, tile) {
       double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;
       double x = tileSize.width * index;
       int tileRowCount = x ~/ tileAreaWidth;
@@ -50,5 +50,13 @@ class Dealts {
         ..y = _game.screenSize.y - 280 + tileRowCount * tileSize.height * 1.3);
       _tileObjects.add(tileObject);
     });
+  }
+
+  int get tileCount {
+    return _tiles.length;
+  }
+
+  List<String> get jsonValue {
+    return _tiles.map((e) => e.name).toList();
   }
 }

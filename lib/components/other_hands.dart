@@ -12,13 +12,12 @@ class OtherHands {
   }
 
   void _render() {
-    double padding = (_game.screenSize.x - tileSize.width) / 13;
     for (int i = 0; i < 13; i++) {
       BackTile tileObject = BackTile(_game.gameImages);
       _game.add(tileObject
         ..width = tileSize.width
         ..height = tileSize.height
-        ..x = padding * i
+        ..x = (i + 1) * tileSize.width
         ..y = 80.0);
     }
   }

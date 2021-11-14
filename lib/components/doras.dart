@@ -6,18 +6,18 @@ import 'back_tile.dart';
 import 'front_tile.dart';
 
 class Doras {
-  List<AllTileKinds> tiles = [];
+  List<AllTileKinds> _tiles = [];
   final SeventeenGame _game;
 
   Doras(this._game);
 
   void initialize(List<AllTileKinds> tiles) {
-    this.tiles = tiles;
+    _tiles = tiles;
     _render();
   }
 
   void _render() {
-    FrontTile dora = FrontTile(_game.gameImages, tiles[0], TileState.dora);
+    FrontTile dora = FrontTile(_game.gameImages, _tiles[0], TileState.dora);
     _game.add(dora
       ..width = tileSize.width
       ..height = tileSize.height
@@ -31,5 +31,9 @@ class Doras {
         ..x = 200 + tileSize.width * i
         ..y = _game.screenSize.y - tileSize.height - 300);
     }
+  }
+
+  List<String> get jsonValue {
+    return _tiles.map((e) => e.name).toList();
   }
 }

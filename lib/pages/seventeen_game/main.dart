@@ -302,7 +302,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
 
-    await _gameDoc.update({'doras': _doras.tiles.map((e) => e.name).toList()});
+    await _gameDoc.update({'doras': _doras.jsonValue});
     await _setTilesAtDatabase(dealtsOther);
   }
 
@@ -372,7 +372,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (final c in children) {
       if (c is FrontTile) {
         if (c.toRect().overlaps(touchArea)) {
-          print({'state': c.state});
           if (c.state == TileState.dealt &&
               _gameStatus == GameStatus.selectHands &&
               _me.status == GamePlayerStatus.selectHands) {
@@ -414,7 +413,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<bool> _selectTile(FrontTile tile) async {
-    if (_handsMe.tiles.length >= 13) {
+    if (_handsMe.tileCount >= 13) {
       return true;
     }
     _dealtsMe.select(tile.tileKind);
@@ -455,8 +454,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   bool get _canFixHands {
-    // TODO status == selectHands
-    return _handsMe.tiles.length == 13;
+    return _gameStatus == GameStatus.selectTrash && _handsMe.tileCount == 13;
   }
 
   bool get _isRoundEnd {
@@ -465,7 +463,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   bool get _isGameEnd {
-    return _gamePlayers.indexWhere((gamePlayer) => gamePlayer.isGameOver) >= 0;
+    return false; // TODO
   }
 
   Future<void> _updateGamePlayers() async {
@@ -476,9 +474,9 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _setTilesAtDatabase(List<AllTileKinds>? dealtsOther) async {
     Map<String, List<String>> myTiles = {
-      'dealts': _dealtsMe.tiles.map((e) => e.name).toList(),
-      'hands': _handsMe.tiles.map((e) => e.name).toList(),
-      'trashs': _trashesMe.tiles.map((e) => e.name).toList(),
+      'dealts': _dealtsMe.jsonValue,
+      'hands': _handsMe.jsonValue,
+      'trashs': _trashesMe.jsonValue,
     };
     // player_tiles 単位での更新は手間がかかるので、 collection にする
     await _gameDoc.collection('player_tiles').doc(_myUid).set(myTiles);
