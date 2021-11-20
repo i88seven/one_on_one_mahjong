@@ -58,23 +58,22 @@ bool canExtractChow(List<AllTileKinds> tiles, AllTileKinds baseTile) {
   return true;
 }
 
-void sortSeparatedTiles(List<Map<String, AllTileKinds>> separatedTiles) {
-  separatedTiles.sort((a, b) {
-    if (a.keys.toList()[0] == 'head') {
-      return -1;
-    }
-    if (b.keys.toList()[0] == 'head') {
-      return 1;
-    }
-    if (a.keys.toList()[0] == 'pung' && b.keys.toList()[0] == 'chow') {
-      return -1;
-    }
-    if (a.keys.toList()[0] == 'chow' && b.keys.toList()[0] == 'pung') {
-      return 1;
-    }
-    return AllTileKinds.values.indexOf(a.values.toList()[0]) -
-        AllTileKinds.values.indexOf(b.values.toList()[0]);
-  });
+int compareSeparatedTile(
+    Map<String, AllTileKinds> a, Map<String, AllTileKinds> b) {
+  if (a.keys.toList()[0] == 'head') {
+    return -1;
+  }
+  if (b.keys.toList()[0] == 'head') {
+    return 1;
+  }
+  if (a.keys.toList()[0] == 'pung' && b.keys.toList()[0] == 'chow') {
+    return -1;
+  }
+  if (a.keys.toList()[0] == 'chow' && b.keys.toList()[0] == 'pung') {
+    return 1;
+  }
+  return AllTileKinds.values.indexOf(a.values.toList()[0]) -
+      AllTileKinds.values.indexOf(b.values.toList()[0]);
 }
 
 bool isSeparatedTilesFound(
@@ -107,17 +106,23 @@ void fetchSetRecursively(
 ) {
   if (tiles.length <= 2) {
     if (tiles[0] == tiles[1]) {
-      currentSeparatedMaps.add({'head': tiles[0]});
-      sortSeparatedTiles(currentSeparatedMaps);
-      if (!isSeparatedTilesFound(
-          separatedTilesCandidates, currentSeparatedMaps)) {
-        separatedTilesCandidates.add(currentSeparatedMaps);
-      }
+      separatedTilesCandidates.add([
+        {'head': tiles[0]},
+        ...currentSeparatedMaps
+      ]);
     }
     return;
   }
-  List<AllTileKinds> pungCandidate = fetchPungCandidate(tiles);
-  List<AllTileKinds> chowCandidate = fetchChowCandidate(tiles);
+  List<AllTileKinds> pungCandidate = fetchPungCandidate(tiles)
+      .where((tile) =>
+          currentSeparatedMaps.isEmpty ||
+          compareSeparatedTile({'pung': tile}, currentSeparatedMaps.last) >= 0)
+      .toList();
+  List<AllTileKinds> chowCandidate = fetchChowCandidate(tiles)
+      .where((tile) =>
+          currentSeparatedMaps.isEmpty ||
+          compareSeparatedTile({'chow': tile}, currentSeparatedMaps.last) >= 0)
+      .toList();
   for (AllTileKinds pung in pungCandidate) {
     List<AllTileKinds> pungRemainderTiles = [...tiles];
     for (var i = 0; i < 3; i++) {
