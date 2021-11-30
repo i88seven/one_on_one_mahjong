@@ -145,13 +145,6 @@ void fetchSetRecursively(
   }
 }
 
-List<List<Map<String, AllTileKinds>>> fetchSeparatedTilesCandidates(
-    List<AllTileKinds> tiles) {
-  List<List<Map<String, AllTileKinds>>> separatedTilesCandidates = [];
-  fetchSetRecursively(convertRedTiles(tiles), separatedTilesCandidates, []);
-  return separatedTilesCandidates;
-}
-
 List<AllTileKinds> fetchPungCandidate(List<AllTileKinds> tiles) {
   Map<AllTileKinds, int> tileKindCount = fetchTileKindCount(tiles);
   tileKindCount.removeWhere((key, value) => value < 3);
@@ -167,6 +160,77 @@ List<AllTileKinds> fetchChowCandidate(List<AllTileKinds> tiles) {
     }
   }
   return result;
+}
+
+List<List<Map<String, AllTileKinds>>> fetchSeparatedTilesCandidates(
+    List<AllTileKinds> tiles) {
+  List<List<Map<String, AllTileKinds>>> separatedTilesCandidates = [];
+  fetchSetRecursively(convertRedTiles(tiles), separatedTilesCandidates, []);
+  return separatedTilesCandidates;
+}
+
+/// Search tiles to win for given [tiles].
+Map<AllTileKinds, List<List<Map<String, AllTileKinds>>>> searchReachTiles(
+    List<AllTileKinds> tiles) {
+  List<String> winTileTypes = fetchWinTileTypes(tiles);
+  if (winTileTypes.isEmpty) {
+    return {};
+  }
+  Map<AllTileKinds, List<List<Map<String, AllTileKinds>>>> result = {};
+  for (AllTileKinds simpleTile in simpleTileKinds.keys) {
+    for (String winTileType in winTileTypes) {
+      if (simpleTile.name.startsWith(winTileType)) {
+        List<List<Map<String, AllTileKinds>>> separatedTilesCandidates =
+            fetchSeparatedTilesCandidates([...tiles, simpleTile]);
+        if (separatedTilesCandidates.isNotEmpty) {
+          result[simpleTile] = separatedTilesCandidates;
+        }
+      }
+    }
+  }
+  return result;
+}
+
+List<String> fetchWinTileTypes(List<AllTileKinds> tiles) {
+  if (tiles.length != 13) {
+    return [];
+  }
+  Map<String, int> tileTypeCount = fetchTileTypeCount(tiles);
+  List<String> count1Tiles = [];
+  List<String> count2Tiles = [];
+  for (String tileType in tileTypeCount.keys) {
+    int countBy3 = tileTypeCount[tileType]! % 3;
+    switch (countBy3) {
+      case 1:
+        count1Tiles.add(tileType);
+        break;
+      case 2:
+        count2Tiles.add(tileType);
+        break;
+      default:
+    }
+  }
+  if (count1Tiles.length == 1 && count2Tiles.isEmpty) {
+    return count1Tiles;
+  }
+  if (count2Tiles.length == 2 && count1Tiles.isEmpty) {
+    return count2Tiles;
+  }
+  return [];
+}
+
+Map<String, int> fetchTileTypeCount(List<AllTileKinds> tiles) {
+  Map<String, int> tileTypeCount = {};
+  for (AllTileKinds tile in tiles) {
+    String tileType = tile.name[0];
+
+    if (tileTypeCount[tileType] == null) {
+      tileTypeCount[tileType] = 1;
+      continue;
+    }
+    tileTypeCount[tileType] = tileTypeCount[tileType]! + 1;
+  }
+  return tileTypeCount;
 }
 
 Map<AllTileKinds, int> fetchTileKindCount(List<AllTileKinds> tiles) {
