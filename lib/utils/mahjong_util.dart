@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
+import 'package:one_on_one_mahjong/types/mahjong_types.dart';
 
 List<AllTileKinds> convertRedTiles(List<AllTileKinds> tiles) {
   return tiles.map((tile) {
@@ -58,36 +56,24 @@ bool canExtractChow(List<AllTileKinds> tiles, AllTileKinds baseTile) {
   return true;
 }
 
-int compareSeparatedTile(
-    Map<String, AllTileKinds> a, Map<String, AllTileKinds> b) {
-  if (a.keys.toList()[0] == 'head') {
-    return -1;
+int compareSeparatedTile(SeparatedTile a, SeparatedTile b) {
+  if (a.type != b.type) {
+    return a.type.index - b.type.index;
   }
-  if (b.keys.toList()[0] == 'head') {
-    return 1;
-  }
-  if (a.keys.toList()[0] == 'pung' && b.keys.toList()[0] == 'chow') {
-    return -1;
-  }
-  if (a.keys.toList()[0] == 'chow' && b.keys.toList()[0] == 'pung') {
-    return 1;
-  }
-  return AllTileKinds.values.indexOf(a.values.toList()[0]) -
-      AllTileKinds.values.indexOf(b.values.toList()[0]);
+  return a.baseTile.index - b.baseTile.index;
 }
 
-bool isSeparatedTilesFound(
-  List<List<Map<String, AllTileKinds>>> separatedTilesCandidates,
-  List<Map<String, AllTileKinds>> targetSeparatedTiles,
+bool isWinCandidateFound(
+  List<WinCandidate> winCandidates,
+  WinCandidate targetWinCandidate,
 ) {
-  if (separatedTilesCandidates.isEmpty || targetSeparatedTiles.isEmpty) {
+  if (winCandidates.isEmpty || targetWinCandidate.isEmpty) {
     return false;
   }
-  for (List<Map<String, AllTileKinds>> separatedTilesCandidate
-      in separatedTilesCandidates) {
+  for (WinCandidate winCandidate in winCandidates) {
     bool result = true;
-    for (var i = 0; i < targetSeparatedTiles.length; i++) {
-      if (!mapEquals(separatedTilesCandidate[i], targetSeparatedTiles[i])) {
+    for (var i = 0; i < targetWinCandidate.length; i++) {
+      if (compareSeparatedTile(winCandidate[i], targetWinCandidate[i]) != 0) {
         result = false;
         break;
       }
@@ -101,36 +87,42 @@ bool isSeparatedTilesFound(
 
 void fetchSetRecursively(
   List<AllTileKinds> tiles,
-  List<List<Map<String, AllTileKinds>>> separatedTilesCandidates,
-  List<Map<String, AllTileKinds>> currentSeparatedMaps,
+  List<WinCandidate> winCandidates,
+  WinCandidate currentWinCandidate,
 ) {
   if (tiles.length <= 2) {
     if (tiles[0] == tiles[1]) {
-      separatedTilesCandidates.add([
-        {'head': tiles[0]},
-        ...currentSeparatedMaps
+      winCandidates.add([
+        SeparatedTile(type: SeparateType.head, baseTile: tiles[0]),
+        ...currentWinCandidate
       ]);
     }
     return;
   }
   List<AllTileKinds> pungCandidate = fetchPungCandidate(tiles)
       .where((tile) =>
-          currentSeparatedMaps.isEmpty ||
-          compareSeparatedTile({'pung': tile}, currentSeparatedMaps.last) >= 0)
+          currentWinCandidate.isEmpty ||
+          compareSeparatedTile(
+                  SeparatedTile(type: SeparateType.pung, baseTile: tile),
+                  currentWinCandidate.last) >=
+              0)
       .toList();
   List<AllTileKinds> chowCandidate = fetchChowCandidate(tiles)
       .where((tile) =>
-          currentSeparatedMaps.isEmpty ||
-          compareSeparatedTile({'chow': tile}, currentSeparatedMaps.last) >= 0)
+          currentWinCandidate.isEmpty ||
+          compareSeparatedTile(
+                  SeparatedTile(type: SeparateType.chow, baseTile: tile),
+                  currentWinCandidate.last) >=
+              0)
       .toList();
   for (AllTileKinds pung in pungCandidate) {
     List<AllTileKinds> pungRemainderTiles = [...tiles];
     for (var i = 0; i < 3; i++) {
       pungRemainderTiles.remove(pung);
     }
-    fetchSetRecursively(pungRemainderTiles, separatedTilesCandidates, [
-      ...currentSeparatedMaps,
-      {'pung': pung}
+    fetchSetRecursively(pungRemainderTiles, winCandidates, [
+      ...currentWinCandidate,
+      SeparatedTile(type: SeparateType.pung, baseTile: pung)
     ]);
   }
   for (AllTileKinds chow in chowCandidate) {
@@ -138,9 +130,9 @@ void fetchSetRecursively(
     chowRemainderTiles.remove(chow);
     chowRemainderTiles.remove(addTileNumber(chow));
     chowRemainderTiles.remove(addTileNumber(addTileNumber(chow)));
-    fetchSetRecursively(chowRemainderTiles, separatedTilesCandidates, [
-      ...currentSeparatedMaps,
-      {'chow': chow}
+    fetchSetRecursively(chowRemainderTiles, winCandidates, [
+      ...currentWinCandidate,
+      SeparatedTile(type: SeparateType.chow, baseTile: chow)
     ]);
   }
 }
@@ -162,28 +154,27 @@ List<AllTileKinds> fetchChowCandidate(List<AllTileKinds> tiles) {
   return result;
 }
 
-List<List<Map<String, AllTileKinds>>> fetchSeparatedTilesCandidates(
-    List<AllTileKinds> tiles) {
-  List<List<Map<String, AllTileKinds>>> separatedTilesCandidates = [];
-  fetchSetRecursively(convertRedTiles(tiles), separatedTilesCandidates, []);
-  return separatedTilesCandidates;
+List<WinCandidate> fetchWinCandidates(List<AllTileKinds> tiles) {
+  List<WinCandidate> winCandidates = [];
+  fetchSetRecursively(convertRedTiles(tiles), winCandidates, []);
+  return winCandidates;
 }
 
 /// Search tiles to win for given [tiles].
-Map<AllTileKinds, List<List<Map<String, AllTileKinds>>>> searchReachTiles(
+Map<AllTileKinds, List<WinCandidate>> searchReachTiles(
     List<AllTileKinds> tiles) {
   List<String> winTileTypes = fetchWinTileTypes(tiles);
   if (winTileTypes.isEmpty) {
     return {};
   }
-  Map<AllTileKinds, List<List<Map<String, AllTileKinds>>>> result = {};
+  Map<AllTileKinds, List<WinCandidate>> result = {};
   for (AllTileKinds simpleTile in simpleTileKinds.keys) {
     for (String winTileType in winTileTypes) {
       if (simpleTile.name.startsWith(winTileType)) {
-        List<List<Map<String, AllTileKinds>>> separatedTilesCandidates =
-            fetchSeparatedTilesCandidates([...tiles, simpleTile]);
-        if (separatedTilesCandidates.isNotEmpty) {
-          result[simpleTile] = separatedTilesCandidates;
+        List<WinCandidate> winCandidates =
+            fetchWinCandidates([...tiles, simpleTile]);
+        if (winCandidates.isNotEmpty) {
+          result[simpleTile] = winCandidates;
         }
       }
     }

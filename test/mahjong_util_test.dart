@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
+import 'package:one_on_one_mahjong/types/mahjong_types.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
 
 void main() {
@@ -151,51 +152,51 @@ void main() {
 
   group('compareSeparatedTile test', () {
     test('compareSeparatedTile Bamboos', () {
-      List<Map<String, AllTileKinds>> baseList = [
-        {'pung': AllTileKinds.s4},
-        {'chow': AllTileKinds.s8},
-        {'head': AllTileKinds.s5},
-        {'pung': AllTileKinds.s9},
-        {'chow': AllTileKinds.s2},
+      WinCandidate baseList = [
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.s4),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s8),
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s5),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.s9),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s2),
       ];
-      List<Map<String, AllTileKinds>> expectList = [
-        {'head': AllTileKinds.s5},
-        {'pung': AllTileKinds.s4},
-        {'pung': AllTileKinds.s9},
-        {'chow': AllTileKinds.s2},
-        {'chow': AllTileKinds.s8},
+      WinCandidate expectList = [
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s5),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.s4),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.s9),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s2),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s8),
       ];
       baseList.sort(compareSeparatedTile);
       expect(baseList.length, expectList.length);
       for (int i = 0; i < expectList.length; i++) {
-        expect(baseList[i].keys.first, expectList[i].keys.first,
+        expect(baseList[i].type, expectList[i].type,
             reason: "actual: ${baseList[i]}, expect: ${expectList[i]}");
-        expect(baseList[i].values.first, expectList[i].values.first,
+        expect(baseList[i].baseTile, expectList[i].baseTile,
             reason: "actual: ${baseList[i]}, expect: ${expectList[i]}");
       }
     });
 
     test('compareSeparatedTile mix', () {
-      List<Map<String, AllTileKinds>> baseList = [
-        {'pung': AllTileKinds.j4},
-        {'chow': AllTileKinds.p8},
-        {'head': AllTileKinds.s5},
-        {'pung': AllTileKinds.m9},
-        {'chow': AllTileKinds.m2},
+      WinCandidate baseList = [
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.j4),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p8),
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s5),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.m9),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m2),
       ];
-      List<Map<String, AllTileKinds>> expectList = [
-        {'head': AllTileKinds.s5},
-        {'pung': AllTileKinds.m9},
-        {'pung': AllTileKinds.j4},
-        {'chow': AllTileKinds.m2},
-        {'chow': AllTileKinds.p8},
+      WinCandidate expectList = [
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s5),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.m9),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.j4),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m2),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p8),
       ];
       baseList.sort(compareSeparatedTile);
       expect(baseList.length, expectList.length);
       for (int i = 0; i < expectList.length; i++) {
-        expect(baseList[i].keys.first, expectList[i].keys.first,
+        expect(baseList[i].type, expectList[i].type,
             reason: "actual: ${baseList[i]}, expect: ${expectList[i]}");
-        expect(baseList[i].values.first, expectList[i].values.first,
+        expect(baseList[i].baseTile, expectList[i].baseTile,
             reason: "actual: ${baseList[i]}, expect: ${expectList[i]}");
       }
     });
@@ -265,20 +266,20 @@ void main() {
     });
   });
 
-  group('fetchSeparatedTilesCandidates test', () {
-    fetchSeparatedTilesCandidatesTest(List<AllTileKinds> hands,
-        List<List<Map<String, AllTileKinds>>> expectCandidates) {
-      final actualCandidates = fetchSeparatedTilesCandidates(hands);
+  group('fetchWinCandidates test', () {
+    fetchWinCandidatesTest(
+        List<AllTileKinds> hands, List<WinCandidate> expectWinCandidates) {
+      final actualWinCandidates = fetchWinCandidates(hands);
 
-      expect(actualCandidates.length, expectCandidates.length);
-      for (List<Map<String, AllTileKinds>> expectCandidate
-          in expectCandidates) {
-        expect(isSeparatedTilesFound(actualCandidates, expectCandidate), true,
-            reason: "expect: $expectCandidate is not found");
+      expect(actualWinCandidates.length, expectWinCandidates.length);
+      for (WinCandidate expectWinCandidate in expectWinCandidates) {
+        expect(
+            isWinCandidateFound(actualWinCandidates, expectWinCandidate), true,
+            reason: "expect: $expectWinCandidate is not found");
       }
     }
 
-    test('fetchSeparatedTilesCandidates test1', () {
+    test('fetchWinCandidates test1', () {
       List<AllTileKinds> hands = [
         AllTileKinds.p2,
         AllTileKinds.p3,
@@ -295,19 +296,19 @@ void main() {
         AllTileKinds.p8,
         AllTileKinds.p8,
       ];
-      List<List<Map<String, AllTileKinds>>> expectCandidates = [
+      List<WinCandidate> expectWinCandidates = [
         [
-          {'head': AllTileKinds.p8},
-          {'pung': AllTileKinds.p3},
-          {'chow': AllTileKinds.p2},
-          {'chow': AllTileKinds.p4},
-          {'chow': AllTileKinds.p4},
+          SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p8),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p3),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
         ]
       ];
-      fetchSeparatedTilesCandidatesTest(hands, expectCandidates);
+      fetchWinCandidatesTest(hands, expectWinCandidates);
     });
 
-    test('fetchSeparatedTilesCandidates test2', () {
+    test('fetchWinCandidates test2', () {
       List<AllTileKinds> hands = [
         AllTileKinds.p1,
         AllTileKinds.p1,
@@ -324,19 +325,19 @@ void main() {
         AllTileKinds.p4,
         AllTileKinds.p5,
       ];
-      List<List<Map<String, AllTileKinds>>> expectCandidates = [
+      List<WinCandidate> expectWinCandidates = [
         [
-          {'head': AllTileKinds.p2},
-          {'pung': AllTileKinds.p1},
-          {'chow': AllTileKinds.p1},
-          {'chow': AllTileKinds.p2},
-          {'chow': AllTileKinds.p3},
+          SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p3),
         ]
       ];
-      fetchSeparatedTilesCandidatesTest(hands, expectCandidates);
+      fetchWinCandidatesTest(hands, expectWinCandidates);
     });
 
-    test('fetchSeparatedTilesCandidates empty', () {
+    test('fetchWinCandidates empty', () {
       List<AllTileKinds> hands = [
         AllTileKinds.m1,
         AllTileKinds.m2,
@@ -353,11 +354,11 @@ void main() {
         AllTileKinds.j1,
         AllTileKinds.j1,
       ];
-      List<List<Map<String, AllTileKinds>>> expectCandidates = [];
-      fetchSeparatedTilesCandidatesTest(hands, expectCandidates);
+      List<WinCandidate> expectWinCandidates = [];
+      fetchWinCandidatesTest(hands, expectWinCandidates);
     });
 
-    test('fetchSeparatedTilesCandidates some pattern test', () {
+    test('fetchWinCandidates some pattern test', () {
       List<AllTileKinds> hands = [
         AllTileKinds.p1,
         AllTileKinds.p1,
@@ -374,53 +375,53 @@ void main() {
         AllTileKinds.p5,
         AllTileKinds.p5,
       ];
-      List<List<Map<String, AllTileKinds>>> expectCandidates = [
+      List<WinCandidate> expectWinCandidates = [
         [
-          {'head': AllTileKinds.p5},
-          {'pung': AllTileKinds.p4},
-          {'chow': AllTileKinds.p1},
-          {'chow': AllTileKinds.p1},
-          {'chow': AllTileKinds.p1},
+          SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p5),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p4),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
         ],
         [
-          {'head': AllTileKinds.p5},
-          {'pung': AllTileKinds.p1},
-          {'chow': AllTileKinds.p2},
-          {'chow': AllTileKinds.p2},
-          {'chow': AllTileKinds.p2},
+          SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p5),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
         ],
         [
-          {'head': AllTileKinds.p5},
-          {'pung': AllTileKinds.p1},
-          {'pung': AllTileKinds.p2},
-          {'pung': AllTileKinds.p3},
-          {'pung': AllTileKinds.p4},
+          SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p5),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p3),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p4),
         ],
         [
-          {'head': AllTileKinds.p2},
-          {'pung': AllTileKinds.p1},
-          {'chow': AllTileKinds.p2},
-          {'chow': AllTileKinds.p3},
-          {'chow': AllTileKinds.p3},
+          SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.p1),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p3),
+          SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p3),
         ],
       ];
-      fetchSeparatedTilesCandidatesTest(hands, expectCandidates);
+      fetchWinCandidatesTest(hands, expectWinCandidates);
     });
   });
 
   group('reach test', () {
     reachTest(List<AllTileKinds> hands,
-        Map<AllTileKinds, List<List<Map<String, AllTileKinds>>>> expectTiles) {
+        Map<AllTileKinds, List<WinCandidate>> expectTiles) {
       final reachTiles = searchReachTiles(hands);
 
       expect(reachTiles.length, expectTiles.length);
       for (AllTileKinds reachTile in reachTiles.keys) {
         expect(reachTiles[reachTile]!.length, expectTiles[reachTile]!.length);
-        for (List<Map<String, AllTileKinds>> expectCandidate
-            in expectTiles[reachTile]!) {
-          expect(isSeparatedTilesFound(reachTiles[reachTile]!, expectCandidate),
+        for (WinCandidate expectWinCandidate in expectTiles[reachTile]!) {
+          expect(
+              isWinCandidateFound(reachTiles[reachTile]!, expectWinCandidate),
               true,
-              reason: "expect: $expectCandidate is not found");
+              reason: "expect: $expectWinCandidate is not found");
         }
       }
     }
@@ -441,53 +442,53 @@ void main() {
         AllTileKinds.p7,
         AllTileKinds.p7,
       ];
-      Map<AllTileKinds, List<List<Map<String, AllTileKinds>>>> expectTiles = {
+      Map<AllTileKinds, List<WinCandidate>> expectTiles = {
         AllTileKinds.p1: [
           [
-            {'head': AllTileKinds.p1},
-            {'chow': AllTileKinds.p2},
-            {'chow': AllTileKinds.p2},
-            {'chow': AllTileKinds.p5},
-            {'chow': AllTileKinds.p5},
+            SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
           ],
           [
-            {'head': AllTileKinds.p4},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p5},
-            {'chow': AllTileKinds.p5},
+            SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p4),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
           ],
           [
-            {'head': AllTileKinds.p7},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p4},
-            {'chow': AllTileKinds.p4},
+            SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p7),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
           ],
         ],
         AllTileKinds.p4: [
           [
-            {'head': AllTileKinds.p4},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p2},
-            {'chow': AllTileKinds.p5},
-            {'chow': AllTileKinds.p5},
+            SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p4),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
           ],
           [
-            {'head': AllTileKinds.p7},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p2},
-            {'chow': AllTileKinds.p4},
-            {'chow': AllTileKinds.p4},
+            SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p7),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
           ],
         ],
         AllTileKinds.p7: [
           [
-            {'head': AllTileKinds.p7},
-            {'chow': AllTileKinds.p1},
-            {'chow': AllTileKinds.p2},
-            {'chow': AllTileKinds.p4},
-            {'chow': AllTileKinds.p5},
+            SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.p7),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p1),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p4),
+            SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p5),
           ],
         ],
       };
