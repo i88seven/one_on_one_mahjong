@@ -105,7 +105,7 @@ final Map<Yaku, int> hanMap = {
   Yaku.sevenPairs: 2,
   /* 一気通貫 */
   Yaku.fullStraight: 2,
-  /* 混全帯 */
+  /* 混全帯么九 */
   Yaku.mixedOutsideHand: 2,
   /* 三暗刻 */
   Yaku.threeConcealedTriples: 2,
@@ -117,7 +117,7 @@ final Map<Yaku, int> hanMap = {
   Yaku.threeColorTriples: 2,
   /* 混一色 */
   Yaku.halfFlush: 3,
-  /* 清全帯 */
+  /* 純全帯么九 */
   Yaku.pureOutsideHand: 3,
   /* ニ盃口 */
   Yaku.twoDoubleRuns: 3,
@@ -165,13 +165,13 @@ final Map<Yaku, String> nameMap = {
   Yaku.threeColorRuns: '三色同順',
   Yaku.sevenPairs: '七対子',
   Yaku.fullStraight: '一気通貫',
-  Yaku.mixedOutsideHand: '混全帯',
+  Yaku.mixedOutsideHand: '混全帯么九',
   Yaku.threeConcealedTriples: '三暗刻',
   Yaku.littleDragons: '小三元',
   Yaku.allTerminalsAndHonors: '混老頭',
   Yaku.threeColorTriples: '三色同刻',
   Yaku.halfFlush: '混一色',
-  Yaku.pureOutsideHand: '清全帯',
+  Yaku.pureOutsideHand: '純全帯么九',
   Yaku.twoDoubleRuns: 'ニ盃口',
   Yaku.fullFlush: '清一色',
   Yaku.fourConcealedTriples: '四暗刻',
