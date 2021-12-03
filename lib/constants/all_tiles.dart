@@ -46,6 +46,30 @@ enum AllTileKinds {
   j7,
 }
 
+List<AllTileKinds> terminals = [
+  AllTileKinds.m1,
+  AllTileKinds.m9,
+  AllTileKinds.p1,
+  AllTileKinds.p9,
+  AllTileKinds.s1,
+  AllTileKinds.s9,
+];
+
+List<AllTileKinds> honors = [
+  AllTileKinds.j1,
+  AllTileKinds.j2,
+  AllTileKinds.j3,
+  AllTileKinds.j4,
+  AllTileKinds.j5,
+  AllTileKinds.j6,
+  AllTileKinds.j7,
+];
+
+List<AllTileKinds> terminalsAndHonors = [
+  ...terminals,
+  ...honors,
+];
+
 void sortTiles(List<AllTileKinds> tiles) {
   tiles.sort((a, b) {
     return AllTileKinds.values.indexOf(a) - AllTileKinds.values.indexOf(b);
