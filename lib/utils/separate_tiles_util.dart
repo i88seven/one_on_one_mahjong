@@ -1,6 +1,6 @@
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/types/mahjong_types.dart';
-import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
+import 'package:one_on_one_mahjong/utils/tiles_util.dart';
 
 bool canExtractChow(List<AllTileKinds> tiles, AllTileKinds baseTile) {
   if (baseTile.name.startsWith('j')) {

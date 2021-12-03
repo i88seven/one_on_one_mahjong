@@ -1,7 +1,7 @@
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/types/mahjong_types.dart';
 import 'mahjong_state.dart';
-import 'mahjong_util.dart';
+import 'tiles_util.dart';
 
 /* 自風 */
 bool isSeatWind(WinCandidate winCandidate, MahjongState mahjongState) {
