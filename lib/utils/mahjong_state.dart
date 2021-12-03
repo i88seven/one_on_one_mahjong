@@ -1,6 +1,8 @@
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 
 class MahjongState {
+  bool isReach;
+  bool isFirstTurn;
   List<AllTileKinds> doras;
   int wind;
   int round;
@@ -8,6 +10,8 @@ class MahjongState {
   AllTileKinds winTile;
 
   MahjongState({
+    required this.isReach,
+    required this.isFirstTurn,
     required this.doras,
     required this.wind,
     required this.round,

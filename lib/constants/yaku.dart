@@ -141,6 +141,14 @@ final Map<Yaku, int> hanMap = {
   Yaku.nineGates: 13,
 };
 
+/// key は value の上位役 := key の役が成り立っているとき、 value の役は成り立たない
+final Map<Yaku, Yaku> conflicts = {
+  Yaku.twoDoubleRuns: Yaku.doubleRun,
+  Yaku.pureOutsideHand: Yaku.mixedOutsideHand,
+  Yaku.allTerminalsAndHonors: Yaku.mixedOutsideHand,
+  Yaku.fullFlush: Yaku.halfFlush,
+};
+
 final Map<Yaku, String> nameMap = {
   Yaku.reach: '立直',
   Yaku.seatWind: '自風',
