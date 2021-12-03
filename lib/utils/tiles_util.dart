@@ -19,6 +19,7 @@ AllTileKinds? addTileNumber(AllTileKinds? tile) {
   if (tile == null) {
     return null;
   }
+  // 赤ドラの差分を修正
   Map<AllTileKinds, AllTileKinds> specialTileMap = {
     AllTileKinds.m5: AllTileKinds.m6,
     AllTileKinds.p5: AllTileKinds.p6,
