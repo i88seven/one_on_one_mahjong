@@ -46,7 +46,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   late DocumentReference<Map<String, dynamic>> _gameDoc;
   final List<StreamSubscription> _streams = [];
   final String _hostUid;
-  bool _isParent = false;
   FixHandsButton? _fixHandsButton;
   int _currentOrder = 0; // 0:親, 1:子
   Function onGameEnd;
@@ -90,6 +89,9 @@ class SeventeenGame extends FlameGame with TapDetector {
         _currentOrder = index;
       }
     });
+    List<String> memberUid = members.map((member) => member.uid).toList();
+    memberUid.shuffle();
+    String parentUid = memberUid.first;
     for (var member in members) {
       GamePlayer gamePlayer = GamePlayer(
         this,
@@ -97,6 +99,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         member.name,
         GamePlayerStatus.selectHands,
         member.uid == _myUid,
+        member.uid == parentUid,
       );
       _gamePlayers.add(gamePlayer);
       await _gameDoc.collection('player_tiles').doc(member.uid).set({
@@ -114,6 +117,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
     await _gameDoc.set({
       'hostUid': _hostUid,
+      'current': 0,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
     });
     await _deal();
@@ -146,7 +150,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     }
 
-    // TODO _isParent;
     QuerySnapshot membersSnapshot = await roomDoc.collection('members').get();
     for (QueryDocumentSnapshot element in membersSnapshot.docs) {
       element.reference.delete();
@@ -183,6 +186,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     Map<String, dynamic>? gameData = snapshot.data();
     if (gameData == null) {
       return;
+    }
+
+    if (gameData['current'] != null) {
+      _currentOrder = gameData['current'];
     }
 
     _gamePlayers.clear();
@@ -348,6 +355,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_isTapping || _isRoundEnd) {
       return;
     }
+    if (_me.status == GamePlayerStatus.selectTrash &&
+        _me.isParent != (_currentOrder == 0)) {
+      return;
+    }
     _isTapping = true;
 
     final touchArea = Rect.fromCenter(
@@ -428,7 +439,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _trashesMe.add(tile.tileKind);
     await _setTilesAtDatabase(null);
 
-    // await _gameDoc.update({'current': (_currentOrder + 1) % 2});
+    _gameDoc.update({'current': (_currentOrder + 1) % 2});
 
     return true;
   }

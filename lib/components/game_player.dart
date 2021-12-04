@@ -11,8 +11,10 @@ class GamePlayer {
   final bool _isMe;
   TextComponent? _textObject;
   final SeventeenGame _game;
+  final bool _isParent;
 
-  GamePlayer(this._game, this.uid, this.name, this.status, this._isMe) {
+  GamePlayer(this._game, this.uid, this.name, this.status, this._isMe,
+      this._isParent) {
     _points = 0;
   }
 
@@ -24,7 +26,8 @@ class GamePlayer {
         status =
             EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
                 GamePlayerStatus.ready,
-        _isMe = isMe;
+        _isMe = isMe,
+        _isParent = json['isParent'] ?? false;
 
   void setStatus(GamePlayerStatus status) {
     this.status = status;
@@ -63,6 +66,7 @@ class GamePlayer {
   }
 
   int get points => _points;
+  bool get isParent => _isParent;
 
   toJson() {
     return {
@@ -70,6 +74,7 @@ class GamePlayer {
       'name': name,
       'status': status.name,
       'points': _points,
+      'isParent': _isParent,
     };
   }
 }
