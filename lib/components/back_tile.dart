@@ -8,10 +8,12 @@ import 'package:one_on_one_mahjong/constants/tile_size.dart';
 class BackTile extends PositionComponent {
   late Sprite _tileImage;
   final Images _gameImages;
+  bool _isSmall = false;
 
-  BackTile(this._gameImages) {
+  BackTile(this._gameImages, {isSmall}) {
     final image = _gameImages.fromCache('tile-back.png');
     _tileImage = Sprite(image);
+    _isSmall = isSmall ?? false;
   }
 
   @override
@@ -22,7 +24,11 @@ class BackTile extends PositionComponent {
   }
 
   _renderTile(Canvas c) {
-    Rect rect = Rect.fromLTWH(0, 0, tileSize.width, tileSize.height);
+    Rect rect = Rect.fromLTWH(
+        0,
+        0,
+        _isSmall ? smallTileSize.width : tileSize.width,
+        _isSmall ? smallTileSize.height : tileSize.height);
     _tileImage.renderRect(c, rect);
   }
 }

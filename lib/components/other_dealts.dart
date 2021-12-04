@@ -24,15 +24,13 @@ class OtherDeals {
     _tileObjects = [];
 
     for (int index = 0; index < _tileCount; index++) {
-      double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;
-      double x = tileSize.width * index;
+      double tileAreaWidth = _game.screenSize.x - smallTileSize.width * 2;
+      double x = smallTileSize.width * index;
       int tileRowCount = x ~/ tileAreaWidth;
       x -= (tileAreaWidth - 1) * tileRowCount;
-      BackTile tileObject = BackTile(_game.gameImages);
+      BackTile tileObject = BackTile(_game.gameImages, isSmall: true);
       _game.add(tileObject
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = x + tileSize.width * 0.7
+        ..x = x + smallTileSize.width * 0.7
         ..y = 150 + tileRowCount * tileSize.height * 1.3);
       _tileObjects.add(tileObject);
     }
