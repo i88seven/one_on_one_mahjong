@@ -23,7 +23,6 @@ import 'package:one_on_one_mahjong/components/other_hands.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
-import 'package:one_on_one_mahjong/constants/game_status.dart';
 import 'package:one_on_one_mahjong/constants/tile_size.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 
@@ -47,7 +46,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   late DocumentReference<Map<String, dynamic>> _gameDoc;
   final List<StreamSubscription> _streams = [];
   final String _hostUid;
-  GameStatus _gameStatus = GameStatus.selectHands;
   bool _isParent = false;
   FixHandsButton? _fixHandsButton;
   int _currentOrder = 0; // 0:親, 1:子
@@ -117,7 +115,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _gameDoc.set({
       'hostUid': _hostUid,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
-      'status': _gameStatus.name,
     });
     await _deal();
     roomDoc.update({
@@ -195,10 +192,6 @@ class SeventeenGame extends FlameGame with TapDetector {
           this, gamePlayerJson['uid'] == _myUid, gamePlayerJson);
       _gamePlayers.add(gamePlayer);
     }
-    if (gameData['status'] != null && _gameStatus.name != gameData['status']) {
-      _gameStatus =
-          EnumToString.fromString(GameStatus.values, gameData['status'])!;
-    }
 
     final dorasJson = gameData['doras'] as List<dynamic>?;
     if (dorasJson is List<dynamic>) {
@@ -210,22 +203,16 @@ class SeventeenGame extends FlameGame with TapDetector {
       _doras.initialize(doras);
     }
 
-    if (_myUid == _hostUid && _gameStatus == GameStatus.selectHands) {
-      bool playersSelected = _gamePlayers.fold(
-          true,
-          (previous, gamePlayer) =>
-              previous && gamePlayer.status == GamePlayerStatus.fixedHands);
-      if (playersSelected) {
-        for (GamePlayer gamePlayer in _gamePlayers) {
-          gamePlayer.setStatus(GamePlayerStatus.selectTrash);
-        }
-        _gameStatus = GameStatus.selectTrash;
-        await _gameDoc.update({
-          'status': _gameStatus.name,
-          'players':
-              _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
-        });
+    bool isHandsFixed = _gamePlayers.every(
+        (gamePlayer) => gamePlayer.status == GamePlayerStatus.fixedHands);
+    if (_myUid == _hostUid && isHandsFixed) {
+      for (GamePlayer gamePlayer in _gamePlayers) {
+        gamePlayer.setStatus(GamePlayerStatus.selectTrash);
       }
+      await _gameDoc.update({
+        'players':
+            _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+      });
     }
   }
 
@@ -373,7 +360,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (c is FrontTile) {
         if (c.toRect().overlaps(touchArea)) {
           if (c.state == TileState.dealt &&
-              _gameStatus == GameStatus.selectHands &&
               _me.status == GamePlayerStatus.selectHands) {
             bool success = await _selectTile(c);
             if (success) {
@@ -381,7 +367,6 @@ class SeventeenGame extends FlameGame with TapDetector {
             }
           }
           if (c.state == TileState.hand &&
-              _gameStatus == GameStatus.selectHands &&
               _me.status == GamePlayerStatus.selectHands) {
             bool success = await _unselectTile(c);
             if (success) {
@@ -389,7 +374,6 @@ class SeventeenGame extends FlameGame with TapDetector {
             }
           }
           if (c.state == TileState.dealt &&
-              _gameStatus == GameStatus.selectTrash &&
               _me.status == GamePlayerStatus.selectTrash) {
             bool success = await _discard(c);
             if (success) {
@@ -454,7 +438,8 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   bool get _canFixHands {
-    return _gameStatus == GameStatus.selectTrash && _handsMe.tileCount == 13;
+    return _me.status == GamePlayerStatus.selectHands &&
+        _handsMe.tileCount == 13;
   }
 
   bool get _isRoundEnd {
