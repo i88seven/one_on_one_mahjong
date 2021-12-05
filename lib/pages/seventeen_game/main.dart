@@ -11,6 +11,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
+import 'package:one_on_one_mahjong/components/game_dialog.dart';
 import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
@@ -46,6 +47,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   final List<StreamSubscription> _streams = [];
   final String _hostUid;
   GameTextButton? _fixHandsButton;
+  GameDialog? _gameDialog;
   int _currentOrder = 0; // 0:親, 1:子
   Function onGameEnd;
 
@@ -396,7 +398,20 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (c is GameTextButton &&
             c.toRect().contains(info.eventPosition.global.toOffset())) {
           if (c.kind == GameButtonKind.fixHands) {
-            remove(c);
+            _gameDialog = GameDialog(screenSize: screenSize);
+            addAll(_gameDialog!.buttons);
+            add(_gameDialog!);
+            break;
+          }
+          if (c.kind == GameButtonKind.dialogCancel) {
+            removeAll(_gameDialog!.buttons);
+            remove(_gameDialog!);
+            break;
+          }
+          if (c.kind == GameButtonKind.dialogOk) {
+            removeAll(_gameDialog!.buttons);
+            remove(_gameDialog!);
+            remove(_fixHandsButton!);
             await _setTilesAtDatabase(null);
             _me.setStatus(GamePlayerStatus.fixedHands);
             _updateGamePlayers();
