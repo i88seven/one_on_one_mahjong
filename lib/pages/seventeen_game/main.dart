@@ -10,20 +10,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
-import 'package:one_on_one_mahjong/components/fix_hands_button.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
-
+import 'package:one_on_one_mahjong/components/game_text_button.dart';
 import 'package:one_on_one_mahjong/components/hands.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/components/other_dealts.dart';
 import 'package:one_on_one_mahjong/components/other_hands.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
+import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
-import 'package:one_on_one_mahjong/constants/tile_size.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 
 class SeventeenGame extends FlameGame with TapDetector {
@@ -46,7 +45,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late DocumentReference<Map<String, dynamic>> _gameDoc;
   final List<StreamSubscription> _streams = [];
   final String _hostUid;
-  FixHandsButton? _fixHandsButton;
+  GameTextButton? _fixHandsButton;
   int _currentOrder = 0; // 0:親, 1:子
   Function onGameEnd;
 
@@ -394,13 +393,15 @@ class SeventeenGame extends FlameGame with TapDetector {
         }
       }
       if (_canFixHands) {
-        if (c is FixHandsButton &&
+        if (c is GameTextButton &&
             c.toRect().contains(info.eventPosition.global.toOffset())) {
-          remove(c);
-          await _setTilesAtDatabase(null);
-          _me.setStatus(GamePlayerStatus.fixedHands);
-          _updateGamePlayers();
-          break;
+          if (c.kind == GameButtonKind.fixHands) {
+            remove(c);
+            await _setTilesAtDatabase(null);
+            _me.setStatus(GamePlayerStatus.fixedHands);
+            _updateGamePlayers();
+            break;
+          }
         }
       }
     }
@@ -414,10 +415,8 @@ class SeventeenGame extends FlameGame with TapDetector {
     _dealtsMe.select(tile.tileKind);
     _handsMe.add(tile.tileKind);
     if (_canFixHands) {
-      _fixHandsButton = FixHandsButton()
-        ..x = (screenSize.x - FixHandsButton.buttonSize.x - tileSize.width)
-        ..y =
-            (screenSize.y - FixHandsButton.buttonSize.y - tileSize.height * 3);
+      _fixHandsButton = GameTextButton('確定', GameButtonKind.fixHands,
+          position: Vector2(screenSize.x - 100, screenSize.y - 150));
       add(_fixHandsButton!);
     }
 
