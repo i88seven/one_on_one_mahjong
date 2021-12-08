@@ -1,4 +1,7 @@
 enum Yaku {
+  dora,
+  uraDora,
+  redFive,
   /* 1翻 */
   /* 立直 */
   reach,
@@ -123,23 +126,26 @@ final Map<Yaku, int> hanMap = {
   Yaku.twoDoubleRuns: 3,
   /* 清一色 */
   Yaku.fullFlush: 6,
-  /* 四暗刻 */
-  Yaku.fourConcealedTriples: 13,
-  /* 国士無双 */
-  Yaku.thirteenOrphans: 13,
-  /* 大三元 */
-  Yaku.bigDragons: 13,
-  /* 四喜和 */
-  Yaku.fourWinds: 13,
-  /* 字一色 */
-  Yaku.allHonors: 13,
-  /* 清老頭 */
-  Yaku.allTerminals: 13,
-  /* 緑一色 */
-  Yaku.allGreen: 13,
-  /* 九蓮宝燈 */
-  Yaku.nineGates: 13,
 };
+
+List<Yaku> yakumanList = [
+  /* 四暗刻 */
+  Yaku.fourConcealedTriples,
+  /* 国士無双 */
+  Yaku.thirteenOrphans,
+  /* 大三元 */
+  Yaku.bigDragons,
+  /* 四喜和 */
+  Yaku.fourWinds,
+  /* 字一色 */
+  Yaku.allHonors,
+  /* 清老頭 */
+  Yaku.allTerminals,
+  /* 緑一色 */
+  Yaku.allGreen,
+  /* 九蓮宝燈 */
+  Yaku.nineGates,
+];
 
 /// key は value の上位役 := key の役が成り立っているとき、 value の役は成り立たない
 final Map<Yaku, Yaku> conflicts = {
@@ -150,6 +156,9 @@ final Map<Yaku, Yaku> conflicts = {
 };
 
 final Map<Yaku, String> nameMap = {
+  Yaku.dora: 'ドラ',
+  Yaku.uraDora: '裏ドラ',
+  Yaku.redFive: '赤ドラ',
   Yaku.reach: '立直',
   Yaku.seatWind: '自風',
   Yaku.prevalentWind: '場風',
