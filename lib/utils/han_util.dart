@@ -4,100 +4,89 @@ import 'package:one_on_one_mahjong/types/mahjong_types.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
 import 'package:one_on_one_mahjong/utils/yaku_util.dart';
 
-Map<Yaku, bool> fetchYakuman(WinCandidate winCandidate,
-    MahjongState mahjongState, List<AllTileKinds> tiles) {
-  return {
-    Yaku.fourConcealedTriples:
-        isFourConcealedTriples(winCandidate, mahjongState),
-    Yaku.thirteenOrphans: false, // 国士無双は別で判定する
-    Yaku.bigDragons: isBigDragons(winCandidate),
-    Yaku.fourWinds: isFourWinds(winCandidate),
-    Yaku.allHonors: isAllHonors(winCandidate),
-    Yaku.allTerminals: isAllTerminals(tiles),
-    Yaku.allGreen: isAllGreen(tiles),
-    Yaku.nineGates: isNineGates(tiles),
-  };
-}
-
-Map<Yaku, bool> fetchYaku(WinCandidate winCandidate, MahjongState mahjongState,
+List<Yaku> fetchYakuman(WinCandidate winCandidate, MahjongState mahjongState,
     List<AllTileKinds> tiles) {
-  Map<Yaku, bool> result = {
-    Yaku.reach: mahjongState.isReach,
-    Yaku.seatWind: isSeatWind(winCandidate, mahjongState),
-    Yaku.prevalentWind: isPrevalentWind(winCandidate, mahjongState),
-    Yaku.whiteDragon: isWhiteDragon(winCandidate),
-    Yaku.greenDragon: isGreenDragon(winCandidate),
-    Yaku.redDragon: isRedDragon(winCandidate),
-    Yaku.allSimples: isAllSimples(tiles),
-    Yaku.allRuns: isAllRuns(winCandidate, mahjongState),
-    Yaku.concealedSelfDraw: true,
-    Yaku.firstTurnWin: mahjongState.isFirstTurn,
-    Yaku.doubleRun: isDoubleRun(winCandidate),
-    Yaku.allTriples: isAllTriples(winCandidate),
-    Yaku.threeColorRuns: isThreeColors(winCandidate, SeparateType.chow),
-    Yaku.sevenPairs: false, // 七対子は別で判定する
-    Yaku.fullStraight: isFullStraight(winCandidate),
-    Yaku.mixedOutsideHand: isMixedOutsideHand(winCandidate),
-    Yaku.threeConcealedTriples:
-        isThreeConcealedTriples(winCandidate, mahjongState),
-    Yaku.littleDragons: isLittleDragons(winCandidate),
-    Yaku.allTerminalsAndHonors: isAllTerminalsAndHonors(tiles),
-    Yaku.threeColorTriples: isThreeColors(winCandidate, SeparateType.pung),
-    Yaku.halfFlush: isHalfFlush(tiles),
-    Yaku.pureOutsideHand: isPureOutsideHand(winCandidate),
-    Yaku.twoDoubleRuns: isTwoDoubleRuns(winCandidate),
-    Yaku.fullFlush: isFullFlush(tiles),
-  };
-  conflicts.forEach((upperYaku, lowerYaku) {
-    if (result[upperYaku]!) {
-      result[lowerYaku] = false;
-    }
-  });
-  return result;
-}
-
-Map<Yaku, bool>? fetchSevenPairsYaku(
-    MahjongState mahjongState, List<AllTileKinds> tiles) {
-  if (!isSevenPairs(tiles)) {
-    return null;
+  List<Yaku> yakuList = [];
+  if (isFourConcealedTriples(winCandidate, mahjongState)) {
+    yakuList.add(Yaku.fourConcealedTriples);
   }
-  Map<Yaku, bool> result = {
-    Yaku.reach: mahjongState.isReach,
-    Yaku.seatWind: false,
-    Yaku.prevalentWind: false,
-    Yaku.whiteDragon: false,
-    Yaku.greenDragon: false,
-    Yaku.redDragon: false,
-    Yaku.allSimples: isAllSimples(tiles),
-    Yaku.allRuns: false,
-    Yaku.concealedSelfDraw: true,
-    Yaku.firstTurnWin: mahjongState.isFirstTurn,
-    Yaku.doubleRun: false,
-    Yaku.allTriples: false,
-    Yaku.threeColorRuns: false,
-    Yaku.sevenPairs: true,
-    Yaku.fullStraight: false,
-    Yaku.mixedOutsideHand: false,
-    Yaku.threeConcealedTriples: false,
-    Yaku.littleDragons: false,
-    Yaku.allTerminalsAndHonors: isAllTerminalsAndHonors(tiles),
-    Yaku.threeColorTriples: false,
-    Yaku.halfFlush: isHalfFlush(tiles),
-    Yaku.pureOutsideHand: false,
-    Yaku.twoDoubleRuns: false,
-    Yaku.fullFlush: isFullFlush(tiles),
-  };
-  conflicts.forEach((upperYaku, lowerYaku) {
-    if (result[upperYaku]!) {
-      result[lowerYaku] = false;
-    }
-  });
-  return result;
+  // Yaku.thirteenOrphans: 国士無双は別で判定する
+  if (isBigDragons(winCandidate)) yakuList.add(Yaku.bigDragons);
+  if (isFourWinds(winCandidate)) yakuList.add(Yaku.fourWinds);
+  if (isAllHonors(winCandidate)) yakuList.add(Yaku.allHonors);
+  if (isAllTerminals(tiles)) yakuList.add(Yaku.allTerminals);
+  if (isAllGreen(tiles)) yakuList.add(Yaku.allGreen);
+  if (isNineGates(tiles)) yakuList.add(Yaku.nineGates);
+  return yakuList;
 }
 
-int sumHan(Map<Yaku, bool> winYakuMap) {
-  Map<Yaku, bool> targetYakuMap = {...winYakuMap};
-  targetYakuMap.removeWhere((yaku, isWin) => !isWin);
-  return targetYakuMap.keys
-      .fold(0, (previous, yaku) => previous + hanMap[yaku]!);
+List<Yaku> fetchYaku(WinCandidate winCandidate, MahjongState mahjongState,
+    List<AllTileKinds> tiles) {
+  List<Yaku> yakuList = [];
+  if (mahjongState.isReach) yakuList.add(Yaku.reach);
+  if (isSeatWind(winCandidate, mahjongState)) yakuList.add(Yaku.seatWind);
+  if (isPrevalentWind(winCandidate, mahjongState)) {
+    yakuList.add(Yaku.prevalentWind);
+  }
+  if (isWhiteDragon(winCandidate)) yakuList.add(Yaku.whiteDragon);
+  if (isGreenDragon(winCandidate)) yakuList.add(Yaku.greenDragon);
+  if (isRedDragon(winCandidate)) yakuList.add(Yaku.redDragon);
+  if (isAllSimples(tiles)) yakuList.add(Yaku.allSimples);
+  if (isAllRuns(winCandidate, mahjongState)) yakuList.add(Yaku.allRuns);
+  yakuList.add(Yaku.concealedSelfDraw);
+  if (mahjongState.isFirstTurn) yakuList.add(Yaku.firstTurnWin);
+  if (isDoubleRun(winCandidate)) yakuList.add(Yaku.doubleRun);
+  if (isAllTriples(winCandidate)) yakuList.add(Yaku.allTriples);
+  if (isThreeColors(winCandidate, SeparateType.chow)) {
+    yakuList.add(Yaku.threeColorRuns);
+  }
+  // Yaku.sevenPairs: 七対子は別で判定する
+  if (isFullStraight(winCandidate)) yakuList.add(Yaku.fullStraight);
+  if (isMixedOutsideHand(winCandidate)) yakuList.add(Yaku.mixedOutsideHand);
+  if (isThreeConcealedTriples(winCandidate, mahjongState)) {
+    yakuList.add(Yaku.threeConcealedTriples);
+  }
+  if (isLittleDragons(winCandidate)) yakuList.add(Yaku.littleDragons);
+  if (isAllTerminalsAndHonors(tiles)) yakuList.add(Yaku.allTerminalsAndHonors);
+  if (isThreeColors(winCandidate, SeparateType.pung)) {
+    yakuList.add(Yaku.threeColorTriples);
+  }
+  if (isHalfFlush(tiles)) yakuList.add(Yaku.halfFlush);
+  if (isPureOutsideHand(winCandidate)) yakuList.add(Yaku.pureOutsideHand);
+  if (isTwoDoubleRuns(winCandidate)) yakuList.add(Yaku.twoDoubleRuns);
+  if (isFullFlush(tiles)) yakuList.add(Yaku.fullFlush);
+
+  conflicts.forEach((upperYaku, lowerYaku) {
+    if (yakuList.contains(upperYaku) && yakuList.contains(lowerYaku)) {
+      yakuList.remove(lowerYaku);
+    }
+  });
+  return yakuList;
+}
+
+List<Yaku> fetchSevenPairsYaku(
+    MahjongState mahjongState, List<AllTileKinds> tiles) {
+  List<Yaku> yakuList = [];
+  if (!isSevenPairs(tiles)) {
+    return yakuList;
+  }
+  if (mahjongState.isReach) yakuList.add(Yaku.reach);
+  if (isAllSimples(tiles)) yakuList.add(Yaku.allSimples);
+  yakuList.add(Yaku.concealedSelfDraw);
+  if (mahjongState.isFirstTurn) yakuList.add(Yaku.firstTurnWin);
+  yakuList.add(Yaku.sevenPairs);
+  if (isAllTerminalsAndHonors(tiles)) yakuList.add(Yaku.allTerminalsAndHonors);
+  if (isHalfFlush(tiles)) yakuList.add(Yaku.halfFlush);
+  if (isFullFlush(tiles)) yakuList.add(Yaku.fullFlush);
+
+  conflicts.forEach((upperYaku, lowerYaku) {
+    if (yakuList.contains(upperYaku) && yakuList.contains(lowerYaku)) {
+      yakuList.remove(lowerYaku);
+    }
+  });
+  return yakuList;
+}
+
+int sumHansOfYaku(List<Yaku> winYakuList) {
+  return winYakuList.fold(0, (previous, yaku) => previous + hanMap[yaku]!);
 }
