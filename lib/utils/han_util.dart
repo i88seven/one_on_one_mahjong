@@ -92,7 +92,3 @@ int fetchHansOfDora(List<AllTileKinds> tiles, AllTileKinds dora) {
   AllTileKinds doraValue = getDoraValue(dora);
   return convertRedTiles(tiles).where((tile) => tile == doraValue).length;
 }
-
-int sumHansOfYaku(List<Yaku> winYakuList) {
-  return winYakuList.fold(0, (previous, yaku) => previous + hanMap[yaku]!);
-}
