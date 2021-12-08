@@ -1104,6 +1104,7 @@ void main() {
       final result = isThirteenOrphans(tiles);
       expect(result, true);
     });
+
     test('success false', () {
       List<AllTileKinds> tiles = [
         AllTileKinds.m1,
@@ -1112,6 +1113,27 @@ void main() {
         AllTileKinds.p9,
         AllTileKinds.p9,
         AllTileKinds.s9,
+        AllTileKinds.s9,
+        AllTileKinds.j1,
+        AllTileKinds.j2,
+        AllTileKinds.j3,
+        AllTileKinds.j4,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+        AllTileKinds.j7,
+      ];
+      final result = isThirteenOrphans(tiles);
+      expect(result, false);
+    });
+
+    test('error single', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m1,
+        AllTileKinds.m9,
+        AllTileKinds.p1,
+        AllTileKinds.p9,
+        AllTileKinds.s1,
+        AllTileKinds.s2,
         AllTileKinds.s9,
         AllTileKinds.j1,
         AllTileKinds.j2,

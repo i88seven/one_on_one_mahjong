@@ -248,7 +248,8 @@ bool isFourConcealedTriples(
 bool isThirteenOrphans(List<AllTileKinds> tiles) {
   // TODO 単騎待ちどうする
   return terminalsAndHonors
-      .every((terminalsAndHonor) => tiles.contains(terminalsAndHonor));
+          .every((terminalsAndHonor) => tiles.contains(terminalsAndHonor)) &&
+      tiles.every((tile) => terminalsAndHonors.contains(tile));
 }
 
 /* 大三元 */
