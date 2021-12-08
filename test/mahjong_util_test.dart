@@ -84,4 +84,116 @@ void main() {
       expect(actual, null);
     });
   });
+
+  group('fetchThirteenOrphansTiles test', () {
+    test('thirteen reach', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m1,
+        AllTileKinds.m9,
+        AllTileKinds.p1,
+        AllTileKinds.p9,
+        AllTileKinds.s1,
+        AllTileKinds.s9,
+        AllTileKinds.j1,
+        AllTileKinds.j2,
+        AllTileKinds.j3,
+        AllTileKinds.j4,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+        AllTileKinds.j7,
+      ];
+      List<AllTileKinds> expected = [
+        AllTileKinds.m1,
+        AllTileKinds.m9,
+        AllTileKinds.p1,
+        AllTileKinds.p9,
+        AllTileKinds.s1,
+        AllTileKinds.s9,
+        AllTileKinds.j1,
+        AllTileKinds.j2,
+        AllTileKinds.j3,
+        AllTileKinds.j4,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+        AllTileKinds.j7,
+      ];
+      List<AllTileKinds> actual = fetchThirteenOrphansTiles(tiles);
+      expect(actual.length, expected.length);
+      for (var i = 0; i < actual.length; i++) {
+        expect(actual[i], expected[i], reason: "on $i");
+      }
+    });
+
+    test('single reach', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m1,
+        AllTileKinds.m9,
+        AllTileKinds.p1,
+        AllTileKinds.p9,
+        AllTileKinds.s1,
+        AllTileKinds.j1,
+        AllTileKinds.j1,
+        AllTileKinds.j2,
+        AllTileKinds.j3,
+        AllTileKinds.j4,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+        AllTileKinds.j7,
+      ];
+      List<AllTileKinds> expected = [AllTileKinds.s9];
+      List<AllTileKinds> actual = fetchThirteenOrphansTiles(tiles);
+      expect(actual.length, expected.length);
+      for (var i = 0; i < actual.length; i++) {
+        expect(actual[i], expected[i], reason: "on $i");
+      }
+    });
+
+    test('other tile', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m1,
+        AllTileKinds.m9,
+        AllTileKinds.p1,
+        AllTileKinds.p9,
+        AllTileKinds.s1,
+        AllTileKinds.sr,
+        AllTileKinds.j1,
+        AllTileKinds.j2,
+        AllTileKinds.j3,
+        AllTileKinds.j4,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+        AllTileKinds.j7,
+      ];
+      List<AllTileKinds> expected = [];
+      List<AllTileKinds> actual = fetchThirteenOrphansTiles(tiles);
+      expect(actual.length, expected.length);
+      for (var i = 0; i < actual.length; i++) {
+        expect(actual[i], expected[i], reason: "on $i");
+      }
+    });
+
+    test('too much', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m1,
+        AllTileKinds.m9,
+        AllTileKinds.p1,
+        AllTileKinds.p1,
+        AllTileKinds.s1,
+        AllTileKinds.s1,
+        AllTileKinds.j1,
+        AllTileKinds.j2,
+        AllTileKinds.j3,
+        AllTileKinds.j4,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+        AllTileKinds.j7,
+      ];
+      List<AllTileKinds> expected = [];
+      List<AllTileKinds> actual = fetchThirteenOrphansTiles(tiles);
+      expect(actual.length, expected.length);
+      for (var i = 0; i < actual.length; i++) {
+        expect(actual[i], expected[i], reason: "on $i");
+      }
+    });
+  });
 }
