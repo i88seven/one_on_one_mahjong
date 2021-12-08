@@ -92,3 +92,7 @@ int fetchHansOfDora(List<AllTileKinds> tiles, AllTileKinds dora) {
   AllTileKinds doraValue = getDoraValue(dora);
   return convertRedTiles(tiles).where((tile) => tile == doraValue).length;
 }
+
+int fetchHansOfRedFive(List<AllTileKinds> tiles) {
+  return tiles.where((tile) => redFives.contains(tile)).length;
+}

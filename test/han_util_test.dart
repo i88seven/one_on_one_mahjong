@@ -450,4 +450,44 @@ void main() {
       expect(fetchHansOfDora(hands, AllTileKinds.j4), 0);
     });
   });
+
+  group('fetchHansOfRedFive test', () {
+    test('red tile', () {
+      List<AllTileKinds> hands = [
+        AllTileKinds.mr,
+        AllTileKinds.p5,
+        AllTileKinds.pr,
+        AllTileKinds.s5,
+        AllTileKinds.s5,
+        AllTileKinds.sr,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.j5,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+      ];
+      expect(fetchHansOfRedFive(hands), 3);
+    });
+
+    test('zero', () {
+      List<AllTileKinds> hands = [
+        AllTileKinds.m1,
+        AllTileKinds.p5,
+        AllTileKinds.p1,
+        AllTileKinds.s5,
+        AllTileKinds.s5,
+        AllTileKinds.s1,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.j5,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+      ];
+      expect(fetchHansOfRedFive(hands), 0);
+    });
+  });
 }

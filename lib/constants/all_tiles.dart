@@ -70,6 +70,12 @@ List<AllTileKinds> terminalsAndHonors = [
   ...honors,
 ];
 
+List<AllTileKinds> redFives = [
+  AllTileKinds.mr,
+  AllTileKinds.pr,
+  AllTileKinds.sr,
+];
+
 void sortTiles(List<AllTileKinds> tiles) {
   tiles.sort((a, b) {
     return AllTileKinds.values.indexOf(a) - AllTileKinds.values.indexOf(b);
