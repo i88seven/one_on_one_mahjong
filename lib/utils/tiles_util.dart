@@ -38,6 +38,25 @@ AllTileKinds? addTileNumber(AllTileKinds? tile) {
   return AllTileKinds.values[tileIndex + 1];
 }
 
+AllTileKinds getDoraValue(AllTileKinds tile) {
+  Map<AllTileKinds, AllTileKinds> specialTileMap = {
+    AllTileKinds.m5: AllTileKinds.m6,
+    AllTileKinds.m9: AllTileKinds.m1,
+    AllTileKinds.p5: AllTileKinds.p6,
+    AllTileKinds.p9: AllTileKinds.p1,
+    AllTileKinds.s5: AllTileKinds.s6,
+    AllTileKinds.s9: AllTileKinds.s1,
+    AllTileKinds.j4: AllTileKinds.j1, // 北 -> 東
+    AllTileKinds.j7: AllTileKinds.j5, // 中 -> 白
+  };
+  if (specialTileMap.keys.contains(tile)) {
+    return specialTileMap[tile]!;
+  }
+  int tileIndex = AllTileKinds.values.indexOf(tile);
+  // 赤ドラも対応される。 e.g. mr -> m6
+  return AllTileKinds.values[tileIndex + 1];
+}
+
 List<String> fetchWinTileTypes(List<AllTileKinds> tiles) {
   if (tiles.length != 13) {
     return [];

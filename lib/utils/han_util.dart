@@ -2,6 +2,7 @@ import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/types/mahjong_types.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
+import 'package:one_on_one_mahjong/utils/tiles_util.dart';
 import 'package:one_on_one_mahjong/utils/yaku_util.dart';
 
 List<Yaku> fetchYakuman(WinCandidate winCandidate, MahjongState mahjongState,
@@ -85,6 +86,11 @@ List<Yaku> fetchSevenPairsYaku(
     }
   });
   return yakuList;
+}
+
+int fetchHansOfDora(List<AllTileKinds> tiles, AllTileKinds dora) {
+  AllTileKinds doraValue = getDoraValue(dora);
+  return convertRedTiles(tiles).where((tile) => tile == doraValue).length;
 }
 
 int sumHansOfYaku(List<Yaku> winYakuList) {

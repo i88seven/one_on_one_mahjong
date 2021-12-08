@@ -392,6 +392,65 @@ void main() {
     });
   });
 
+  group('fetchHansOfDora test', () {
+    test('red tile', () {
+      List<AllTileKinds> hands = [
+        AllTileKinds.mr,
+        AllTileKinds.p5,
+        AllTileKinds.pr,
+        AllTileKinds.s5,
+        AllTileKinds.s5,
+        AllTileKinds.sr,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.j5,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+      ];
+      expect(fetchHansOfDora(hands, AllTileKinds.s4), 3);
+    });
+
+    test('red tile dora', () {
+      List<AllTileKinds> hands = [
+        AllTileKinds.mr,
+        AllTileKinds.p5,
+        AllTileKinds.pr,
+        AllTileKinds.s5,
+        AllTileKinds.s5,
+        AllTileKinds.sr,
+        AllTileKinds.s6,
+        AllTileKinds.s6,
+        AllTileKinds.s6,
+        AllTileKinds.s6,
+        AllTileKinds.j5,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+      ];
+      expect(fetchHansOfDora(hands, AllTileKinds.sr), 4);
+    });
+
+    test('honor', () {
+      List<AllTileKinds> hands = [
+        AllTileKinds.mr,
+        AllTileKinds.p5,
+        AllTileKinds.pr,
+        AllTileKinds.s5,
+        AllTileKinds.s5,
+        AllTileKinds.sr,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.s7,
+        AllTileKinds.j5,
+        AllTileKinds.j5,
+        AllTileKinds.j6,
+      ];
+      expect(fetchHansOfDora(hands, AllTileKinds.j4), 0);
+    });
+  });
+
   group('sumHansOfYaku test', () {
     test('AllRuns', () {
       List<Yaku> yakuList = [

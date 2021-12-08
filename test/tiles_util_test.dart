@@ -75,6 +75,37 @@ void main() {
     }
   });
 
+  test('getDoraValue', () {
+    Map<AllTileKinds, AllTileKinds?> expectTilesMap = {
+      AllTileKinds.m1: AllTileKinds.m2,
+      AllTileKinds.m4: AllTileKinds.m5,
+      AllTileKinds.m5: AllTileKinds.m6,
+      AllTileKinds.mr: AllTileKinds.m6,
+      AllTileKinds.m6: AllTileKinds.m7,
+      AllTileKinds.m9: AllTileKinds.m1,
+      AllTileKinds.p1: AllTileKinds.p2,
+      AllTileKinds.p4: AllTileKinds.p5,
+      AllTileKinds.p5: AllTileKinds.p6,
+      AllTileKinds.pr: AllTileKinds.p6,
+      AllTileKinds.p6: AllTileKinds.p7,
+      AllTileKinds.p9: AllTileKinds.p1,
+      AllTileKinds.s1: AllTileKinds.s2,
+      AllTileKinds.s4: AllTileKinds.s5,
+      AllTileKinds.s5: AllTileKinds.s6,
+      AllTileKinds.sr: AllTileKinds.s6,
+      AllTileKinds.s6: AllTileKinds.s7,
+      AllTileKinds.s9: AllTileKinds.s1,
+      AllTileKinds.j1: AllTileKinds.j2,
+      AllTileKinds.j4: AllTileKinds.j1,
+      AllTileKinds.j5: AllTileKinds.j6,
+      AllTileKinds.j7: AllTileKinds.j5,
+    };
+    for (AllTileKinds baseTile in expectTilesMap.keys) {
+      expect(getDoraValue(baseTile), expectTilesMap[baseTile],
+          reason: "for tile:${baseTile.name}");
+    }
+  });
+
   group('fetchWinTileTypes test', () {
     test('fetchWinTileTypes error', () {
       List<AllTileKinds> hands = [
