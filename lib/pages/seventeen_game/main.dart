@@ -24,6 +24,7 @@ import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
+import 'package:one_on_one_mahjong/constants/reach_state.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
@@ -405,7 +406,8 @@ class SeventeenGame extends FlameGame with TapDetector {
             c.toRect().contains(info.eventPosition.global.toOffset())) {
           if (c.kind == GameButtonKind.fixHands) {
             _fetchReachResult();
-            _gameDialog = GameDialog(game: this, screenSize: screenSize);
+            _gameDialog = GameDialog(
+                game: this, screenSize: screenSize, reachState: _reachState);
             add(_gameDialog!);
             break;
           }
@@ -535,5 +537,18 @@ class SeventeenGame extends FlameGame with TapDetector {
       isParent: _me.isParent,
     );
     _reachResult = fetchReachResult(_handsMe.tiles, mahjongState);
+  }
+
+  ReachState get _reachState {
+    if (_reachResult.isEmpty) {
+      return ReachState.none;
+    }
+    if (_reachResult.values.every((winResult) => winResult.hans >= 4)) {
+      return ReachState.confirmed;
+    }
+    if (_reachResult.values.every((winResult) => winResult.hans < 4)) {
+      return ReachState.notEnough;
+    }
+    return ReachState.undecided;
   }
 }
