@@ -113,7 +113,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       await _gameDoc.collection('player_tiles').doc(member.uid).set({
         'dealts': [],
         'hands': [],
-        'trashs': [],
+        'trashes': [],
       });
       if (member.uid != _myUid) {
         _streams.add(_gameDoc
@@ -494,7 +494,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     Map<String, List<String>> myTiles = {
       'dealts': _dealtsMe.jsonValue,
       'hands': _handsMe.jsonValue,
-      'trashs': _trashesMe.jsonValue,
+      'trashes': _trashesMe.jsonValue,
     };
     // player_tiles 単位での更新は手間がかかるので、 collection にする
     await _gameDoc.collection('player_tiles').doc(_myUid).set(myTiles);
@@ -502,7 +502,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       Map<String, List<String>> otherTiles = {
         'dealts': dealtsOther.map((e) => e.name).toList(),
         'hands': [],
-        'trashs': [],
+        'trashes': [],
       };
       GamePlayer otherPlayer =
           _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid != _myUid);
