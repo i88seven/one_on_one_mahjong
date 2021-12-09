@@ -46,6 +46,8 @@ class Hands {
     return _tiles.length;
   }
 
+  List<AllTileKinds> get tiles => _tiles;
+
   List<String> get jsonValue {
     return _tiles.map((e) => e.name).toList();
   }

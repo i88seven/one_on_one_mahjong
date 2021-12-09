@@ -11,6 +11,8 @@ class Doras {
 
   Doras(this._game);
 
+  get tiles => _tiles;
+
   void initialize(List<AllTileKinds> tiles) {
     _tiles = tiles;
     _render();

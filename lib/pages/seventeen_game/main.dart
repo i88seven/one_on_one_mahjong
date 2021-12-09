@@ -25,6 +25,9 @@ import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
+import 'package:one_on_one_mahjong/types/win_result.dart';
+import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
+import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
 
 class SeventeenGame extends FlameGame with TapDetector {
   Images gameImages = Images();
@@ -49,6 +52,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   GameTextButton? _fixHandsButton;
   GameDialog? _gameDialog;
   int _currentOrder = 0; // 0:親, 1:子
+  int _currentWind = 1; // 東:1, 南:2, 西:3, 北:4
+  int _currentRound = 1; // 局
+  Map<AllTileKinds, WinResult> _reachResult = {};
   Function onGameEnd;
 
   static const playerCount = 2;
@@ -400,6 +406,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           if (c.kind == GameButtonKind.fixHands) {
             _gameDialog = GameDialog(screenSize: screenSize);
             addAll(_gameDialog!.buttons);
+            _fetchReachResult();
             add(_gameDialog!);
             break;
           }
@@ -519,5 +526,15 @@ class SeventeenGame extends FlameGame with TapDetector {
       await deleteGame();
     }
     onGameEnd();
+  }
+
+  void _fetchReachResult() {
+    ReachMahjongState mahjongState = ReachMahjongState(
+      doras: _doras.tiles,
+      wind: _currentWind,
+      round: _currentRound,
+      isParent: _me.isParent,
+    );
+    _reachResult = fetchReachResult(_handsMe.tiles, mahjongState);
   }
 }
