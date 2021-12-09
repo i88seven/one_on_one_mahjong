@@ -404,9 +404,8 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (c is GameTextButton &&
             c.toRect().contains(info.eventPosition.global.toOffset())) {
           if (c.kind == GameButtonKind.fixHands) {
-            _gameDialog = GameDialog(screenSize: screenSize);
-            addAll(_gameDialog!.buttons);
             _fetchReachResult();
+            _gameDialog = GameDialog(game: this, screenSize: screenSize);
             add(_gameDialog!);
             break;
           }
