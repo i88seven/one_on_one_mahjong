@@ -55,6 +55,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   int _currentOrder = 0; // 0:親, 1:子
   int _currentWind = 1; // 東:1, 南:2, 西:3, 北:4
   int _currentRound = 1; // 局
+  bool _isFuriten = false;
   Map<AllTileKinds, WinResult> _reachResult = {};
   Function onGameEnd;
 
@@ -250,7 +251,30 @@ class SeventeenGame extends FlameGame with TapDetector {
               EnumToString.fromString(AllTileKinds.values, tileString) ??
               AllTileKinds.m1)
           .toList();
-      _trashesOther.initialize(trashes);
+      AllTileKinds? targetTile;
+      switch (trashes.length - _trashesOther.tileCount) {
+        case 0:
+          break;
+        case 1:
+          _trashesOther.add(trashes.last);
+          targetTile = trashes.last;
+          break;
+        default:
+          _trashesOther.initialize(trashes);
+      }
+      if (!_isFuriten &&
+          targetTile != null &&
+          _reachResult.containsKey(targetTile)) {
+        WinResult winResult = _reachResult[targetTile]!;
+        if (_isFirstTurnWin) winResult.addFirstTurnWin();
+        if (_isReach) winResult.addReach();
+        if (winResult.hans >= 4) {
+          // TODO ロンの処理
+          print("ロン!!!!!");
+        } else {
+          _isFuriten = true;
+        }
+      }
     }
   }
 
@@ -538,6 +562,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     );
     _reachResult = fetchReachResult(_handsMe.tiles, mahjongState);
   }
+
+  bool get _isReach => _trashesMe.tileCount > 0;
+
+  bool get _isFirstTurnWin => _trashesMe.tileCount == 1;
 
   ReachState get _reachState {
     if (_reachResult.isEmpty) {

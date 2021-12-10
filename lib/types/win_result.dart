@@ -10,6 +10,14 @@ class WinResult {
   })  : _yakuList = yakuList ?? [],
         _hansOfDoras = hansOfDoras ?? [0, 0, 0];
 
+  void addReach() {
+    _yakuList.insert(0, Yaku.reach);
+  }
+
+  void addFirstTurnWin() {
+    _yakuList.insert(0, Yaku.firstTurnWin);
+  }
+
   int get hans {
     return resultMap.fold(0, (int p, resultRow) => p + resultRow.hans);
   }
