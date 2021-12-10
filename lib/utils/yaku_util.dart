@@ -64,7 +64,7 @@ bool isAllRuns(WinCandidate winCandidate, MahjongState mahjongState) {
       .firstWhere((separatedTile) => separatedTile.type == SeparateType.head)
       .baseTile;
   if (valueTiles.contains(headTile)) {
-    // すなわち役牌が雀頭の時は平和にならない
+    // 場風・自風・役牌が雀頭の時は平和にならない
     return false;
   }
 
@@ -73,8 +73,14 @@ bool isAllRuns(WinCandidate winCandidate, MahjongState mahjongState) {
     if (separatedTile.type == SeparateType.head) {
       continue;
     }
-    sideTiles.add(separatedTile.baseTile);
-    sideTiles.add(addTileNumber(addTileNumber(separatedTile.baseTile))!);
+    AllTileKinds higherSideTile =
+        addTileNumber(addTileNumber(separatedTile.baseTile))!;
+    if (!terminals.contains(higherSideTile)) {
+      sideTiles.add(separatedTile.baseTile);
+    }
+    if (!terminals.contains(separatedTile.baseTile)) {
+      sideTiles.add(higherSideTile);
+    }
   }
   if (!sideTiles.contains(mahjongState.winTile)) {
     // 両面待ちでない場合は平和にならない

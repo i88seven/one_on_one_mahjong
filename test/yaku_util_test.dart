@@ -281,7 +281,31 @@ void main() {
           isAllRuns(winCandidate, fetchMahjongState(AllTileKinds.m2));
       expect(result, true);
     });
-    test('success false middle', () {
+    test('success true edge wait ', () {
+      WinCandidate winCandidate = [
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s3),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m3),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m5),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s5),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s7),
+      ];
+      final result =
+          isAllRuns(winCandidate, fetchMahjongState(AllTileKinds.s7));
+      expect(result, true);
+    });
+    test('success false contain pung ', () {
+      WinCandidate winCandidate = [
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s3),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.m3),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m5),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s6),
+      ];
+      final result =
+          isAllRuns(winCandidate, fetchMahjongState(AllTileKinds.s6));
+      expect(result, false);
+    });
+    test('success false closed wait ', () {
       WinCandidate winCandidate = [
         SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s3),
         SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m3),
@@ -293,7 +317,19 @@ void main() {
           isAllRuns(winCandidate, fetchMahjongState(AllTileKinds.s7));
       expect(result, false);
     });
-    test('success false head', () {
+    test('success false edge wait ', () {
+      WinCandidate winCandidate = [
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s3),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m3),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m5),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.p2),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.s7),
+      ];
+      final result =
+          isAllRuns(winCandidate, fetchMahjongState(AllTileKinds.s7));
+      expect(result, false);
+    });
+    test('success false single wait', () {
       WinCandidate winCandidate = [
         SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.s2),
         SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m3),
