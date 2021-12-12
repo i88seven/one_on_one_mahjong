@@ -350,12 +350,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> _processRoundEnd() async {
-    if (_myUid == _hostUid) {
-      await _processRoundEndHost();
+    if (_myUid != _hostUid) {
+      return;
     }
-  }
-
-  Future<void> _processRoundEndHost() async {
     GamePlayer winPlayer =
         _gamePlayers.firstWhere((gamePlayer) => gamePlayer.winResult != null);
     WinResult winResult = winPlayer.winResult!;
