@@ -15,7 +15,7 @@ class GamePlayer {
   final bool _isMe;
   TextComponent? _textObject;
   final SeventeenGame _game;
-  final bool _isParent;
+  bool _isParent;
 
   GamePlayer(this._game, this.uid, this.name, this.status, this._isMe,
       this._isParent) {
@@ -43,6 +43,12 @@ class GamePlayer {
       }
       winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
     }
+  }
+
+  void initOnRound(String parentUid) {
+    winResult = null;
+    status = GamePlayerStatus.selectHands;
+    _isParent = uid == parentUid;
   }
 
   void setStatus(GamePlayerStatus status) {

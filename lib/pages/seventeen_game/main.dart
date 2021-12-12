@@ -369,6 +369,8 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> _processNewRound() async {
+    _isFuriten = false;
+    _reachResult = {};
     if (_myUid != _hostUid) {
       return;
     }
@@ -376,7 +378,21 @@ class SeventeenGame extends FlameGame with TapDetector {
       _processGameEnd();
       return;
     }
+    await _initOnRound();
     await _deal();
+  }
+
+  Future<void> _initOnRound() async {
+    _currentOrder = 0;
+    _gamePlayers.shuffle();
+    String parentUid = _gamePlayers.first.uid;
+    for (GamePlayer gamePlayer in _gamePlayers) {
+      gamePlayer.initOnRound(parentUid);
+    }
+    await _gameDoc.update({
+      'current': _currentOrder,
+      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
+    });
   }
 
   void _processGameEnd() {
