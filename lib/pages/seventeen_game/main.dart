@@ -202,10 +202,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
 
     _gamePlayers.clear();
-    final players = gameData['players'];
-    for (var gamePlayerJson in players) {
-      GamePlayer gamePlayer = GamePlayer.fromJson(
-          this, gamePlayerJson['uid'] == _myUid, gamePlayerJson);
+    final playersJson = gameData['players'];
+    for (var playerJson in playersJson) {
+      GamePlayer gamePlayer =
+          GamePlayer.fromJson(this, playerJson['uid'] == _myUid, playerJson);
       _gamePlayers.add(gamePlayer);
     }
     if (_gamePlayers.any((gamePlayer) => gamePlayer.winResult != null) &&
