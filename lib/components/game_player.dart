@@ -19,7 +19,7 @@ class GamePlayer {
 
   GamePlayer(this._game, this.uid, this.name, this.status, this._isMe,
       this._isParent) {
-    _points = 0;
+    _points = 25000;
   }
 
   GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)

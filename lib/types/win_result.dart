@@ -42,6 +42,16 @@ class WinResult {
   int get yakumanCount =>
       yakumanList.where((yakuman) => _yakuList.contains(yakuman)).length;
 
+  int get winPoints {
+    if (yakumanCount >= 1) return 32000 * yakumanCount;
+    if (hans >= 13) return 32000;
+    if (hans >= 11) return 24000;
+    if (hans >= 8) return 16000;
+    if (hans >= 6) return 12000;
+    if (hans >= 4) return 8000;
+    return 0; // TODO エラー
+  }
+
   @override
   String toString() {
     return "_yakuList: $_yakuList\n_hansOfDoras: $_hansOfDoras";

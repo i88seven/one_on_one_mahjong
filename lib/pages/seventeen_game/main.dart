@@ -208,6 +208,12 @@ class SeventeenGame extends FlameGame with TapDetector {
           this, gamePlayerJson['uid'] == _myUid, gamePlayerJson);
       _gamePlayers.add(gamePlayer);
     }
+    if (_gamePlayers.any((gamePlayer) => gamePlayer.winResult != null) &&
+        _gamePlayers.every(
+            (gamePlayer) => gamePlayer.status != GamePlayerStatus.waitRound)) {
+      // TODO 結果表示の後
+      await _processRoundEnd();
+    }
 
     final dorasJson = gameData['doras'] as List<dynamic>?;
     if (dorasJson is List<dynamic>) {
@@ -273,6 +279,8 @@ class SeventeenGame extends FlameGame with TapDetector {
           _me.setStatus(GamePlayerStatus.ron);
           _me.winResult = winResult;
           await _updateGamePlayers();
+          // TODO 結果表示の後
+          await _processRoundEnd();
         } else {
           _isFuriten = true;
         }
@@ -341,17 +349,19 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> _processRoundEndHost() async {
+    GamePlayer winPlayer =
+        _gamePlayers.firstWhere((gamePlayer) => gamePlayer.winResult != null);
+    WinResult winResult = winPlayer.winResult!;
     _gamePlayers.asMap().forEach((index, gamePlayer) {
-      int points = 10000; // TODO 得点計算
-      gamePlayer.addPoints(points);
+      if (gamePlayer.winResult != null) {
+        gamePlayer.addPoints(winResult.winPoints);
+      } else {
+        gamePlayer.addPoints(winResult.winPoints * -1);
+      }
+      gamePlayer.setStatus(GamePlayerStatus.waitRound);
       gamePlayer.render();
     });
-    // _isGameEnd の状態を一旦 False にしないと何度も得点が加算される
-    Map<String, List<dynamic>> playerStatus = {
-      'player_status':
-          _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
-    };
-    await _gameDoc.update(playerStatus);
+    await _updateGamePlayers();
 
     if (_isGameEnd) {
       _processGameEnd();
