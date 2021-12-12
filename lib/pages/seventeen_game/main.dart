@@ -5,6 +5,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/assets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:localstorage/localstorage.dart';
@@ -201,28 +202,34 @@ class SeventeenGame extends FlameGame with TapDetector {
       _currentOrder = gameData['current'];
     }
 
-    _gamePlayers.clear();
     final playersJson = gameData['players'];
-    for (var playerJson in playersJson) {
-      GamePlayer gamePlayer =
-          GamePlayer.fromJson(this, playerJson['uid'] == _myUid, playerJson);
-      _gamePlayers.add(gamePlayer);
-    }
-    if (_gamePlayers.any((gamePlayer) => gamePlayer.winResult != null) &&
-        _gamePlayers.every(
-            (gamePlayer) => gamePlayer.status != GamePlayerStatus.waitRound)) {
-      // TODO 結果表示の後
-      await _processRoundEnd();
+    if (_gamePlayers.isEmpty ||
+        !mapEquals(playersJson[0], _gamePlayers[0].toJson()) ||
+        !mapEquals(playersJson[1], _gamePlayers[1].toJson())) {
+      _gamePlayers.clear();
+      for (var playerJson in playersJson) {
+        GamePlayer gamePlayer =
+            GamePlayer.fromJson(this, playerJson['uid'] == _myUid, playerJson);
+        _gamePlayers.add(gamePlayer);
+      }
+      if (_gamePlayers.any((gamePlayer) => gamePlayer.winResult != null) &&
+          _gamePlayers.every((gamePlayer) =>
+              gamePlayer.status != GamePlayerStatus.waitRound)) {
+        // TODO 結果表示の後
+        await _processRoundEnd();
+      }
     }
 
     final dorasJson = gameData['doras'] as List<dynamic>?;
     if (dorasJson is List<dynamic>) {
-      List<AllTileKinds> doras = dorasJson
-          .map((tileString) =>
-              EnumToString.fromString(AllTileKinds.values, tileString) ??
-              AllTileKinds.m1)
-          .toList();
-      _doras.initialize(doras);
+      if (!listEquals(dorasJson, _doras.tiles.map((e) => e.name).toList())) {
+        List<AllTileKinds> doras = dorasJson
+            .map((tileString) =>
+                EnumToString.fromString(AllTileKinds.values, tileString) ??
+                AllTileKinds.m1)
+            .toList();
+        _doras.initialize(doras);
+      }
     }
 
     bool isHandsFixed = _gamePlayers.every(
