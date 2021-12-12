@@ -269,8 +269,10 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (_isFirstTurnWin) winResult.addFirstTurnWin();
         if (_isReach) winResult.addReach();
         if (winResult.hans >= 4) {
-          // TODO ロンの処理
-          print("ロン!!!!!");
+          // ロン!!!
+          _me.setStatus(GamePlayerStatus.ron);
+          _me.winResult = winResult;
+          await _updateGamePlayers();
         } else {
           _isFuriten = true;
         }

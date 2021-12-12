@@ -46,6 +46,13 @@ class WinResult {
   String toString() {
     return "_yakuList: $_yakuList\n_hansOfDoras: $_hansOfDoras";
   }
+
+  toJson() {
+    return {
+      'yakuList': _yakuList.map((tile) => tile.name).toList(),
+      'hansOfDoras': _hansOfDoras,
+    };
+  }
 }
 
 class ResultRow {

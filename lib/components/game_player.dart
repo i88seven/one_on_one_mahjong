@@ -2,13 +2,16 @@ import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
+import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
+import 'package:one_on_one_mahjong/types/win_result.dart';
 
 class GamePlayer {
   String uid;
   String name;
   late int _points;
   GamePlayerStatus status;
+  WinResult? winResult;
   final bool _isMe;
   TextComponent? _textObject;
   final SeventeenGame _game;
@@ -28,7 +31,19 @@ class GamePlayer {
             EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
                 GamePlayerStatus.ready,
         _isMe = isMe,
-        _isParent = json['isParent'] ?? false;
+        _isParent = json['isParent'] ?? false {
+    if (json['yakuList'] != null && json['hansOfDoras'] != null) {
+      List<Yaku> yakuList = [];
+      for (String yakuString in json['yakuList']) {
+        yakuList.add(EnumToString.fromString(Yaku.values, yakuString)!);
+      }
+      List<int> hansOfDoras = [];
+      for (int hansString in json['hansOfDoras']) {
+        hansOfDoras.add(hansString);
+      }
+      winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
+    }
+  }
 
   void setStatus(GamePlayerStatus status) {
     this.status = status;
@@ -70,13 +85,17 @@ class GamePlayer {
   int get points => _points;
   bool get isParent => _isParent;
 
-  toJson() {
-    return {
+  Map<String, dynamic> toJson() {
+    final json = {
       'uid': uid,
       'name': name,
       'status': status.name,
       'points': _points,
       'isParent': _isParent,
     };
+    if (winResult != null) {
+      return {...json, ...winResult!.toJson()};
+    }
+    return json;
   }
 }
