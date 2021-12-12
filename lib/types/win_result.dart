@@ -18,9 +18,7 @@ class WinResult {
     _yakuList.insert(0, Yaku.firstTurnWin);
   }
 
-  int get hans {
-    return resultMap.fold(0, (int p, resultRow) => p + resultRow.hans);
-  }
+  int get hans => resultMap.fold(0, (int p, resultRow) => p + resultRow.hans);
 
   List<ResultRow> get resultMap {
     List<ResultRow> result = [];
