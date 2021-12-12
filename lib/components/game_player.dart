@@ -1,5 +1,6 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 
@@ -54,15 +55,16 @@ class GamePlayer {
     } else {
       posY = 30.0;
     }
+    final textRenderer =
+        TextPaint(config: const TextPaintConfig(color: Colors.white));
     _textObject = TextComponent(
       "$name: $_points",
+      textRenderer: textRenderer,
       size: Vector2(100.0, _isMe ? 24.0 : 12.0),
     );
-    if (_game.isLoaded) {
-      _game.add(_textObject!
-        ..x = 0
-        ..y = posY);
-    }
+    _game.add(_textObject!
+      ..x = 0
+      ..y = posY);
   }
 
   int get points => _points;
