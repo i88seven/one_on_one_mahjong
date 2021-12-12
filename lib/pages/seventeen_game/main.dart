@@ -275,6 +275,9 @@ class SeventeenGame extends FlameGame with TapDetector {
         default:
           _trashesOther.initialize(trashes);
       }
+      if (_isDrawnGame) {
+        await _processRoundEnd();
+      }
       if (!_isFuriten &&
           targetTile != null &&
           _reachResult.containsKey(targetTile)) {
@@ -351,6 +354,13 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _processRoundEnd() async {
     if (_myUid != _hostUid) {
+      return;
+    }
+    if (_isDrawnGame) {
+      _gamePlayers.asMap().forEach((index, gamePlayer) {
+        gamePlayer.setStatus(GamePlayerStatus.waitRound);
+      });
+      await _updateGamePlayers();
       return;
     }
     GamePlayer winPlayer =
@@ -521,6 +531,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     _dealtsMe.discard(tile);
     _trashesMe.add(tile.tileKind);
     await _setTilesAtDatabase(null);
+    if (_isDrawnGame) {
+      await _processRoundEnd();
+      return true;
+    }
 
     if (_reachResult.containsKey(tile)) {
       _isFuriten = true;
@@ -532,6 +546,11 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   GamePlayer get _me {
     return _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid == _myUid);
+  }
+
+  bool get _isDrawnGame {
+    return _trashesMe.tileCount == _trashesOther.tileCount &&
+        _trashesMe.tileCount == 17;
   }
 
   bool get _canFixHands {
