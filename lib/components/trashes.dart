@@ -6,6 +6,7 @@ import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 
 class Trashes {
   List<AllTileKinds> _tiles = [];
+  List<FrontTile> _tileObjects = [];
   final SeventeenGame _game;
   final bool _isMe;
 
@@ -13,6 +14,7 @@ class Trashes {
 
   void initialize(List<AllTileKinds> tiles) {
     _tiles = tiles;
+    _renderAll();
   }
 
   void add(AllTileKinds tileKind) {
@@ -21,9 +23,20 @@ class Trashes {
   }
 
   void _render(AllTileKinds tileKind) {
-    _game.add(FrontTile(_game.gameImages, tileKind, TileState.trash)
+    FrontTile tileObject =
+        FrontTile(_game.gameImages, tileKind, TileState.trash);
+    _game.add(tileObject
       ..x = tileSize.width * tileCount
-      ..y = _isMe ? 550 : 250);
+      ..y = _isMe ? _game.screenSize.y - tileSize.height * 3 - 42 : 250);
+    _tileObjects.add(tileObject);
+  }
+
+  void _renderAll() {
+    _game.removeAll(_tileObjects);
+    _tileObjects = [];
+    for (AllTileKinds tile in _tiles) {
+      _render(tile);
+    }
   }
 
   int get tileCount {
