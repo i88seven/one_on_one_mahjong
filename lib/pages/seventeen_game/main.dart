@@ -206,6 +206,8 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_gamePlayers.isEmpty ||
         !mapEquals(playersJson[0], _gamePlayers[0].toJson()) ||
         !mapEquals(playersJson[1], _gamePlayers[1].toJson())) {
+      GamePlayerStatus oldMyStatus =
+          _gamePlayers.isNotEmpty ? _me.status : GamePlayerStatus.ready;
       _gamePlayers.clear();
       for (var playerJson in playersJson) {
         GamePlayer gamePlayer =
@@ -217,6 +219,16 @@ class SeventeenGame extends FlameGame with TapDetector {
               gamePlayer.status != GamePlayerStatus.waitRound)) {
         // TODO 結果表示の後
         await _processRoundEnd();
+      }
+      if (_gamePlayers.every(
+          (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
+        await _processNewRound();
+      }
+      if (oldMyStatus == GamePlayerStatus.waitRound &&
+          _me.status == GamePlayerStatus.selectHands) {
+        final tilesSnapshot =
+            await _gameDoc.collection('player_tiles').doc(_myUid).get();
+        await _initializeMyTiles(tilesSnapshot);
       }
     }
 
@@ -286,8 +298,8 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (_isReach) winResult.addReach();
         if (winResult.hans >= 4) {
           // ロン!!!
-          _me.setStatus(GamePlayerStatus.ron);
           _me.winResult = winResult;
+          _me.setStatus(GamePlayerStatus.ron);
           await _updateGamePlayers();
           // TODO 結果表示の後
           await _processRoundEnd();
@@ -381,6 +393,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   Future<void> _processNewRound() async {
     _isFuriten = false;
     _reachResult = {};
+    _trashesMe.initialize([]);
+    _trashesOther.initialize([]);
+    _handsMe.initialize([]);
     if (_myUid != _hostUid) {
       return;
     }
@@ -388,19 +403,28 @@ class SeventeenGame extends FlameGame with TapDetector {
       _processGameEnd();
       return;
     }
-    await _initOnRound();
+    await _initOnRoundMaster();
     await _deal();
+    await _initOnRoundSlave();
   }
 
-  Future<void> _initOnRound() async {
+  Future<void> _initOnRoundMaster() async {
     _currentOrder = 0;
     _gamePlayers.shuffle();
+    String parentUid = _gamePlayers.first.uid;
+    _me.initOnRound(parentUid);
+    await _gameDoc.update({
+      'current': _currentOrder,
+      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
+    });
+  }
+
+  Future<void> _initOnRoundSlave() async {
     String parentUid = _gamePlayers.first.uid;
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.initOnRound(parentUid);
     }
     await _gameDoc.update({
-      'current': _currentOrder,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
     });
   }
