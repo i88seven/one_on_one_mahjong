@@ -1477,5 +1477,25 @@ void main() {
       final result = isNineGates(tiles);
       expect(result, false);
     });
+    test('success false', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m2,
+        AllTileKinds.m3,
+        AllTileKinds.m4,
+        AllTileKinds.m4,
+        AllTileKinds.m4,
+        AllTileKinds.m5,
+        AllTileKinds.m5,
+        AllTileKinds.mr,
+        AllTileKinds.m7,
+        AllTileKinds.m7,
+        AllTileKinds.m7,
+        AllTileKinds.m8,
+        AllTileKinds.m8,
+        AllTileKinds.m8,
+      ];
+      final result = isNineGates(tiles);
+      expect(result, false);
+    });
   });
 }

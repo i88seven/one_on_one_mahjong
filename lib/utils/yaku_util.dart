@@ -321,10 +321,11 @@ bool isNineGates(List<AllTileKinds> tiles) {
     return false;
   }
   final tileKindCount = fetchTileKindCount(tiles);
-  return tileKindCount.keys.every((tile) {
-    if (tile.name.endsWith('1') || tile.name.endsWith('9')) {
-      return tileKindCount[tile]! >= 3;
-    }
-    return tileKindCount[tile]! >= 1;
-  });
+  return tileKindCount.keys.length == 9 &&
+      tileKindCount.keys.every((tile) {
+        if (tile.name.endsWith('1') || tile.name.endsWith('9')) {
+          return tileKindCount[tile]! >= 3;
+        }
+        return tileKindCount[tile]! >= 1;
+      });
 }
