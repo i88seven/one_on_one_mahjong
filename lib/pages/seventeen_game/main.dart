@@ -676,10 +676,12 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_reachResult.isEmpty) {
       return ReachState.none;
     }
-    if (_reachResult.values.every((winResult) => winResult.hans >= 4)) {
+    if (_reachResult.values.every(
+        (winResult) => winResult.hans >= 4 || winResult.yakumanCount > 0)) {
       return ReachState.confirmed;
     }
-    if (_reachResult.values.every((winResult) => winResult.hans < 4)) {
+    if (_reachResult.values.every(
+        (winResult) => winResult.hans < 4 && winResult.yakumanCount == 0)) {
       return ReachState.notEnough;
     }
     return ReachState.undecided;
