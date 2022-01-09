@@ -50,6 +50,17 @@ class WinResult {
     return 0; // TODO エラー
   }
 
+  String get winName {
+    if (yakumanCount >= 2) return yakumanCount.toString() + '倍役満';
+    if (yakumanCount == 1) return '役満';
+    if (hans >= 13) return '数え役満';
+    if (hans >= 11) return '三倍満';
+    if (hans >= 8) return '倍満';
+    if (hans >= 6) return '跳満';
+    if (hans >= 4) return '満貫';
+    return 'エラー';
+  }
+
   @override
   String toString() {
     return "_yakuList: $_yakuList\n_hansOfDoras: $_hansOfDoras";
@@ -72,6 +83,6 @@ class ResultRow {
 
   @override
   String toString() {
-    return "$yaku : $hans";
+    return "$yakuName : $hans翻";
   }
 }

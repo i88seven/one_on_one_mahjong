@@ -16,6 +16,7 @@ import 'package:one_on_one_mahjong/components/game_dialog.dart';
 import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
+import 'package:one_on_one_mahjong/components/game_round_result.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
 import 'package:one_on_one_mahjong/components/hands.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
@@ -47,6 +48,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late Trashes _trashesMe;
   late Trashes _trashesOther;
   late GameResult _gameResult;
+  late GameRoundResult? _gameRoundResult;
   final FirebaseFirestore _firestoreReference = FirebaseFirestore.instance;
   late DocumentReference<Map<String, dynamic>> _gameDoc;
   final List<StreamSubscription> _streams = [];
@@ -72,6 +74,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _trashesMe = Trashes(this, true);
     _trashesOther = Trashes(this, false);
     // this.add(GameBackground(this));
+    _gameRoundResult = null;
   }
 
   Future<void> initializeHost() async {
@@ -214,11 +217,13 @@ class SeventeenGame extends FlameGame with TapDetector {
             GamePlayer.fromJson(this, playerJson['uid'] == _myUid, playerJson);
         _gamePlayers.add(gamePlayer);
       }
-      if (_gamePlayers.any((gamePlayer) => gamePlayer.winResult != null) &&
-          _gamePlayers.every((gamePlayer) =>
-              gamePlayer.status != GamePlayerStatus.waitRound)) {
-        // TODO 結果表示の後
-        await _processRoundEnd();
+      if (_me.status == GamePlayerStatus.roundResult &&
+          _gameRoundResult == null) {
+        final winner = _gamePlayers
+            .firstWhere((gamePlayer) => gamePlayer.winResult != null);
+        _gameRoundResult = GameRoundResult(
+            game: this, screenSize: screenSize, winResult: winner.winResult!);
+        add(_gameRoundResult!);
       }
       if (_gamePlayers.every(
           (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
@@ -299,10 +304,15 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (winResult.hans >= 4) {
           // ロン!!!
           _me.winResult = winResult;
-          _me.setStatus(GamePlayerStatus.ron);
+          _gamePlayers.asMap().forEach((index, gamePlayer) {
+            gamePlayer.setStatus(GamePlayerStatus.roundResult);
+          });
           await _updateGamePlayers();
-          // TODO 結果表示の後
-          await _processRoundEnd();
+          if (_gameRoundResult == null) {
+            _gameRoundResult = GameRoundResult(
+                game: this, screenSize: screenSize, winResult: winResult);
+            add(_gameRoundResult!);
+          }
         } else {
           _isFuriten = true;
         }
@@ -373,6 +383,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         gamePlayer.setStatus(GamePlayerStatus.waitRound);
       });
       await _updateGamePlayers();
+      await _processNewRound();
       return;
     }
     GamePlayer winPlayer =
@@ -384,7 +395,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       } else {
         gamePlayer.addPoints(winResult.winPoints * -1);
       }
-      gamePlayer.setStatus(GamePlayerStatus.waitRound);
       gamePlayer.render();
     });
     await _updateGamePlayers();
@@ -520,6 +530,18 @@ class SeventeenGame extends FlameGame with TapDetector {
             _updateGamePlayers();
             break;
           }
+        }
+      }
+      if (c is GameTextButton &&
+          c.toRect().contains(info.eventPosition.global.toOffset())) {
+        if (c.kind == GameButtonKind.roundResultOk) {
+          remove(_gameRoundResult!.button);
+          remove(_gameRoundResult!);
+          _gameRoundResult = null;
+          _me.setStatus(GamePlayerStatus.waitRound);
+          await _updateGamePlayers();
+          await _processRoundEnd();
+          break;
         }
       }
     }
