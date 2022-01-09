@@ -485,14 +485,14 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (c.toRect().overlaps(touchArea)) {
           if (c.state == TileState.dealt &&
               _me.status == GamePlayerStatus.selectHands) {
-            bool success = await _selectTile(c);
+            bool success = _selectTile(c);
             if (success) {
               break;
             }
           }
           if (c.state == TileState.hand &&
               _me.status == GamePlayerStatus.selectHands) {
-            bool success = await _unselectTile(c);
+            bool success = _unselectTile(c);
             if (success) {
               break;
             }
@@ -527,7 +527,7 @@ class SeventeenGame extends FlameGame with TapDetector {
             remove(_fixHandsButton!);
             await _setTilesAtDatabase(null);
             _me.setStatus(GamePlayerStatus.fixedHands);
-            _updateGamePlayers();
+            await _updateGamePlayers();
             break;
           }
         }
@@ -548,7 +548,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _isTapping = false;
   }
 
-  Future<bool> _selectTile(FrontTile tile) async {
+  bool _selectTile(FrontTile tile) {
     if (_handsMe.tileCount >= 13) {
       return true;
     }
@@ -563,7 +563,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     return true;
   }
 
-  Future<bool> _unselectTile(FrontTile tile) async {
+  bool _unselectTile(FrontTile tile) {
     if (_canFixHands) {
       remove(_fixHandsButton!);
     }
