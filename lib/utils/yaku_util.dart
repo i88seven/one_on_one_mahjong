@@ -238,7 +238,7 @@ bool isTwoDoubleRuns(WinCandidate winCandidate) {
 /* 清一色 */
 bool isFullFlush(List<AllTileKinds> tiles) {
   final tileTypeCount = fetchTileTypeCount(tiles);
-  return tileTypeCount.values.first == 14 && tileTypeCount.keys.first != 'j';
+  return tileTypeCount.values.length == 1 && tileTypeCount.keys.first != 'j';
 }
 
 /* 四暗刻 */
@@ -310,11 +310,7 @@ bool isAllGreen(List<AllTileKinds> tiles) {
 
 /* 九蓮宝燈 */
 bool isNineGates(List<AllTileKinds> tiles) {
-  final tileTypeCount = fetchTileTypeCount(tiles);
-  if (tileTypeCount.values.first != 14) {
-    return false;
-  }
-  if (tileTypeCount.keys.first == 'j') {
+  if (!isFullFlush(tiles)) {
     return false;
   }
   final tileKindCount = fetchTileKindCount(tiles);

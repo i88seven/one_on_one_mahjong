@@ -100,7 +100,8 @@ Map<AllTileKinds, WinResult> fetchReachResult(
         isFirstTurn: false,
         winTile: winTile);
     for (WinCandidate winCandidate in winCandidates) {
-      List<Yaku> yakumanList = fetchYakuman(winCandidate, mahjongState, tiles);
+      List<Yaku> yakumanList =
+          fetchYakuman(winCandidate, mahjongState, [...tiles, winTile]);
       if (yakumanList.isNotEmpty) {
         WinResult temporaryWinResult = WinResult(yakuList: yakumanList);
         if (result[winTile] == null ||
@@ -110,7 +111,8 @@ Map<AllTileKinds, WinResult> fetchReachResult(
         continue; // 他の高い役満があるかもしれない e.g. 緑一色 + 四暗刻
       }
 
-      List<Yaku> yakuList = fetchYaku(winCandidate, mahjongState, tiles);
+      List<Yaku> yakuList =
+          fetchYaku(winCandidate, mahjongState, [...tiles, winTile]);
       if (yakuList.isNotEmpty) {
         WinResult temporaryWinResult = WinResult(
           yakuList: yakuList,

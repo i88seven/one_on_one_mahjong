@@ -226,7 +226,8 @@ void main() {
       for (AllTileKinds tile in actual.keys) {
         for (int i = 0; i < actual[tile]!.resultMap.length; i++) {
           expect(actual[tile]!.resultMap[i].toString(),
-              expected[tile]!.resultMap[i].toString());
+              expected[tile]!.resultMap[i].toString(),
+              reason: "on $tile");
         }
         expect(actual[tile]!.resultMap.length, expected[tile]!.resultMap.length,
             reason: 'resultMap.length');
@@ -349,6 +350,56 @@ void main() {
             Yaku.concealedSelfDraw
           ], hansOfDoras: [
             0,
+            0,
+            1
+          ]),
+        };
+        ReachMahjongState reachMahjongState = fetchReachMahjongState();
+        fetchReachResultTest(tiles, reachMahjongState, expected);
+      });
+
+      test('FullFlush', () {
+        List<AllTileKinds> tiles = [
+          AllTileKinds.m2,
+          AllTileKinds.m3,
+          AllTileKinds.m4,
+          AllTileKinds.m4,
+          AllTileKinds.m4,
+          AllTileKinds.m5,
+          AllTileKinds.m5,
+          AllTileKinds.mr,
+          AllTileKinds.m7,
+          AllTileKinds.m7,
+          AllTileKinds.m8,
+          AllTileKinds.m8,
+          AllTileKinds.m8,
+        ];
+        Map<AllTileKinds, WinResult> expected = {
+          AllTileKinds.m1: WinResult(yakuList: [
+            Yaku.concealedSelfDraw,
+            Yaku.threeConcealedTriples,
+            Yaku.fullFlush
+          ], hansOfDoras: [
+            1,
+            0,
+            1
+          ]),
+          AllTileKinds.m4: WinResult(yakuList: [
+            Yaku.allSimples,
+            Yaku.concealedSelfDraw,
+            Yaku.threeConcealedTriples,
+            Yaku.fullFlush
+          ], hansOfDoras: [
+            1,
+            0,
+            1
+          ]),
+          AllTileKinds.m7: WinResult(yakuList: [
+            Yaku.allSimples,
+            Yaku.concealedSelfDraw,
+            Yaku.fullFlush
+          ], hansOfDoras: [
+            1,
             0,
             1
           ]),

@@ -994,7 +994,7 @@ void main() {
     });
   });
 
-  /* 混一色 */
+  /* 清一色 */
   group('isFullFlush test', () {
     test('success true', () {
       List<AllTileKinds> tiles = [
