@@ -701,6 +701,18 @@ void main() {
           winCandidate, fetchMahjongState(AllTileKinds.m3));
       expect(result, true);
     });
+    test('success true 4 tiles', () {
+      WinCandidate winCandidate = [
+        SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.m9),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.m4),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.m6),
+        SeparatedTile(type: SeparateType.pung, baseTile: AllTileKinds.m7),
+        SeparatedTile(type: SeparateType.chow, baseTile: AllTileKinds.m2),
+      ];
+      final result = isThreeConcealedTriples(
+          winCandidate, fetchMahjongState(AllTileKinds.m4));
+      expect(result, true);
+    });
     test('success false', () {
       WinCandidate winCandidate = [
         SeparatedTile(type: SeparateType.head, baseTile: AllTileKinds.m9),

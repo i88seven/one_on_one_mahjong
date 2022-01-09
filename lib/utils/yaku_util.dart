@@ -176,9 +176,16 @@ bool isMixedOutsideHand(WinCandidate winCandidate) {
 /* 三暗刻 */
 bool isThreeConcealedTriples(
     WinCandidate winCandidate, MahjongState mahjongState) {
+  bool isWinTileInChow = winCandidate
+      .where((separatedTile) => separatedTile.type == SeparateType.chow)
+      .any((separatedTile) => [
+            separatedTile.baseTile,
+            addTileNumber(separatedTile.baseTile),
+            addTileNumber(addTileNumber(separatedTile.baseTile))
+          ].contains(mahjongState.winTile));
   final concealedTriples = winCandidate.where((separatedTile) =>
       separatedTile.type == SeparateType.pung &&
-      separatedTile.baseTile != mahjongState.winTile);
+      (isWinTileInChow || separatedTile.baseTile != mahjongState.winTile));
   return concealedTriples.length >= 3;
 }
 
