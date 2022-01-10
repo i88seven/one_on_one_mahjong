@@ -211,6 +211,9 @@ class SeventeenGame extends FlameGame with TapDetector {
         !mapEquals(playersJson[1], _gamePlayers[1].toJson())) {
       GamePlayerStatus oldMyStatus =
           _gamePlayers.isNotEmpty ? _me.status : GamePlayerStatus.ready;
+      _gamePlayers.asMap().forEach((index, gamePlayer) {
+        gamePlayer.remove();
+      });
       _gamePlayers.clear();
       for (var playerJson in playersJson) {
         GamePlayer gamePlayer =
@@ -370,7 +373,13 @@ class SeventeenGame extends FlameGame with TapDetector {
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
 
-    await _gameDoc.update({'doras': _doras.jsonValue});
+    _gamePlayers.asMap().forEach((index, gamePlayer) {
+      gamePlayer.setStatus(GamePlayerStatus.selectHands);
+    });
+    await _gameDoc.update({
+      'doras': _doras.jsonValue,
+      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+    });
     await _setTilesAtDatabase(dealtsOther);
   }
 
@@ -395,7 +404,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       } else {
         gamePlayer.addPoints(winResult.winPoints * -1);
       }
-      gamePlayer.render();
     });
     await _updateGamePlayers();
   }
@@ -434,9 +442,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.initOnRound(parentUid);
     }
-    await _gameDoc.update({
-      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
-    });
+    await _updateGamePlayers();
   }
 
   void _processGameEnd() {

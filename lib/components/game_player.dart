@@ -43,6 +43,7 @@ class GamePlayer {
       }
       winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
     }
+    render();
   }
 
   void initOnRound(String parentUid) {
@@ -56,19 +57,16 @@ class GamePlayer {
     render();
   }
 
-  void setPoint(int points) {
-    _points = points;
-    render();
-  }
-
   void addPoints(int points) {
     _points += points;
     render();
   }
 
   void render() {
+    String text = "$name: $_points";
     if (_textObject != null) {
-      _game.remove(_textObject!);
+      _textObject!.text = text;
+      return;
     }
     double posY;
     if (_isMe) {
@@ -79,13 +77,19 @@ class GamePlayer {
     final textRenderer =
         TextPaint(config: const TextPaintConfig(color: Colors.white));
     _textObject = TextComponent(
-      "$name: $_points",
+      text,
       textRenderer: textRenderer,
       size: Vector2(100.0, _isMe ? 24.0 : 12.0),
     );
     _game.add(_textObject!
       ..x = 10
       ..y = posY);
+  }
+
+  void remove() {
+    if (_textObject != null) {
+      _game.remove(_textObject!);
+    }
   }
 
   int get points => _points;
