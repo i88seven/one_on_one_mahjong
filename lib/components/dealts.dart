@@ -39,6 +39,7 @@ class Dealts {
     _tileObjects = [];
     _tiles.asMap().forEach((index, tile) {
       double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;
+      tileAreaWidth = (tileAreaWidth ~/ tileSize.width) * tileSize.width;
       double x = tileSize.width * index;
       int tileRowCount = x ~/ tileAreaWidth;
       x -= tileAreaWidth * tileRowCount;

@@ -84,7 +84,7 @@ class GamePlayer {
       size: Vector2(100.0, _isMe ? 24.0 : 12.0),
     );
     _game.add(_textObject!
-      ..x = 0
+      ..x = 10
       ..y = posY);
   }
 

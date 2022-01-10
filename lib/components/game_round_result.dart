@@ -19,7 +19,7 @@ class GameRoundResult extends PositionComponent {
     final okButton = GameTextButton(
       'OK',
       GameButtonKind.roundResultOk,
-      position: Vector2(screenSize.x - 100, screenSize.y - 40),
+      position: Vector2(screenSize.x - 100, screenSize.y - 50),
       priority: 20,
     );
     _button = okButton;
@@ -42,10 +42,12 @@ class GameRoundResult extends PositionComponent {
         Vector2(10 + (i > 7 ? size.x / 2 : 0), i * 28 + 40),
       );
     });
-    _textRenderer.render(
+    final _winNameRenderer = TextPaint(
+        config: const TextPaintConfig(fontSize: 50.0, color: Colors.black54));
+    _winNameRenderer.render(
       canvas,
       _winResult.winName,
-      Vector2(10, size.y - 30),
+      Vector2(20, size.y - 70),
     );
   }
 }
