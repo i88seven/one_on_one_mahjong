@@ -588,7 +588,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       return true;
     }
 
-    if (_reachResult.containsKey(tile)) {
+    if (_reachResult.containsKey(tile.tileKind)) {
       _isFuriten = true;
     }
     _gameDoc.update({'current': (_currentOrder + 1) % 2});
