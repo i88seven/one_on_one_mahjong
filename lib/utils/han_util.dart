@@ -34,7 +34,6 @@ List<Yaku> fetchYaku(WinCandidate winCandidate, MahjongState mahjongState,
   if (isRedDragon(winCandidate)) yakuList.add(Yaku.redDragon);
   if (isAllSimples(tiles)) yakuList.add(Yaku.allSimples);
   if (isAllRuns(winCandidate, mahjongState)) yakuList.add(Yaku.allRuns);
-  yakuList.add(Yaku.concealedSelfDraw);
   if (mahjongState.isFirstTurn) yakuList.add(Yaku.firstTurnWin);
   if (isDoubleRun(winCandidate)) yakuList.add(Yaku.doubleRun);
   if (isAllTriples(winCandidate)) yakuList.add(Yaku.allTriples);
@@ -73,7 +72,6 @@ List<Yaku> fetchSevenPairsYaku(
   }
   if (mahjongState.isReach) yakuList.add(Yaku.reach);
   if (isAllSimples(tiles)) yakuList.add(Yaku.allSimples);
-  yakuList.add(Yaku.concealedSelfDraw);
   if (mahjongState.isFirstTurn) yakuList.add(Yaku.firstTurnWin);
   yakuList.add(Yaku.sevenPairs);
   if (isAllTerminalsAndHonors(tiles)) yakuList.add(Yaku.allTerminalsAndHonors);

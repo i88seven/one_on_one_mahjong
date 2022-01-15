@@ -317,9 +317,8 @@ void main() {
           AllTileKinds.j2,
         ];
         Map<AllTileKinds, WinResult> expected = {
-          AllTileKinds.p4: WinResult(
-              yakuList: [Yaku.concealedSelfDraw, Yaku.sevenPairs],
-              hansOfDoras: [0, 2, 0]),
+          AllTileKinds.p4:
+              WinResult(yakuList: [Yaku.sevenPairs], hansOfDoras: [0, 2, 0]),
         };
         ReachMahjongState reachMahjongState = fetchReachMahjongState();
         fetchReachResultTest(tiles, reachMahjongState, expected);
@@ -342,12 +341,9 @@ void main() {
           AllTileKinds.j1,
         ];
         Map<AllTileKinds, WinResult> expected = {
-          AllTileKinds.p1: WinResult(
-              yakuList: [Yaku.concealedSelfDraw], hansOfDoras: [0, 0, 1]),
           AllTileKinds.j1: WinResult(yakuList: [
             Yaku.seatWind,
             Yaku.prevalentWind,
-            Yaku.concealedSelfDraw
           ], hansOfDoras: [
             0,
             0,
@@ -375,18 +371,11 @@ void main() {
           AllTileKinds.m8,
         ];
         Map<AllTileKinds, WinResult> expected = {
-          AllTileKinds.m1: WinResult(yakuList: [
-            Yaku.concealedSelfDraw,
-            Yaku.threeConcealedTriples,
-            Yaku.fullFlush
-          ], hansOfDoras: [
-            1,
-            0,
-            1
-          ]),
+          AllTileKinds.m1: WinResult(
+              yakuList: [Yaku.threeConcealedTriples, Yaku.fullFlush],
+              hansOfDoras: [1, 0, 1]),
           AllTileKinds.m4: WinResult(yakuList: [
             Yaku.allSimples,
-            Yaku.concealedSelfDraw,
             Yaku.threeConcealedTriples,
             Yaku.fullFlush
           ], hansOfDoras: [
@@ -394,15 +383,9 @@ void main() {
             0,
             1
           ]),
-          AllTileKinds.m7: WinResult(yakuList: [
-            Yaku.allSimples,
-            Yaku.concealedSelfDraw,
-            Yaku.fullFlush
-          ], hansOfDoras: [
-            1,
-            0,
-            1
-          ]),
+          AllTileKinds.m7: WinResult(
+              yakuList: [Yaku.allSimples, Yaku.fullFlush],
+              hansOfDoras: [1, 0, 1]),
         };
         ReachMahjongState reachMahjongState = fetchReachMahjongState();
         fetchReachResultTest(tiles, reachMahjongState, expected);

@@ -166,7 +166,6 @@ void main() {
         Yaku.reach,
         Yaku.allSimples,
         Yaku.allRuns,
-        Yaku.concealedSelfDraw,
       ];
       fetchYakuTest(tiles, AllTileKinds.s6, expected);
     });
@@ -191,7 +190,6 @@ void main() {
       List<Yaku> expected = [
         Yaku.reach,
         Yaku.allRuns,
-        Yaku.concealedSelfDraw,
         Yaku.halfFlush,
         Yaku.twoDoubleRuns,
       ];
@@ -217,7 +215,6 @@ void main() {
       ];
       List<Yaku> expected = [
         Yaku.reach,
-        Yaku.concealedSelfDraw,
         Yaku.threeColorRuns,
         Yaku.pureOutsideHand,
       ];
@@ -244,7 +241,6 @@ void main() {
       List<Yaku> expected = [
         Yaku.reach,
         Yaku.greenDragon,
-        Yaku.concealedSelfDraw,
         Yaku.allTriples,
         Yaku.threeConcealedTriples,
         Yaku.allTerminalsAndHonors,
@@ -272,7 +268,6 @@ void main() {
       ];
       List<Yaku> expected = [
         Yaku.reach,
-        Yaku.concealedSelfDraw,
         Yaku.threeConcealedTriples,
         Yaku.fullFlush,
       ];
@@ -311,7 +306,6 @@ void main() {
       List<Yaku> expected = [
         Yaku.reach,
         Yaku.allSimples,
-        Yaku.concealedSelfDraw,
         Yaku.sevenPairs,
       ];
       fetchSevenPairsYakuTest(tiles, AllTileKinds.s7, expected);
@@ -336,7 +330,6 @@ void main() {
       ];
       List<Yaku> expected = [
         Yaku.reach,
-        Yaku.concealedSelfDraw,
         Yaku.sevenPairs,
         Yaku.allTerminalsAndHonors,
       ];
@@ -363,7 +356,6 @@ void main() {
       List<Yaku> expected = [
         Yaku.reach,
         Yaku.allSimples,
-        Yaku.concealedSelfDraw,
         Yaku.sevenPairs,
         Yaku.fullFlush,
       ];
