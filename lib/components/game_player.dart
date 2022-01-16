@@ -20,6 +20,7 @@ class GamePlayer {
   GamePlayer(this._game, this.uid, this.name, this.status, this._isMe,
       this._isParent) {
     _points = 25000;
+    render();
   }
 
   GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)
@@ -88,6 +89,7 @@ class GamePlayer {
 
   void remove() {
     if (_textObject != null) {
+      _textObject!.text = '';
       _game.remove(_textObject!);
     }
   }

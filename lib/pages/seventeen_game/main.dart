@@ -188,9 +188,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       await initializeSlave();
     }
 
-    for (GamePlayer gamePlayer in _gamePlayers) {
-      gamePlayer.render();
-    }
     _handsOther.initialize();
   }
 
