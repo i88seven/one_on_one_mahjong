@@ -304,7 +304,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           _reachResult.containsKey(targetTile)) {
         WinResult winResult = _reachResult[targetTile]!;
         if (_isFirstTurnWin) winResult.addFirstTurnWin();
-        if (winResult.hans >= 4) {
+        if (winResult.hans >= 4 || winResult.yakumanCount >= 1) {
           // ロン!!!
           _me.winResult = winResult;
           _gamePlayers.asMap().forEach((index, gamePlayer) {

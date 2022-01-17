@@ -79,6 +79,6 @@ class ResultRow {
 
   @override
   String toString() {
-    return "$yakuName : $hans翻";
+    return yakumanList.contains(yaku) ? yakuName : "$yakuName : $hans翻";
   }
 }
