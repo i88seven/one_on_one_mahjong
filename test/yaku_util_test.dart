@@ -11,7 +11,6 @@ MahjongState fetchMahjongState(
   bool? isParent,
 }) {
   return MahjongState(
-      isReach: true,
       isFirstTurn: false,
       doras: [AllTileKinds.m1, AllTileKinds.j1],
       wind: wind ?? 1,

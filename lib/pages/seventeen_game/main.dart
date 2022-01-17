@@ -304,7 +304,6 @@ class SeventeenGame extends FlameGame with TapDetector {
           _reachResult.containsKey(targetTile)) {
         WinResult winResult = _reachResult[targetTile]!;
         if (_isFirstTurnWin) winResult.addFirstTurnWin();
-        if (_isReach) winResult.addReach();
         if (winResult.hans >= 4) {
           // ロン!!!
           _me.winResult = winResult;
@@ -677,8 +676,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     );
     _reachResult = fetchReachResult(_handsMe.tiles, mahjongState);
   }
-
-  bool get _isReach => _trashesMe.tileCount > 0;
 
   bool get _isFirstTurnWin => _trashesMe.tileCount == 1;
 

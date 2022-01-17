@@ -23,8 +23,7 @@ List<Yaku> fetchYakuman(WinCandidate winCandidate, MahjongState mahjongState,
 
 List<Yaku> fetchYaku(WinCandidate winCandidate, MahjongState mahjongState,
     List<AllTileKinds> tiles) {
-  List<Yaku> yakuList = [];
-  if (mahjongState.isReach) yakuList.add(Yaku.reach);
+  List<Yaku> yakuList = [Yaku.reach];
   if (isSeatWind(winCandidate, mahjongState)) yakuList.add(Yaku.seatWind);
   if (isPrevalentWind(winCandidate, mahjongState)) {
     yakuList.add(Yaku.prevalentWind);
@@ -70,7 +69,7 @@ List<Yaku> fetchSevenPairsYaku(
   if (!isSevenPairs(tiles)) {
     return yakuList;
   }
-  if (mahjongState.isReach) yakuList.add(Yaku.reach);
+  yakuList.add(Yaku.reach);
   if (isAllSimples(tiles)) yakuList.add(Yaku.allSimples);
   if (mahjongState.isFirstTurn) yakuList.add(Yaku.firstTurnWin);
   yakuList.add(Yaku.sevenPairs);

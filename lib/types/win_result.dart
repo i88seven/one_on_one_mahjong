@@ -7,12 +7,8 @@ class WinResult {
   WinResult({
     required yakuList,
     hansOfDoras,
-  })  : _yakuList = yakuList ?? [],
+  })  : _yakuList = yakuList ?? [Yaku.reach],
         _hansOfDoras = hansOfDoras ?? [0, 0, 0];
-
-  void addReach() {
-    _yakuList.insert(0, Yaku.reach);
-  }
 
   void addFirstTurnWin() {
     _yakuList.insert(0, Yaku.firstTurnWin);
