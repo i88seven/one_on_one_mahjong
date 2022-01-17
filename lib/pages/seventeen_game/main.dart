@@ -208,6 +208,8 @@ class SeventeenGame extends FlameGame with TapDetector {
         !mapEquals(playersJson[1], _gamePlayers[1].toJson())) {
       GamePlayerStatus oldMyStatus =
           _gamePlayers.isNotEmpty ? _me.status : GamePlayerStatus.ready;
+      GamePlayerStatus oldOtherStatus =
+          _gamePlayers.isNotEmpty ? _other.status : GamePlayerStatus.ready;
       _gamePlayers.asMap().forEach((index, gamePlayer) {
         gamePlayer.remove();
       });
@@ -229,8 +231,10 @@ class SeventeenGame extends FlameGame with TapDetector {
           (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
         await _processNewRound();
       }
-      if (oldMyStatus == GamePlayerStatus.waitRound &&
-          _me.status == GamePlayerStatus.selectHands) {
+      if ((oldMyStatus == GamePlayerStatus.waitRound &&
+              _me.status == GamePlayerStatus.selectHands) ||
+          (oldOtherStatus == GamePlayerStatus.waitRound &&
+              _other.status == GamePlayerStatus.selectHands)) {
         final tilesSnapshot =
             await _gameDoc.collection('player_tiles').doc(_myUid).get();
         await _initializeMyTiles(tilesSnapshot);
@@ -373,11 +377,11 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       gamePlayer.setStatus(GamePlayerStatus.selectHands);
     });
+    await _setTilesAtDatabase(dealtsOther);
     await _gameDoc.update({
       'doras': _doras.jsonValue,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
     });
-    await _setTilesAtDatabase(dealtsOther);
   }
 
   Future<void> _processRoundEnd() async {
@@ -597,6 +601,9 @@ class SeventeenGame extends FlameGame with TapDetector {
     return _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid == _myUid);
   }
 
+  GamePlayer get _other {
+    return _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid != _myUid);
+  }
   bool get _isDrawnGame {
     return _trashesMe.tileCount == _trashesOther.tileCount &&
         _trashesMe.tileCount == 17;
