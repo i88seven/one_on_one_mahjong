@@ -154,8 +154,8 @@ class SeventeenGame extends FlameGame with TapDetector {
         final otherTilesDoc =
             _gameDoc.collection('player_tiles').doc(gamePlayer.uid);
         _streams.add(otherTilesDoc.snapshots().listen(_onChangeOtherTiles));
-        final tiesSnapshot = await otherTilesDoc.get();
-        await _onChangeOtherTiles(tiesSnapshot);
+        final tilesSnapshot = await otherTilesDoc.get();
+        await _onChangeOtherTiles(tilesSnapshot);
       } else {
         final tilesSnapshot =
             await _gameDoc.collection('player_tiles').doc(gamePlayer.uid).get();
