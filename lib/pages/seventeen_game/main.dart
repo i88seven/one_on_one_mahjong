@@ -296,9 +296,6 @@ class SeventeenGame extends FlameGame with TapDetector {
         default:
           _trashesOther.initialize(trashes);
       }
-      if (_isDrawnGame) {
-        await _processRoundEnd();
-      }
       if (!_isFuriten &&
           targetTile != null &&
           _reachResult.containsKey(targetTile)) {
@@ -316,9 +313,13 @@ class SeventeenGame extends FlameGame with TapDetector {
                 game: this, screenSize: screenSize, winResult: winResult);
             add(_gameRoundResult!);
           }
+          return;
         } else {
           _isFuriten = true;
         }
+      }
+      if (_isDrawnGame) {
+        await _processRoundEnd();
       }
     }
   }
@@ -603,6 +604,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   GamePlayer get _other {
     return _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid != _myUid);
   }
+
   bool get _isDrawnGame {
     return _trashesMe.tileCount == _trashesOther.tileCount &&
         _trashesMe.tileCount == 17;
