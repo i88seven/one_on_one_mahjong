@@ -489,6 +489,44 @@ class SeventeenGame extends FlameGame with TapDetector {
     );
 
     for (final c in children) {
+      if (_canFixHands) {
+        if (c is GameTextButton &&
+            c.toRect().contains(info.eventPosition.global.toOffset())) {
+          if (c.kind == GameButtonKind.dialogCancel) {
+            removeAll(_gameDialog!.buttons);
+            remove(_gameDialog!);
+            break;
+          }
+          if (c.kind == GameButtonKind.dialogOk) {
+            removeAll(_gameDialog!.buttons);
+            remove(_gameDialog!);
+            remove(_fixHandsButton!);
+            await _setTilesAtDatabase(null);
+            _me.setStatus(GamePlayerStatus.fixedHands);
+            await _updateGamePlayers();
+            break;
+          }
+          if (c.kind == GameButtonKind.fixHands) {
+            _fetchReachResult();
+            _gameDialog = GameDialog(
+                game: this, screenSize: screenSize, reachState: _reachState);
+            add(_gameDialog!);
+            break;
+          }
+        }
+      }
+      if (c is GameTextButton &&
+          c.toRect().contains(info.eventPosition.global.toOffset())) {
+        if (c.kind == GameButtonKind.roundResultOk) {
+          remove(_gameRoundResult!.button);
+          remove(_gameRoundResult!);
+          _gameRoundResult = null;
+          _me.setStatus(GamePlayerStatus.waitRound);
+          await _updateGamePlayers();
+          await _processRoundEnd();
+          break;
+        }
+      }
       if (c is FrontTile) {
         if (c.toRect().overlaps(touchArea)) {
           if (c.state == TileState.dealt &&
@@ -512,44 +550,6 @@ class SeventeenGame extends FlameGame with TapDetector {
               break;
             }
           }
-        }
-      }
-      if (_canFixHands) {
-        if (c is GameTextButton &&
-            c.toRect().contains(info.eventPosition.global.toOffset())) {
-          if (c.kind == GameButtonKind.fixHands) {
-            _fetchReachResult();
-            _gameDialog = GameDialog(
-                game: this, screenSize: screenSize, reachState: _reachState);
-            add(_gameDialog!);
-            break;
-          }
-          if (c.kind == GameButtonKind.dialogCancel) {
-            removeAll(_gameDialog!.buttons);
-            remove(_gameDialog!);
-            break;
-          }
-          if (c.kind == GameButtonKind.dialogOk) {
-            removeAll(_gameDialog!.buttons);
-            remove(_gameDialog!);
-            remove(_fixHandsButton!);
-            await _setTilesAtDatabase(null);
-            _me.setStatus(GamePlayerStatus.fixedHands);
-            await _updateGamePlayers();
-            break;
-          }
-        }
-      }
-      if (c is GameTextButton &&
-          c.toRect().contains(info.eventPosition.global.toOffset())) {
-        if (c.kind == GameButtonKind.roundResultOk) {
-          remove(_gameRoundResult!.button);
-          remove(_gameRoundResult!);
-          _gameRoundResult = null;
-          _me.setStatus(GamePlayerStatus.waitRound);
-          await _updateGamePlayers();
-          await _processRoundEnd();
-          break;
         }
       }
     }
