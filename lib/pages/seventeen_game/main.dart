@@ -233,10 +233,8 @@ class SeventeenGame extends FlameGame with TapDetector {
           (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
         await _processNewRound();
       }
-      if ((oldMyStatus == GamePlayerStatus.waitRound &&
-              _me.status == GamePlayerStatus.selectHands) ||
-          (oldOtherStatus == GamePlayerStatus.waitRound &&
-              _other.status == GamePlayerStatus.selectHands)) {
+      if (oldMyStatus == GamePlayerStatus.waitRound &&
+          _me.status == GamePlayerStatus.selectHands) {
         final tilesSnapshot =
             await _gameDoc.collection('player_tiles').doc(_myUid).get();
         await _initializeMyTiles(tilesSnapshot);
