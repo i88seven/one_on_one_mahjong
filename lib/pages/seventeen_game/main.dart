@@ -16,6 +16,7 @@ import 'package:one_on_one_mahjong/components/game_dialog.dart';
 import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
+import 'package:one_on_one_mahjong/components/game_round.dart';
 import 'package:one_on_one_mahjong/components/game_round_result.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
 import 'package:one_on_one_mahjong/components/hands.dart';
@@ -42,6 +43,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   bool _isTapping = false;
   Vector2 screenSize;
   final List<GamePlayer> _gamePlayers = [];
+  late GameRound _gameRound;
   late Dealts _dealtsMe;
   late OtherDeals _dealtsOther;
   late Doras _doras;
@@ -58,8 +60,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   GameTextButton? _fixHandsButton;
   GameDialog? _gameDialog;
   int _currentOrder = 0; // 0:親, 1:子
-  int _currentWind = 1; // 東:1, 南:2, 西:3, 北:4
-  int _currentRound = 1; // 局
   bool _isFuriten = false;
   Map<AllTileKinds, WinResult> _reachResult = {};
   Function onGameEnd;
@@ -130,9 +130,12 @@ class SeventeenGame extends FlameGame with TapDetector {
             .listen(_onChangeOtherTiles));
       }
     }
+    _gameRound = GameRound(this, 1, 1);
     await _gameDoc.set({
       'hostUid': _hostUid,
       'current': 0,
+      'wind': _gameRound.wind,
+      'round': _gameRound.round,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
     });
     await _deal();
@@ -148,6 +151,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
     _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
 
+    _gameRound = GameRound(this, 1, 1);
     final gameSnapshot = await _gameDoc.get();
     await _onChangeGame(gameSnapshot);
 
@@ -204,6 +208,17 @@ class SeventeenGame extends FlameGame with TapDetector {
       _currentOrder = gameData['current'];
     }
 
+    if (gameData['wind'] != null) {
+      _gameRound.setRound(wind: gameData['wind']);
+      if (gameData['wind'] == 5) {
+        _processGameEnd();
+        return;
+      }
+    }
+    if (gameData['round'] != null) {
+      _gameRound.setRound(round: gameData['round']);
+    }
+
     final playersJson = gameData['players'];
     if (_gamePlayers.isEmpty ||
         !mapEquals(playersJson[0], _gamePlayers[0].toJson()) ||
@@ -231,7 +246,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
       if (_gamePlayers.every(
           (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
-        await _processNewRound();
+        await _processNewRound(isDrawnGame: false);
       }
       if (oldMyStatus == GamePlayerStatus.waitRound &&
           _me.status == GamePlayerStatus.selectHands) {
@@ -399,7 +414,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         gamePlayer.setStatus(GamePlayerStatus.waitRound);
       });
       await _updateGamePlayers();
-      await _processNewRound();
+      await _processNewRound(isDrawnGame: true);
       return;
     }
     GamePlayer winPlayer =
@@ -415,7 +430,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _updateGamePlayers();
   }
 
-  Future<void> _processNewRound() async {
+  Future<void> _processNewRound({required bool isDrawnGame}) async {
     _isFuriten = false;
     _reachResult = {};
     _trashesMe.initialize([]);
@@ -424,22 +439,31 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_myUid != _hostUid) {
       return;
     }
-    if (_isGameEnd) {
+    if (_gameRound.isFinalGame && !isDrawnGame) {
+      await _gameDoc.update({
+        'wind': 5,
+        'round': 1,
+      });
       _processGameEnd();
       return;
     }
-    await _initOnRoundMaster();
+    await _initOnRoundMaster(isDrawnGame: isDrawnGame);
     await _deal();
     await _initOnRoundSlave();
   }
 
-  Future<void> _initOnRoundMaster() async {
+  Future<void> _initOnRoundMaster({required bool isDrawnGame}) async {
     _currentOrder = 0;
-    _gamePlayers.shuffle();
+    _gamePlayers.sort((a, b) => 1);
     String parentUid = _gamePlayers.first.uid;
     _me.initOnRound(parentUid);
+    if (!isDrawnGame) {
+      _gameRound.setNewRound();
+    }
     await _gameDoc.update({
       'current': _currentOrder,
+      'wind': _gameRound.wind,
+      'round': _gameRound.round,
       'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
     });
   }
@@ -467,7 +491,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   @override
   Future<void> onTapUp(info) async {
-    if (_isGameEnd) {
+    if (_gameRound.isGameEnded) {
       for (final t in children) {
         if (t is GameEndButton &&
             t.toRect().contains(info.eventPosition.global.toOffset())) {
@@ -620,12 +644,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   bool get _isRoundEnd {
-    // TODO どう管理するか
-    return false;
-  }
-
-  bool get _isGameEnd {
-    return false; // TODO
+    return _me.status == GamePlayerStatus.waitRound;
   }
 
   Future<void> _updateGamePlayers() async {
@@ -676,8 +695,8 @@ class SeventeenGame extends FlameGame with TapDetector {
   void _fetchReachResult() {
     ReachMahjongState mahjongState = ReachMahjongState(
       doras: _doras.tiles,
-      wind: _currentWind,
-      round: _currentRound,
+      wind: _gameRound.wind,
+      round: _gameRound.round,
       isParent: _me.isParent,
     );
     _reachResult = fetchReachResult(_handsMe.tiles, mahjongState);
