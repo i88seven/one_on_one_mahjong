@@ -14,6 +14,10 @@ class WinResult {
     _yakuList.insert(0, Yaku.firstTurnWin);
   }
 
+  void addFinalTileWin() {
+    _yakuList.insert(0, Yaku.finalTileWin);
+  }
+
   int get hans => resultMap.fold(0, (int p, resultRow) => p + resultRow.hans);
 
   List<ResultRow> get resultMap {

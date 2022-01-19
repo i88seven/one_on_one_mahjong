@@ -14,6 +14,7 @@ MahjongState fetchMahjongState(
 }) {
   return MahjongState(
       isFirstTurn: false,
+      isFinalTile: false,
       doras: [AllTileKinds.m1, AllTileKinds.j1],
       wind: wind ?? 1,
       round: round ?? 1,
@@ -167,6 +168,88 @@ void main() {
         Yaku.allRuns,
       ];
       fetchYakuTest(tiles, AllTileKinds.s6, expected);
+    });
+
+    test('FirstTurnWin', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m3,
+        AllTileKinds.m4,
+        AllTileKinds.m5,
+        AllTileKinds.m5,
+        AllTileKinds.m6,
+        AllTileKinds.m7,
+        AllTileKinds.p2,
+        AllTileKinds.p3,
+        AllTileKinds.p4,
+        AllTileKinds.s3,
+        AllTileKinds.s3,
+        AllTileKinds.s6,
+        AllTileKinds.s7,
+        AllTileKinds.s8,
+      ];
+      List<Yaku> expected = [
+        Yaku.reach,
+        Yaku.allSimples,
+        Yaku.allRuns,
+        Yaku.firstTurnWin,
+      ];
+      AllTileKinds winTile = AllTileKinds.s6;
+      List<WinCandidate> winCandidates = fetchWinCandidates(tiles);
+      MahjongState mahjongState = MahjongState(
+          isFirstTurn: true,
+          isFinalTile: false,
+          doras: [AllTileKinds.m1, AllTileKinds.j1],
+          wind: 1,
+          round: 1,
+          isParent: true,
+          winTile: winTile);
+      WinCandidate winCandidate = winCandidates[0];
+      List<Yaku> actualYakuList = fetchYaku(winCandidate, mahjongState, tiles);
+      expect(actualYakuList.length, expected.length);
+      for (var i = 0; i < actualYakuList.length; i++) {
+        expect(actualYakuList[i], expected[i], reason: "on $i");
+      }
+    });
+
+    test('FinalTileWin', () {
+      List<AllTileKinds> tiles = [
+        AllTileKinds.m3,
+        AllTileKinds.m4,
+        AllTileKinds.m5,
+        AllTileKinds.m5,
+        AllTileKinds.m6,
+        AllTileKinds.m7,
+        AllTileKinds.p2,
+        AllTileKinds.p3,
+        AllTileKinds.p4,
+        AllTileKinds.s3,
+        AllTileKinds.s3,
+        AllTileKinds.s6,
+        AllTileKinds.s7,
+        AllTileKinds.s8,
+      ];
+      List<Yaku> expected = [
+        Yaku.reach,
+        Yaku.allSimples,
+        Yaku.allRuns,
+        Yaku.finalTileWin,
+      ];
+      AllTileKinds winTile = AllTileKinds.s6;
+      List<WinCandidate> winCandidates = fetchWinCandidates(tiles);
+      MahjongState mahjongState = MahjongState(
+          isFirstTurn: false,
+          isFinalTile: true,
+          doras: [AllTileKinds.m1, AllTileKinds.j1],
+          wind: 1,
+          round: 1,
+          isParent: true,
+          winTile: winTile);
+      WinCandidate winCandidate = winCandidates[0];
+      List<Yaku> actualYakuList = fetchYaku(winCandidate, mahjongState, tiles);
+      expect(actualYakuList.length, expected.length);
+      for (var i = 0; i < actualYakuList.length; i++) {
+        expect(actualYakuList[i], expected[i], reason: "on $i");
+      }
     });
 
     test('TwoDoubleRuns', () {

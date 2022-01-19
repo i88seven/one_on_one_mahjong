@@ -12,6 +12,7 @@ MahjongState fetchMahjongState(
 }) {
   return MahjongState(
       isFirstTurn: false,
+      isFinalTile: false,
       doras: [AllTileKinds.m1, AllTileKinds.j1],
       wind: wind ?? 1,
       round: round ?? 1,

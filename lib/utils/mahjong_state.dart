@@ -2,6 +2,7 @@ import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 
 class MahjongState {
   bool isFirstTurn;
+  bool isFinalTile;
   List<AllTileKinds> doras;
   int wind;
   int round;
@@ -10,6 +11,7 @@ class MahjongState {
 
   MahjongState({
     required this.isFirstTurn,
+    required this.isFinalTile,
     required this.doras,
     required this.wind,
     required this.round,
@@ -20,6 +22,7 @@ class MahjongState {
   MahjongState.fromReach({
     required ReachMahjongState reachMahjongState,
     required this.isFirstTurn,
+    required this.isFinalTile,
     required this.winTile,
   })  : doras = reachMahjongState.doras,
         wind = reachMahjongState.wind,

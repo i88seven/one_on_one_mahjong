@@ -81,6 +81,7 @@ Map<AllTileKinds, WinResult> fetchReachResult(
     MahjongState mahjongState = MahjongState.fromReach(
         reachMahjongState: reachMahjongState,
         isFirstTurn: false,
+        isFinalTile: false,
         winTile: sevenPairsReachTile);
     final sevenPairsYaku =
         fetchSevenPairsYaku(mahjongState, [...tiles, sevenPairsReachTile]);
@@ -96,6 +97,7 @@ Map<AllTileKinds, WinResult> fetchReachResult(
     MahjongState mahjongState = MahjongState.fromReach(
         reachMahjongState: reachMahjongState,
         isFirstTurn: false,
+        isFinalTile: false,
         winTile: winTile);
     for (WinCandidate winCandidate in winCandidates) {
       List<Yaku> yakumanList =

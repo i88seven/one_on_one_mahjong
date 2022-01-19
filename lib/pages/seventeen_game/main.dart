@@ -300,6 +300,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           targetTile != null &&
           _reachResult.containsKey(targetTile)) {
         WinResult winResult = _reachResult[targetTile]!;
+        if (_isFinalTileWin) winResult.addFinalTileWin();
         if (_isFirstTurnWin) winResult.addFirstTurnWin();
         if (winResult.hans >= 4 || winResult.yakumanCount >= 1) {
           // ロン!!!
@@ -680,6 +681,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   bool get _isFirstTurnWin => _trashesOther.tileCount == 1;
+  bool get _isFinalTileWin =>
+      _trashesMe.tileCount == _trashesOther.tileCount &&
+      _trashesOther.tileCount == maxTrashCount;
 
   ReachState get _reachState {
     if (_reachResult.isEmpty) {
