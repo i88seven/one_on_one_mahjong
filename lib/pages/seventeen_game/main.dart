@@ -32,6 +32,8 @@ import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
 
+const maxTrashCount = 17;
+
 class SeventeenGame extends FlameGame with TapDetector {
   Images gameImages = Images();
   final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
@@ -607,7 +609,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   bool get _isDrawnGame {
     return _trashesMe.tileCount == _trashesOther.tileCount &&
-        _trashesMe.tileCount == 17;
+        _trashesMe.tileCount == maxTrashCount;
   }
 
   bool get _canFixHands {
