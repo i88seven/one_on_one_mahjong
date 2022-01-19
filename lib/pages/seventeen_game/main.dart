@@ -241,6 +241,11 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     }
 
+    if (_isDrawnGame) {
+      await _processRoundEnd();
+      return;
+    }
+
     final dorasJson = gameData['doras'] as List<dynamic>?;
     if (dorasJson is List<dynamic>) {
       if (!listEquals(dorasJson, _doras.tiles.map((e) => e.name).toList())) {
@@ -319,7 +324,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           _isFuriten = true;
         }
       }
-      if (_isDrawnGame) {
+      if (_myUid == _hostUid && _isDrawnGame) {
         await _processRoundEnd();
       }
     }
@@ -585,10 +590,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     _dealtsMe.discard(tile);
     _trashesMe.add(tile.tileKind);
     await _setTilesAtDatabase(null);
-    if (_isDrawnGame) {
-      await _processRoundEnd();
-      return true;
-    }
 
     if (_reachResult.containsKey(tile.tileKind)) {
       _isFuriten = true;
@@ -608,7 +609,9 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   bool get _isDrawnGame {
     return _trashesMe.tileCount == _trashesOther.tileCount &&
-        _trashesMe.tileCount == maxTrashCount;
+        _trashesMe.tileCount == maxTrashCount &&
+        _gamePlayers.every(
+            (gamePlayer) => gamePlayer.status == GamePlayerStatus.selectTrash);
   }
 
   bool get _canFixHands {
