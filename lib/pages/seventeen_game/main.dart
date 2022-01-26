@@ -530,11 +530,13 @@ class SeventeenGame extends FlameGame with TapDetector {
           if (c.kind == GameButtonKind.dialogCancel) {
             removeAll(_gameDialog!.buttons);
             remove(_gameDialog!);
+            _gameDialog = null;
             break;
           }
           if (c.kind == GameButtonKind.dialogOk) {
             removeAll(_gameDialog!.buttons);
             remove(_gameDialog!);
+            _gameDialog = null;
             remove(_fixHandsButton!);
             await _setTilesAtDatabase(null);
             _me.setStatus(GamePlayerStatus.fixedHands);
@@ -562,7 +564,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           break;
         }
       }
-      if (c is FrontTile) {
+      if (c is FrontTile && _gameDialog == null) {
         if (c.toRect().overlaps(touchArea)) {
           if (c.state == TileState.dealt &&
               _me.status == GamePlayerStatus.selectHands) {
