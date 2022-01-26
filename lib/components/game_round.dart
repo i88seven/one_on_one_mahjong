@@ -9,8 +9,8 @@ class GameRound {
   TextComponent? _textObject;
   final SeventeenGame _game;
 
-  static const windMap = ['', '東', '南', '西', '北'];
-  static const roundMap = ['', '一', '二'];
+  static const windMap = ['', '東', '南', '西', '北', '北'];
+  static const roundMap = ['', '一', '二', '二'];
 
   GameRound(this._game, this._wind, this._round) {
     render();

@@ -13,7 +13,6 @@ import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_dialog.dart';
-import 'package:one_on_one_mahjong/components/game_end_button.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
 import 'package:one_on_one_mahjong/components/game_round.dart';
@@ -51,7 +50,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late OtherHands _handsOther;
   late Trashes _trashesMe;
   late Trashes _trashesOther;
-  late GameResult _gameResult;
+  late GameResult? _gameResult;
   late GameRoundResult? _gameRoundResult;
   final FirebaseFirestore _firestoreReference = FirebaseFirestore.instance;
   late DocumentReference<Map<String, dynamic>> _gameDoc;
@@ -67,7 +66,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   static const playerCount = 2;
 
   SeventeenGame(this._roomId, this._hostUid, this.screenSize, this.onGameEnd) {
-    _gameResult = GameResult(this, _gamePlayers);
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(this);
     _doras = Doras(this);
@@ -477,7 +475,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   void _processGameEnd() {
-    _gameResult.render();
+    _gameResult = GameResult(
+        game: this, screenSize: screenSize, gamePlayers: _gamePlayers);
+    add(_gameResult!);
     for (var stream in _streams) {
       stream.cancel();
     }
@@ -493,10 +493,14 @@ class SeventeenGame extends FlameGame with TapDetector {
   Future<void> onTapUp(info) async {
     if (_gameRound.isGameEnded) {
       for (final t in children) {
-        if (t is GameEndButton &&
-            t.toRect().contains(info.eventPosition.global.toOffset())) {
-          _gameResult.remove();
+        if (t is GameTextButton &&
+            t.toRect().contains(info.eventPosition.global.toOffset()) &&
+            t.kind == GameButtonKind.gameEnd) {
+          remove(_gameResult!.button);
+          remove(_gameResult!);
+          _gameResult = null;
           await _gameEnd();
+          break;
         }
       }
       return;

@@ -3,4 +3,5 @@ enum GameButtonKind {
   dialogOk,
   fixHands,
   roundResultOk,
+  gameEnd,
 }
