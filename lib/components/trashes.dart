@@ -39,6 +39,8 @@ class Trashes {
     }
   }
 
+  List<AllTileKinds> get tiles => _tiles;
+
   int get tileCount {
     return _tiles.length;
   }

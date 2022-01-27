@@ -238,9 +238,22 @@ class SeventeenGame extends FlameGame with TapDetector {
           _gameRoundResult == null) {
         final winner = _gamePlayers
             .firstWhere((gamePlayer) => gamePlayer.winResult != null);
-        _gameRoundResult = GameRoundResult(
-            game: this, screenSize: screenSize, winResult: winner.winResult!);
-        add(_gameRoundResult!);
+        AllTileKinds targetTile = winner.uid == _me.uid
+            ? _trashesOther.tiles.last
+            : _trashesMe.tiles.last;
+        final tilesSnapshot =
+            await _gameDoc.collection('player_tiles').doc(winner.uid).get();
+        List<AllTileKinds> winnerHands = _fetchOtherHands(tilesSnapshot);
+        if (_gameRoundResult == null) {
+          _gameRoundResult = GameRoundResult(
+              game: this,
+              screenSize: screenSize,
+              winResult: winner.winResult!,
+              tiles: winnerHands,
+              winTile: targetTile,
+              doras: _doras.tiles);
+          add(_gameRoundResult!);
+        }
       }
       if (_gamePlayers.every(
           (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
@@ -282,6 +295,24 @@ class SeventeenGame extends FlameGame with TapDetector {
             _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
       });
     }
+  }
+
+  List<AllTileKinds> _fetchOtherHands(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    Map<String, dynamic>? myTilesData = snapshot.data();
+    if (myTilesData == null) {
+      return [];
+    }
+
+    final handsJson = myTilesData['hands'] as List<dynamic>?;
+    if (handsJson is List<dynamic>) {
+      return handsJson
+          .map((tileString) =>
+              EnumToString.fromString(AllTileKinds.values, tileString) ??
+              AllTileKinds.m1)
+          .toList();
+    }
+    return [];
   }
 
   Future<void> _onChangeOtherTiles(
@@ -331,7 +362,12 @@ class SeventeenGame extends FlameGame with TapDetector {
           await _updateGamePlayers();
           if (_gameRoundResult == null) {
             _gameRoundResult = GameRoundResult(
-                game: this, screenSize: screenSize, winResult: winResult);
+                game: this,
+                screenSize: screenSize,
+                winResult: winResult,
+                tiles: _handsMe.tiles,
+                winTile: targetTile,
+                doras: _doras.tiles);
             add(_gameRoundResult!);
           }
           return;
@@ -552,17 +588,15 @@ class SeventeenGame extends FlameGame with TapDetector {
           }
         }
       }
-      if (c is GameTextButton &&
-          c.toRect().contains(info.eventPosition.global.toOffset())) {
-        if (c.kind == GameButtonKind.roundResultOk) {
-          remove(_gameRoundResult!.button);
-          remove(_gameRoundResult!);
-          _gameRoundResult = null;
-          _me.setStatus(GamePlayerStatus.waitRound);
-          await _updateGamePlayers();
-          await _processRoundEnd();
-          break;
-        }
+      if (c is GameRoundResult &&
+          c.button.toRect().contains(info.eventPosition.global.toOffset())) {
+        remove(_gameRoundResult!.button);
+        remove(_gameRoundResult!);
+        _gameRoundResult = null;
+        _me.setStatus(GamePlayerStatus.waitRound);
+        await _updateGamePlayers();
+        await _processRoundEnd();
+        break;
       }
       if (c is FrontTile && _gameDialog == null) {
         if (c.toRect().overlaps(touchArea)) {

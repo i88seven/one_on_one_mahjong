@@ -4,4 +4,5 @@ enum TileState {
   candidate,
   trash,
   dora,
+  result,
 }
