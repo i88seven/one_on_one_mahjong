@@ -134,7 +134,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       'current': 0,
       'wind': _gameRound.wind,
       'round': _gameRound.round,
-      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
+      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
+      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
     });
     await _deal();
     roomDoc.update({
@@ -217,23 +218,34 @@ class SeventeenGame extends FlameGame with TapDetector {
       _gameRound.setRound(round: gameData['round']);
     }
 
-    final playersJson = gameData['players'];
-    if (_gamePlayers.isEmpty ||
-        !mapEquals(playersJson[0], _gamePlayers[0].toJson()) ||
-        !mapEquals(playersJson[1], _gamePlayers[1].toJson())) {
+    final parentPlayerJson = gameData['player-0'];
+    final childPlayerJson = gameData['player-1'];
+    if (_gamePlayers.isEmpty) {
+      if (parentPlayerJson != null && childPlayerJson != null) {
+        GamePlayer parentPlayer = GamePlayer.fromJson(
+            this, parentPlayerJson['uid'] == _myUid, parentPlayerJson);
+        _gamePlayers.add(parentPlayer);
+        GamePlayer childPlayer = GamePlayer.fromJson(
+            this, childPlayerJson['uid'] == _myUid, childPlayerJson);
+        _gamePlayers.add(childPlayer);
+      }
+    } else if (!mapEquals(parentPlayerJson, _gamePlayers[0].toJson()) ||
+        !mapEquals(childPlayerJson, _gamePlayers[1].toJson())) {
       GamePlayerStatus oldMyStatus =
           _gamePlayers.isNotEmpty ? _me.status : GamePlayerStatus.ready;
       GamePlayerStatus oldOtherStatus =
           _gamePlayers.isNotEmpty ? _other.status : GamePlayerStatus.ready;
       _gamePlayers.asMap().forEach((index, gamePlayer) {
+        // TODO update に変更
         gamePlayer.remove();
       });
       _gamePlayers.clear();
-      for (var playerJson in playersJson) {
-        GamePlayer gamePlayer =
-            GamePlayer.fromJson(this, playerJson['uid'] == _myUid, playerJson);
-        _gamePlayers.add(gamePlayer);
-      }
+      GamePlayer parentPlayer = GamePlayer.fromJson(
+          this, parentPlayerJson['uid'] == _myUid, parentPlayerJson);
+      _gamePlayers.add(parentPlayer);
+      GamePlayer childPlayer = GamePlayer.fromJson(
+          this, childPlayerJson['uid'] == _myUid, childPlayerJson);
+      _gamePlayers.add(childPlayer);
       if (_me.status == GamePlayerStatus.roundResult &&
           _gameRoundResult == null) {
         final winner = _gamePlayers
@@ -290,10 +302,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       for (GamePlayer gamePlayer in _gamePlayers) {
         gamePlayer.setStatus(GamePlayerStatus.selectTrash);
       }
-      await _gameDoc.update({
-        'players':
-            _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
-      });
+      await _updateGamePlayers();
     }
   }
 
@@ -437,7 +446,8 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _setTilesAtDatabase(dealtsOther);
     await _gameDoc.update({
       'doras': _doras.jsonValue,
-      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
+      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
     });
   }
 
@@ -500,7 +510,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       'current': _currentOrder,
       'wind': _gameRound.wind,
       'round': _gameRound.round,
-      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList(),
+      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
+      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
     });
   }
 
@@ -576,7 +587,7 @@ class SeventeenGame extends FlameGame with TapDetector {
             remove(_fixHandsButton!);
             await _setTilesAtDatabase(null);
             _me.setStatus(GamePlayerStatus.fixedHands);
-            await _updateGamePlayers();
+            await _updateMe();
             break;
           }
           if (c.kind == GameButtonKind.fixHands) {
@@ -594,7 +605,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         remove(_gameRoundResult!);
         _gameRoundResult = null;
         _me.setStatus(GamePlayerStatus.waitRound);
-        await _updateGamePlayers();
+        await _updateMe();
         await _processRoundEnd();
         break;
       }
@@ -691,7 +702,14 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _updateGamePlayers() async {
     await _gameDoc.update({
-      'players': _gamePlayers.map((gamePlayer) => gamePlayer.toJson()).toList()
+      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
+      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
+    });
+  }
+
+  Future<void> _updateMe() async {
+    await _gameDoc.update({
+      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
     });
   }
 
