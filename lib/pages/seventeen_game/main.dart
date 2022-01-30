@@ -29,12 +29,14 @@ import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/reach_state.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
+import 'package:one_on_one_mahjong/utils/firestore_accessor.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
 
 const maxTrashCount = 17;
 
 class SeventeenGame extends FlameGame with TapDetector {
+  late FirestoreAccessor _firestoreAccessor;
   Images gameImages = Images();
   final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
   late String _myUid;
@@ -52,9 +54,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   late Trashes _trashesOther;
   late GameResult? _gameResult;
   late GameRoundResult? _gameRoundResult;
-  final FirebaseFirestore _firestoreReference = FirebaseFirestore.instance;
-  late DocumentReference<Map<String, dynamic>> _gameDoc;
-  final List<StreamSubscription> _streams = [];
   final String _hostUid;
   GameTextButton? _fixHandsButton;
   GameDialog? _gameDialog;
@@ -78,34 +77,20 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> initializeHost() async {
-    DocumentReference roomDoc =
-        _firestoreReference.collection('preparationRooms').doc(_roomId);
-    _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
-    await deleteGame();
-    _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
-    final membersSnapshot = await roomDoc.collection('members').get();
-    final List<Member> members = [];
-
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> membersDoc =
-        List<QueryDocumentSnapshot<Map<String, dynamic>>>.from(
-            membersSnapshot.docs);
-    for (QueryDocumentSnapshot<Map<String, dynamic>> memberDoc in membersDoc) {
-      final memberData = memberDoc.data();
-      Member member = Member(
-        uid: memberDoc.id,
-        name: memberData['name'],
-      );
-      members.add(member);
-    }
+    _gameRound = GameRound(this, 1, 1);
+    _firestoreAccessor = FirestoreAccessor(_roomId, _hostUid, _onChangeGame);
+    await _firestoreAccessor.deleteGame();
+    List<Member> members = await _firestoreAccessor.getRoomMembers();
     members.asMap().forEach((index, member) {
       if (member.uid == _myUid) {
         _currentOrder = index;
       }
     });
     List<String> memberUid = members.map((member) => member.uid).toList();
+    // memberUid の index == 0 が親になる
     memberUid.shuffle();
     String parentUid = memberUid.first;
-    for (var member in members) {
+    for (Member member in members) {
       GamePlayer gamePlayer = GamePlayer(
         this,
         member.uid,
@@ -115,64 +100,37 @@ class SeventeenGame extends FlameGame with TapDetector {
         member.uid == parentUid,
       );
       _gamePlayers.add(gamePlayer);
-      await _gameDoc.collection('player_tiles').doc(member.uid).set({
-        'dealts': [],
-        'hands': [],
-        'trashes': [],
-      });
+      await _firestoreAccessor.initializePlayerTiles(member.uid);
       if (member.uid != _myUid) {
-        _streams.add(_gameDoc
-            .collection('player_tiles')
-            .doc(member.uid)
-            .snapshots()
-            .listen(_onChangeOtherTiles));
+        _firestoreAccessor.listenPlayerTilesDoc(
+            member.uid, _onChangeOtherTiles);
       }
     }
-    _gameRound = GameRound(this, 1, 1);
-    await _gameDoc.set({
-      'hostUid': _hostUid,
-      'current': 0,
-      'wind': _gameRound.wind,
-      'round': _gameRound.round,
-      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
-      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
-    });
+    await _firestoreAccessor.initializeGame(_hostUid, _gameRound, _gamePlayers);
     await _deal();
-    roomDoc.update({
-      'status': 'start',
-      'updatedAt': Timestamp.now(),
-    });
+    await _firestoreAccessor.notifyStartToGame();
   }
 
   Future<void> initializeSlave() async {
-    DocumentReference roomDoc =
-        _firestoreReference.collection('preparationRooms').doc(_roomId);
-    _gameDoc = _firestoreReference.collection('games').doc(_hostUid);
-    _streams.add(_gameDoc.snapshots().listen(_onChangeGame));
-
     _gameRound = GameRound(this, 1, 1);
-    final gameSnapshot = await _gameDoc.get();
+    _firestoreAccessor = FirestoreAccessor(_roomId, _hostUid, _onChangeGame);
+    final gameSnapshot = await _firestoreAccessor.getGameSnapshot();
     await _onChangeGame(gameSnapshot);
 
     for (GamePlayer gamePlayer in _gamePlayers) {
       if (gamePlayer.uid != _myUid) {
-        final otherTilesDoc =
-            _gameDoc.collection('player_tiles').doc(gamePlayer.uid);
-        _streams.add(otherTilesDoc.snapshots().listen(_onChangeOtherTiles));
-        final tilesSnapshot = await otherTilesDoc.get();
+        _firestoreAccessor.listenPlayerTilesDoc(
+            gamePlayer.uid, _onChangeOtherTiles);
+        final tilesSnapshot =
+            await _firestoreAccessor.getTilesSnapshot(gamePlayer.uid);
         await _onChangeOtherTiles(tilesSnapshot);
       } else {
         final tilesSnapshot =
-            await _gameDoc.collection('player_tiles').doc(gamePlayer.uid).get();
+            await _firestoreAccessor.fetchTilesData(gamePlayer.uid);
         await _initializeMyTiles(tilesSnapshot);
       }
     }
-
-    QuerySnapshot membersSnapshot = await roomDoc.collection('members').get();
-    for (QueryDocumentSnapshot element in membersSnapshot.docs) {
-      element.reference.delete();
-    }
-    roomDoc.delete();
+    _firestoreAccessor.deleteRoomOnStartGame();
   }
 
   @override
@@ -210,7 +168,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (gameData['wind'] != null) {
       _gameRound.setRound(wind: gameData['wind']);
       if (gameData['wind'] == 5) {
-        _processGameEnd();
+        await _processGameEnd();
         return;
       }
     }
@@ -231,10 +189,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     } else if (!mapEquals(parentPlayerJson, _gamePlayers[0].toJson()) ||
         !mapEquals(childPlayerJson, _gamePlayers[1].toJson())) {
-      GamePlayerStatus oldMyStatus =
-          _gamePlayers.isNotEmpty ? _me.status : GamePlayerStatus.ready;
-      GamePlayerStatus oldOtherStatus =
-          _gamePlayers.isNotEmpty ? _other.status : GamePlayerStatus.ready;
+      GamePlayerStatus oldMyStatus = _me.status;
+      GamePlayerStatus oldOtherStatus = _other.status;
       _gamePlayers.asMap().forEach((index, gamePlayer) {
         // TODO update に変更
         gamePlayer.remove();
@@ -253,9 +209,8 @@ class SeventeenGame extends FlameGame with TapDetector {
         AllTileKinds targetTile = winner.uid == _me.uid
             ? _trashesOther.tiles.last
             : _trashesMe.tiles.last;
-        final tilesSnapshot =
-            await _gameDoc.collection('player_tiles').doc(winner.uid).get();
-        List<AllTileKinds> winnerHands = _fetchOtherHands(tilesSnapshot);
+        List<AllTileKinds> winnerHands =
+            await _firestoreAccessor.fetchOtherHands(winner.uid);
         if (_gameRoundResult == null) {
           _gameRoundResult = GameRoundResult(
               game: this,
@@ -273,8 +228,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
       if (oldMyStatus == GamePlayerStatus.waitRound &&
           _me.status == GamePlayerStatus.selectHands) {
-        final tilesSnapshot =
-            await _gameDoc.collection('player_tiles').doc(_myUid).get();
+        final tilesSnapshot = await _firestoreAccessor.fetchTilesData(_myUid);
         await _initializeMyTiles(tilesSnapshot);
       }
     }
@@ -302,26 +256,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       for (GamePlayer gamePlayer in _gamePlayers) {
         gamePlayer.setStatus(GamePlayerStatus.selectTrash);
       }
-      await _updateGamePlayers();
+      await _firestoreAccessor.updateGamePlayers(_gamePlayers);
     }
-  }
-
-  List<AllTileKinds> _fetchOtherHands(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    Map<String, dynamic>? myTilesData = snapshot.data();
-    if (myTilesData == null) {
-      return [];
-    }
-
-    final handsJson = myTilesData['hands'] as List<dynamic>?;
-    if (handsJson is List<dynamic>) {
-      return handsJson
-          .map((tileString) =>
-              EnumToString.fromString(AllTileKinds.values, tileString) ??
-              AllTileKinds.m1)
-          .toList();
-    }
-    return [];
   }
 
   Future<void> _onChangeOtherTiles(
@@ -368,7 +304,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           _gamePlayers.asMap().forEach((index, gamePlayer) {
             gamePlayer.setStatus(GamePlayerStatus.roundResult);
           });
-          await _updateGamePlayers();
+          await _firestoreAccessor.updateGamePlayers(_gamePlayers);
           if (_gameRoundResult == null) {
             _gameRoundResult = GameRoundResult(
                 game: this,
@@ -390,9 +326,8 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
   }
 
-  Future<void> _initializeMyTiles(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) async {
-    Map<String, dynamic>? myTilesData = snapshot.data();
+  Future<void> _initializeMyTiles(Map<String, dynamic>? myTilesData) async {
+    print({'_initializeMyTiles': myTilesData});
     if (myTilesData == null) {
       return;
     }
@@ -443,12 +378,15 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       gamePlayer.setStatus(GamePlayerStatus.selectHands);
     });
-    await _setTilesAtDatabase(dealtsOther);
-    await _gameDoc.update({
-      'doras': _doras.jsonValue,
-      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
-      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
-    });
+    await _firestoreAccessor.setTiles(
+      dealtsMe: _dealtsMe,
+      handsMe: _handsMe,
+      trashesMe: _trashesMe,
+      myUid: _myUid,
+      dealtsOther: dealtsOther,
+      gamePlayers: _gamePlayers,
+    );
+    await _firestoreAccessor.updateGameAsDeal(_doras, _gamePlayers);
   }
 
   Future<void> _processRoundEnd() async {
@@ -459,7 +397,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       _gamePlayers.asMap().forEach((index, gamePlayer) {
         gamePlayer.setStatus(GamePlayerStatus.waitRound);
       });
-      await _updateGamePlayers();
+      await _firestoreAccessor.updateGamePlayers(_gamePlayers);
       await _processNewRound(isDrawnGame: true);
       return;
     }
@@ -473,7 +411,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         gamePlayer.addPoints(winResult.winPoints * -1);
       }
     });
-    await _updateGamePlayers();
+    await _firestoreAccessor.updateGamePlayers(_gamePlayers);
   }
 
   Future<void> _processNewRound({required bool isDrawnGame}) async {
@@ -486,11 +424,11 @@ class SeventeenGame extends FlameGame with TapDetector {
       return;
     }
     if (_gameRound.isFinalGame && !isDrawnGame) {
-      await _gameDoc.update({
-        'wind': 5,
-        'round': 1,
-      });
-      _processGameEnd();
+      _currentOrder = 0;
+      _gameRound.setRound(wind: 5, round: 1);
+      await _firestoreAccessor.updateGameOnNewRound(
+          _currentOrder, _gameRound, _gamePlayers);
+      await _processGameEnd();
       return;
     }
     await _initOnRoundMaster(isDrawnGame: isDrawnGame);
@@ -506,13 +444,8 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (!isDrawnGame) {
       _gameRound.setNewRound();
     }
-    await _gameDoc.update({
-      'current': _currentOrder,
-      'wind': _gameRound.wind,
-      'round': _gameRound.round,
-      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
-      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
-    });
+    await _firestoreAccessor.updateGameOnNewRound(
+        _currentOrder, _gameRound, _gamePlayers);
   }
 
   Future<void> _initOnRoundSlave() async {
@@ -520,16 +453,14 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.initOnRound(parentUid);
     }
-    await _updateGamePlayers();
+    await _firestoreAccessor.updateGamePlayers(_gamePlayers);
   }
 
-  void _processGameEnd() {
+  Future<void> _processGameEnd() async {
     _gameResult = GameResult(
         game: this, screenSize: screenSize, gamePlayers: _gamePlayers);
     add(_gameResult!);
-    for (var stream in _streams) {
-      stream.cancel();
-    }
+    await _firestoreAccessor.cancelStream();
   }
 
   @override
@@ -585,9 +516,16 @@ class SeventeenGame extends FlameGame with TapDetector {
             remove(_gameDialog!);
             _gameDialog = null;
             remove(_fixHandsButton!);
-            await _setTilesAtDatabase(null);
+            await _firestoreAccessor.setTiles(
+              dealtsMe: _dealtsMe,
+              handsMe: _handsMe,
+              trashesMe: _trashesMe,
+              myUid: _myUid,
+              gamePlayers: _gamePlayers,
+            );
             _me.setStatus(GamePlayerStatus.fixedHands);
-            await _updateMe();
+            await _firestoreAccessor.updateTargetPlayer(
+                _me.isParent ? 0 : 1, _me);
             break;
           }
           if (c.kind == GameButtonKind.fixHands) {
@@ -605,8 +543,12 @@ class SeventeenGame extends FlameGame with TapDetector {
         remove(_gameRoundResult!);
         _gameRoundResult = null;
         _me.setStatus(GamePlayerStatus.waitRound);
-        await _updateMe();
+        await _firestoreAccessor.updateTargetPlayer(_me.isParent ? 0 : 1, _me);
         await _processRoundEnd();
+        if (_gamePlayers.every(
+            (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
+          await _processNewRound(isDrawnGame: false);
+        }
         break;
       }
       if (c is FrontTile && _gameDialog == null) {
@@ -666,12 +608,18 @@ class SeventeenGame extends FlameGame with TapDetector {
   Future<bool> _discard(FrontTile tile) async {
     _dealtsMe.discard(tile);
     _trashesMe.add(tile.tileKind);
-    await _setTilesAtDatabase(null);
+    await _firestoreAccessor.setTiles(
+      dealtsMe: _dealtsMe,
+      handsMe: _handsMe,
+      trashesMe: _trashesMe,
+      myUid: _myUid,
+      gamePlayers: _gamePlayers,
+    );
 
     if (_reachResult.containsKey(tile.tileKind)) {
       _isFuriten = true;
     }
-    _gameDoc.update({'current': (_currentOrder + 1) % 2});
+    await _firestoreAccessor.updateCurrentOrder(_currentOrder);
 
     return true;
   }
@@ -687,8 +635,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   bool get _isDrawnGame {
     return _trashesMe.tileCount == _trashesOther.tileCount &&
         _trashesMe.tileCount == maxTrashCount &&
-        _gamePlayers.every(
-            (gamePlayer) => gamePlayer.status == GamePlayerStatus.selectTrash);
+        _gamePlayers.every((gamePlayer) =>
+            gamePlayer.status == GamePlayerStatus.selectTrash) &&
+        _currentOrder == 0;
   }
 
   bool get _canFixHands {
@@ -700,54 +649,9 @@ class SeventeenGame extends FlameGame with TapDetector {
     return _me.status == GamePlayerStatus.waitRound;
   }
 
-  Future<void> _updateGamePlayers() async {
-    await _gameDoc.update({
-      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
-      "player-${_me.isParent ? 1 : 0}": _other.toJson(),
-    });
-  }
-
-  Future<void> _updateMe() async {
-    await _gameDoc.update({
-      "player-${_me.isParent ? 0 : 1}": _me.toJson(),
-    });
-  }
-
-  Future<void> _setTilesAtDatabase(List<AllTileKinds>? dealtsOther) async {
-    Map<String, List<String>> myTiles = {
-      'dealts': _dealtsMe.jsonValue,
-      'hands': _handsMe.jsonValue,
-      'trashes': _trashesMe.jsonValue,
-    };
-    // player_tiles 単位での更新は手間がかかるので、 collection にする
-    await _gameDoc.collection('player_tiles').doc(_myUid).set(myTiles);
-    if (dealtsOther is List<AllTileKinds>) {
-      Map<String, List<String>> otherTiles = {
-        'dealts': dealtsOther.map((e) => e.name).toList(),
-        'hands': [],
-        'trashes': [],
-      };
-      GamePlayer otherPlayer =
-          _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid != _myUid);
-      await _gameDoc
-          .collection('player_tiles')
-          .doc(otherPlayer.uid)
-          .set(otherTiles);
-    }
-  }
-
-  Future<void> deleteGame() async {
-    QuerySnapshot playerTilesSnapshot =
-        await _gameDoc.collection('player_tiles').get();
-    for (QueryDocumentSnapshot element in playerTilesSnapshot.docs) {
-      element.reference.delete();
-    }
-    await _gameDoc.delete();
-  }
-
   Future<void> _gameEnd() async {
     if (_myUid == _hostUid) {
-      await deleteGame();
+      await _firestoreAccessor.deleteGame();
     }
     onGameEnd();
   }
