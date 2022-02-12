@@ -86,11 +86,12 @@ class SeventeenGame extends FlameGame with TapDetector {
         _currentOrder = index;
       }
     });
-    List<String> memberUid = members.map((member) => member.uid).toList();
-    // memberUid の index == 0 が親になる
-    memberUid.shuffle();
-    String parentUid = memberUid.first;
-    for (Member member in members) {
+    List<String> memberUids = members.map((member) => member.uid).toList();
+    // memberUids の index == 0 が親になる
+    memberUids.shuffle();
+    String parentUid = memberUids.first;
+    for (String memberUid in memberUids) {
+      Member member = members.firstWhere((member) => member.uid == memberUid);
       GamePlayer gamePlayer = GamePlayer(
         this,
         member.uid,
