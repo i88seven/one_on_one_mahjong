@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -210,13 +211,14 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (_me.status == GamePlayerStatus.roundResult &&
           _gameRoundResult == null) {
         final winner = _gamePlayers
-            .firstWhere((gamePlayer) => gamePlayer.winResult != null);
-        AllTileKinds targetTile = winner.uid == _me.uid
+            .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
+        AllTileKinds targetTile = winner?.uid == _me.uid
             ? _trashesOther.tiles.last
             : _trashesMe.tiles.last;
-        List<AllTileKinds> winnerHands =
-            await _firestoreAccessor.fetchOtherHands(winner.uid);
-        if (_gameRoundResult == null) {
+        List<AllTileKinds> winnerHands = winner != null
+            ? await _firestoreAccessor.fetchOtherHands(winner.uid)
+            : [];
+        if (winner != null && _gameRoundResult == null) {
           _gameRoundResult = GameRoundResult(
               game: this,
               screenSize: screenSize,
@@ -407,8 +409,13 @@ class SeventeenGame extends FlameGame with TapDetector {
       await _processNewRound(isDrawnGame: true);
       return;
     }
-    GamePlayer winPlayer =
-        _gamePlayers.firstWhere((gamePlayer) => gamePlayer.winResult != null);
+    GamePlayer? winPlayer = _gamePlayers
+        .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
+    if (winPlayer == null) {
+      // TODO エラー検知
+      print({'error': _gamePlayers.map((gamePlayer) => gamePlayer.toJson())});
+      return;
+    }
     WinResult winResult = winPlayer.winResult!;
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       if (gamePlayer.winResult != null) {

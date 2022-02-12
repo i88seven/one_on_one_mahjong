@@ -21,6 +21,7 @@ dependencies:
   flame: ^1.0.0-rc9
   localstorage: ^4.0.0+1
   enum_to_string: ^2.0.1
+  collection: ^1.15.0
 
 dev_dependencies:
   flutter_test:

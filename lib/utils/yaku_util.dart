@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/types/mahjong_types.dart';
 import 'mahjong_state.dart';
@@ -60,10 +61,11 @@ bool isAllRuns(WinCandidate winCandidate, MahjongState mahjongState) {
     AllTileKinds.j6,
     AllTileKinds.j7,
   ];
-  AllTileKinds headTile = winCandidate
-      .firstWhere((separatedTile) => separatedTile.type == SeparateType.head)
-      .baseTile;
-  if (valueTiles.contains(headTile)) {
+  AllTileKinds? headTile = winCandidate
+      .firstWhereOrNull(
+          (separatedTile) => separatedTile.type == SeparateType.head)
+      ?.baseTile;
+  if (headTile == null || valueTiles.contains(headTile)) {
     // 場風・自風・役牌が雀頭の時は平和にならない
     return false;
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
@@ -207,12 +208,14 @@ class FirestoreAccessor {
         'hands': [],
         'trashes': [],
       };
-      GamePlayer otherPlayer =
-          gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid != myUid);
-      await _gameDoc
-          .collection('player_tiles')
-          .doc(otherPlayer.uid)
-          .set(otherTiles);
+      GamePlayer? otherPlayer =
+          gamePlayers.firstWhereOrNull((gamePlayer) => gamePlayer.uid != myUid);
+      if (otherPlayer != null) {
+        await _gameDoc
+            .collection('player_tiles')
+            .doc(otherPlayer.uid)
+            .set(otherTiles);
+      }
     }
   }
 }

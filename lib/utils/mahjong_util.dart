@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/types/mahjong_types.dart';
@@ -27,17 +28,6 @@ AllTileKinds? fetchSevenPairsReachTile(List<AllTileKinds> tiles) {
     singleTile = tile;
   }
   return singleTile;
-}
-
-// firstWhere の orElse で null が返せない問題を無理矢理解消している
-// https://github.com/dart-lang/sdk/issues/42947
-extension FirstWhereOrNullExtension<E> on Iterable<E> {
-  E? firstWhereOrNull(bool Function(E) test) {
-    for (E element in this) {
-      if (test(element)) return element;
-    }
-    return null;
-  }
 }
 
 List<AllTileKinds> fetchThirteenOrphansTiles(List<AllTileKinds> tiles) {
