@@ -17,9 +17,15 @@ class FirestoreAccessor {
   final List<StreamSubscription> _streams = [];
   final FirebaseFirestore _firestoreReference = FirebaseFirestore.instance;
 
-  FirestoreAccessor(roomId, hostUid, onChangeGame) {
+  FirestoreAccessor({
+    required String roomId,
+    required String hostUid,
+  }) {
     _roomDoc = _firestoreReference.collection('preparationRooms').doc(roomId);
     _gameDoc = _firestoreReference.collection('games').doc(hostUid);
+  }
+
+  void listenOnChangeGame(onChangeGame) {
     _streams.add(_gameDoc.snapshots().listen(onChangeGame));
   }
 

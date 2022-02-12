@@ -78,7 +78,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> initializeHost() async {
     _gameRound = GameRound(this, 1, 1);
-    _firestoreAccessor = FirestoreAccessor(_roomId, _hostUid, _onChangeGame);
+    _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     await _firestoreAccessor.deleteGame();
     List<Member> members = await _firestoreAccessor.getRoomMembers();
     members.asMap().forEach((index, member) {
@@ -110,11 +110,12 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _deal();
     await _firestoreAccessor.notifyStartToGame();
     add(_handsMe);
+    _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
 
   Future<void> initializeSlave() async {
     _gameRound = GameRound(this, 1, 1);
-    _firestoreAccessor = FirestoreAccessor(_roomId, _hostUid, _onChangeGame);
+    _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     final gameSnapshot = await _firestoreAccessor.getGameSnapshot();
     await _onChangeGame(gameSnapshot);
 
@@ -133,6 +134,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
     _firestoreAccessor.deleteRoomOnStartGame();
     add(_handsMe);
+    _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
 
   @override
