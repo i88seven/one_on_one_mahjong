@@ -93,12 +93,12 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (String memberUid in memberUids) {
       Member member = members.firstWhere((member) => member.uid == memberUid);
       GamePlayer gamePlayer = GamePlayer(
-        this,
-        member.uid,
-        member.name,
-        GamePlayerStatus.selectHands,
-        member.uid == _myUid,
-        member.uid == parentUid,
+        game: this,
+        uid: member.uid,
+        name: member.name,
+        status: GamePlayerStatus.selectHands,
+        isMe: member.uid == _myUid,
+        isParent: member.uid == parentUid,
       );
       _gamePlayers.add(gamePlayer);
       await _firestoreAccessor.initializePlayerTiles(member.uid);
@@ -305,7 +305,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         }
         if (winResult.hans >= 4 || winResult.yakumanCount >= 1) {
           // ロン!!!
-          _me.winResult = winResult;
+          _me.setWinResult(winResult);
           _gamePlayers.asMap().forEach((index, gamePlayer) {
             gamePlayer.setStatus(GamePlayerStatus.roundResult);
           });

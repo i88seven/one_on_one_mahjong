@@ -7,28 +7,39 @@ import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 
 class GamePlayer {
-  String uid;
-  String name;
+  final String _uid;
+  final String _name;
   late int _points;
-  GamePlayerStatus status;
-  WinResult? winResult;
+  GamePlayerStatus _status;
+  WinResult? _winResult;
   final bool _isMe;
   TextComponent? _textObject;
   final SeventeenGame _game;
   bool _isParent;
 
-  GamePlayer(this._game, this.uid, this.name, this.status, this._isMe,
-      this._isParent) {
+  GamePlayer(
+      {required SeventeenGame game,
+      required String uid,
+      required String name,
+      required GamePlayerStatus status,
+      required bool isMe,
+      required bool isParent})
+      : _game = game,
+        _uid = uid,
+        _name = name,
+        _status = status,
+        _isMe = isMe,
+        _isParent = isParent {
     _points = 25000;
     render();
   }
 
   GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)
       : _game = game,
-        uid = json['uid'],
-        name = json['name'],
+        _uid = json['uid'],
+        _name = json['name'],
         _points = json['points'] ?? 0,
-        status =
+        _status =
             EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
                 GamePlayerStatus.ready,
         _isMe = isMe,
@@ -42,19 +53,28 @@ class GamePlayer {
       for (int hansString in json['hansOfDoras']) {
         hansOfDoras.add(hansString);
       }
-      winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
+      _winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
     }
     render();
   }
 
+  String get uid => _uid;
+  String get name => _name;
+  GamePlayerStatus get status => _status;
+  WinResult? get winResult => _winResult;
+
+  void setWinResult(WinResult winResult) {
+    _winResult = winResult;
+  }
+
   void initOnRound(String parentUid) {
-    winResult = null;
-    status = GamePlayerStatus.selectHands;
-    _isParent = uid == parentUid;
+    _winResult = null;
+    _status = GamePlayerStatus.selectHands;
+    _isParent = _uid == parentUid;
   }
 
   void setStatus(GamePlayerStatus status) {
-    this.status = status;
+    _status = status;
     render();
   }
 
@@ -99,14 +119,14 @@ class GamePlayer {
 
   Map<String, dynamic> toJson() {
     final json = {
-      'uid': uid,
-      'name': name,
-      'status': status.name,
+      'uid': _uid,
+      'name': _name,
+      'status': _status.name,
       'points': _points,
       'isParent': _isParent,
     };
-    if (winResult != null) {
-      return {...json, ...winResult!.toJson()};
+    if (_winResult != null) {
+      return {...json, ..._winResult!.toJson()};
     }
     return json;
   }
