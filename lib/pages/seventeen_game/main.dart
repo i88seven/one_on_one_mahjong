@@ -68,7 +68,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(this);
     _doras = Doras(this);
-    _handsMe = Hands(this);
+    _handsMe = Hands(game: this);
     _handsOther = OtherHands(this);
     _trashesMe = Trashes(this, true);
     _trashesOther = Trashes(this, false);
@@ -109,6 +109,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _firestoreAccessor.initializeGame(_hostUid, _gameRound, _gamePlayers);
     await _deal();
     await _firestoreAccessor.notifyStartToGame();
+    add(_handsMe);
   }
 
   Future<void> initializeSlave() async {
@@ -131,6 +132,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     }
     _firestoreAccessor.deleteRoomOnStartGame();
+    add(_handsMe);
   }
 
   @override
@@ -374,6 +376,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     stocks.removeRange(0, 34);
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
+    _handsMe.initialize([]);
 
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       gamePlayer.setStatus(GamePlayerStatus.selectHands);
@@ -551,18 +554,26 @@ class SeventeenGame extends FlameGame with TapDetector {
         }
         break;
       }
+      if (c is Hands) {
+        for (final tile in c.children) {
+          if (tile is FrontTile && _gameDialog == null) {
+            if (tile.toRect().shift(Offset(c.x, c.y)).overlaps(touchArea)) {
+              if (tile.state == TileState.hand &&
+                  _me.status == GamePlayerStatus.selectHands) {
+                bool success = _unselectTile(tile);
+                if (success) {
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
       if (c is FrontTile && _gameDialog == null) {
         if (c.toRect().overlaps(touchArea)) {
           if (c.state == TileState.dealt &&
               _me.status == GamePlayerStatus.selectHands) {
             bool success = _selectTile(c);
-            if (success) {
-              break;
-            }
-          }
-          if (c.state == TileState.hand &&
-              _me.status == GamePlayerStatus.selectHands) {
-            bool success = _unselectTile(c);
             if (success) {
               break;
             }
@@ -585,7 +596,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       return true;
     }
     _dealtsMe.select(tile.tileKind);
-    _handsMe.add(tile.tileKind);
+    _handsMe.addTile(tile.tileKind);
     if (_canFixHands) {
       _fixHandsButton = GameTextButton('確定', GameButtonKind.fixHands,
           position: Vector2(screenSize.x - 100, screenSize.y - 150));
