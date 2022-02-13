@@ -591,7 +591,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       gamePlayers: _gamePlayers,
     );
 
-    if (_reachResult.containsKey(tile.tileKind)) {
+    if (_reachResult.containsKey(convertRedTile(tile.tileKind))) {
       _isFuriten = true;
     }
     await _firestoreAccessor.updateCurrentOrder(_currentOrder);
