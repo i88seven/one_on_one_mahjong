@@ -6,7 +6,7 @@ import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 
-class GamePlayer {
+class GamePlayer extends PositionComponent {
   final String _uid;
   final String _name;
   late int _points;
@@ -14,7 +14,6 @@ class GamePlayer {
   WinResult? _winResult;
   final bool _isMe;
   TextComponent? _textObject;
-  final SeventeenGame _game;
   bool _isParent;
 
   GamePlayer(
@@ -24,19 +23,20 @@ class GamePlayer {
       required GamePlayerStatus status,
       required bool isMe,
       required bool isParent})
-      : _game = game,
-        _uid = uid,
+      : _uid = uid,
         _name = name,
         _status = status,
         _isMe = isMe,
         _isParent = isParent {
     _points = 25000;
-    render();
+    final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
+    position = Vector2(10, _posY);
+    size = Vector2(100.0, _isMe ? 24.0 : 12.0);
+    _rerender();
   }
 
   GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)
-      : _game = game,
-        _uid = json['uid'],
+      : _uid = json['uid'],
         _name = json['name'],
         _points = json['points'] ?? 0,
         _status =
@@ -55,13 +55,17 @@ class GamePlayer {
       }
       _winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
     }
-    render();
+    final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
+    position = Vector2(10, _posY);
+    size = Vector2(100.0, _isMe ? 24.0 : 12.0);
+    _rerender();
   }
 
   String get uid => _uid;
   String get name => _name;
   GamePlayerStatus get status => _status;
   WinResult? get winResult => _winResult;
+  String get _text => "$_name: $_points ${_status.name}";
 
   void setWinResult(WinResult winResult) {
     _winResult = winResult;
@@ -75,43 +79,26 @@ class GamePlayer {
 
   void setStatus(GamePlayerStatus status) {
     _status = status;
-    render();
+    _rerender();
   }
 
   void addPoints(int points) {
     _points += points;
-    render();
+    _rerender();
   }
 
-  void render() {
-    String text = "$name: $_points";
+  void _rerender() {
     if (_textObject != null) {
-      _textObject!.text = text;
+      _textObject!.text = _text;
       return;
-    }
-    double posY;
-    if (_isMe) {
-      posY = _game.screenSize.y - 30;
-    } else {
-      posY = 30.0;
     }
     final textRenderer =
         TextPaint(config: const TextPaintConfig(color: Colors.white));
     _textObject = TextComponent(
-      text,
+      _text,
       textRenderer: textRenderer,
-      size: Vector2(100.0, _isMe ? 24.0 : 12.0),
     );
-    _game.add(_textObject!
-      ..x = 10
-      ..y = posY);
-  }
-
-  void remove() {
-    if (_textObject != null) {
-      _textObject!.text = '';
-      _game.remove(_textObject!);
-    }
+    add(_textObject!);
   }
 
   int get points => _points;

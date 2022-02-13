@@ -111,6 +111,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _firestoreAccessor.initializeGame(_hostUid, _gameRound, _gamePlayers);
     await _deal();
     await _firestoreAccessor.notifyStartToGame();
+    addAll(_gamePlayers);
     add(_handsMe);
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
@@ -192,15 +193,13 @@ class SeventeenGame extends FlameGame with TapDetector {
         GamePlayer childPlayer = GamePlayer.fromJson(
             this, childPlayerJson['uid'] == _myUid, childPlayerJson);
         _gamePlayers.add(childPlayer);
+        addAll(_gamePlayers);
       }
     } else if (!mapEquals(parentPlayerJson, _gamePlayers[0].toJson()) ||
         !mapEquals(childPlayerJson, _gamePlayers[1].toJson())) {
       GamePlayerStatus oldMyStatus = _me.status;
       GamePlayerStatus oldOtherStatus = _other.status;
-      _gamePlayers.asMap().forEach((index, gamePlayer) {
-        // TODO update に変更
-        gamePlayer.remove();
-      });
+      removeAll(_gamePlayers);
       _gamePlayers.clear();
       GamePlayer parentPlayer = GamePlayer.fromJson(
           this, parentPlayerJson['uid'] == _myUid, parentPlayerJson);
@@ -208,6 +207,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       GamePlayer childPlayer = GamePlayer.fromJson(
           this, childPlayerJson['uid'] == _myUid, childPlayerJson);
       _gamePlayers.add(childPlayer);
+      addAll(_gamePlayers);
       if (_me.status == GamePlayerStatus.roundResult &&
           _gameRoundResult == null) {
         final winner = _gamePlayers
