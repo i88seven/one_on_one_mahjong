@@ -44,6 +44,18 @@ class GamePlayer extends PositionComponent {
                 GamePlayerStatus.ready,
         _isMe = isMe,
         _isParent = json['isParent'] ?? false {
+    final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
+    position = Vector2(10, _posY);
+    size = Vector2(100.0, _isMe ? 24.0 : 12.0);
+    updateFromJson(json);
+  }
+
+  void updateFromJson(json) {
+    _points = json['points'] ?? 0;
+    _status =
+        EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
+            GamePlayerStatus.ready;
+    _isParent = json['isParent'] ?? false;
     if (json['yakuList'] != null && json['hansOfDoras'] != null) {
       List<Yaku> yakuList = [];
       for (String yakuString in json['yakuList']) {
@@ -55,9 +67,6 @@ class GamePlayer extends PositionComponent {
       }
       _winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
     }
-    final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
-    position = Vector2(10, _posY);
-    size = Vector2(100.0, _isMe ? 24.0 : 12.0);
     _rerender();
   }
 
@@ -65,16 +74,19 @@ class GamePlayer extends PositionComponent {
   String get name => _name;
   GamePlayerStatus get status => _status;
   WinResult? get winResult => _winResult;
+  bool get isMe => _isMe;
   String get _text => "$_name: $_points ${_status.name}";
 
   void setWinResult(WinResult winResult) {
     _winResult = winResult;
   }
 
-  void initOnRound(String parentUid) {
+  void initOnRound(bool shouldParentChange) {
     _winResult = null;
     _status = GamePlayerStatus.selectHands;
-    _isParent = _uid == parentUid;
+    if (shouldParentChange) {
+      _isParent = !_isParent;
+    }
   }
 
   void setStatus(GamePlayerStatus status) {

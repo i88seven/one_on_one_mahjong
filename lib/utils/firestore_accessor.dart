@@ -84,8 +84,8 @@ class FirestoreAccessor {
       'current': 0,
       'wind': gameRound.wind,
       'round': gameRound.round,
-      'player-0': gamePlayers[0].toJson(),
-      'player-1': gamePlayers[1].toJson(),
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
     });
   }
 
@@ -93,8 +93,8 @@ class FirestoreAccessor {
       Doras doras, List<GamePlayer> gamePlayers) async {
     await _gameDoc.update({
       'doras': doras.jsonValue,
-      'player-0': gamePlayers[0].toJson(),
-      'player-1': gamePlayers[1].toJson(),
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
     });
   }
 
@@ -104,8 +104,8 @@ class FirestoreAccessor {
       'current': currentOrder,
       'wind': gameRound.wind,
       'round': gameRound.round,
-      'player-0': gamePlayers[0].toJson(),
-      'player-1': gamePlayers[1].toJson(),
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
     });
   }
 
@@ -117,15 +117,15 @@ class FirestoreAccessor {
 
   Future<void> updateGamePlayers(List<GamePlayer> gamePlayers) async {
     await _gameDoc.update({
-      'player-0': gamePlayers[0].toJson(),
-      'player-1': gamePlayers[1].toJson(),
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
     });
   }
 
-  Future<void> updateTargetPlayer(
-      int playerIndex, GamePlayer gamePlayer) async {
+  Future<void> updateTargetPlayer(bool isHost, GamePlayer gamePlayer) async {
+    String key = isHost ? 'host' : 'client';
     await _gameDoc.update({
-      "player-$playerIndex": gamePlayer.toJson(),
+      "player-$key": gamePlayer.toJson(),
     });
   }
 

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'dart:async';
 
@@ -44,7 +45,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   final String _roomId;
   bool _isTapping = false;
   Vector2 screenSize;
-  final List<GamePlayer> _gamePlayers = [];
+  final List<GamePlayer> _gamePlayers = []; // 0 が host
   late GameRound _gameRound;
   late Dealts _dealtsMe;
   late OtherDeals _dealtsOther;
@@ -82,17 +83,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     await _firestoreAccessor.deleteGame();
     List<Member> members = await _firestoreAccessor.getRoomMembers();
-    members.asMap().forEach((index, member) {
-      if (member.uid == _myUid) {
-        _currentOrder = index;
-      }
-    });
-    List<String> memberUids = members.map((member) => member.uid).toList();
-    // memberUids の index == 0 が親になる
-    memberUids.shuffle();
-    String parentUid = memberUids.first;
-    for (String memberUid in memberUids) {
-      Member member = members.firstWhere((member) => member.uid == memberUid);
+    members.sort((a, b) => a.uid == _hostUid ? -1 : 1);
+    int parentIndex = Random().nextInt(1);
+    String parentUid = members[parentIndex].uid;
+    for (Member member in members) {
       GamePlayer gamePlayer = GamePlayer(
         game: this,
         uid: member.uid,
@@ -183,31 +177,24 @@ class SeventeenGame extends FlameGame with TapDetector {
       _gameRound.setRound(round: gameData['round']);
     }
 
-    final parentPlayerJson = gameData['player-0'];
-    final childPlayerJson = gameData['player-1'];
+    final hostPlayerJson = gameData['player-host'];
+    final clientPlayerJson = gameData['player-client'];
     if (_gamePlayers.isEmpty) {
-      if (parentPlayerJson != null && childPlayerJson != null) {
-        GamePlayer parentPlayer = GamePlayer.fromJson(
-            this, parentPlayerJson['uid'] == _myUid, parentPlayerJson);
-        _gamePlayers.add(parentPlayer);
-        GamePlayer childPlayer = GamePlayer.fromJson(
-            this, childPlayerJson['uid'] == _myUid, childPlayerJson);
-        _gamePlayers.add(childPlayer);
+      if (hostPlayerJson != null && clientPlayerJson != null) {
+        GamePlayer hostPlayer = GamePlayer.fromJson(
+            this, hostPlayerJson['uid'] == _myUid, hostPlayerJson);
+        _gamePlayers.add(hostPlayer);
+        GamePlayer clientPlayer = GamePlayer.fromJson(
+            this, clientPlayerJson['uid'] == _myUid, clientPlayerJson);
+        _gamePlayers.add(clientPlayer);
         addAll(_gamePlayers);
       }
-    } else if (!mapEquals(parentPlayerJson, _gamePlayers[0].toJson()) ||
-        !mapEquals(childPlayerJson, _gamePlayers[1].toJson())) {
+    } else if (!mapEquals(hostPlayerJson, _gamePlayers[0].toJson()) ||
+        !mapEquals(clientPlayerJson, _gamePlayers[1].toJson())) {
       GamePlayerStatus oldMyStatus = _me.status;
       GamePlayerStatus oldOtherStatus = _other.status;
-      removeAll(_gamePlayers);
-      _gamePlayers.clear();
-      GamePlayer parentPlayer = GamePlayer.fromJson(
-          this, parentPlayerJson['uid'] == _myUid, parentPlayerJson);
-      _gamePlayers.add(parentPlayer);
-      GamePlayer childPlayer = GamePlayer.fromJson(
-          this, childPlayerJson['uid'] == _myUid, childPlayerJson);
-      _gamePlayers.add(childPlayer);
-      addAll(_gamePlayers);
+      _gamePlayers[0].updateFromJson(hostPlayerJson);
+      _gamePlayers[1].updateFromJson(clientPlayerJson);
       if (_me.status == GamePlayerStatus.roundResult &&
           _gameRoundResult == null) {
         final winner = _gamePlayers
@@ -446,27 +433,18 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
     await _initOnRoundMaster(isDrawnGame: isDrawnGame);
     await _deal();
-    await _initOnRoundSlave();
   }
 
   Future<void> _initOnRoundMaster({required bool isDrawnGame}) async {
     _currentOrder = 0;
-    _gamePlayers.sort((a, b) => 1);
-    String parentUid = _gamePlayers.first.uid;
-    _me.initOnRound(parentUid);
+    for (GamePlayer gamePlayer in _gamePlayers) {
+      gamePlayer.initOnRound(!isDrawnGame);
+    }
     if (!isDrawnGame) {
       _gameRound.setNewRound();
     }
     await _firestoreAccessor.updateGameOnNewRound(
         _currentOrder, _gameRound, _gamePlayers);
-  }
-
-  Future<void> _initOnRoundSlave() async {
-    String parentUid = _gamePlayers.first.uid;
-    for (GamePlayer gamePlayer in _gamePlayers) {
-      gamePlayer.initOnRound(parentUid);
-    }
-    await _firestoreAccessor.updateGamePlayers(_gamePlayers);
   }
 
   Future<void> _processGameEnd() async {
@@ -538,7 +516,7 @@ class SeventeenGame extends FlameGame with TapDetector {
             );
             _me.setStatus(GamePlayerStatus.fixedHands);
             await _firestoreAccessor.updateTargetPlayer(
-                _me.isParent ? 0 : 1, _me);
+                _myUid == _hostUid, _me);
             break;
           }
           if (c.kind == GameButtonKind.fixHands) {
@@ -556,7 +534,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         remove(_gameRoundResult!);
         _gameRoundResult = null;
         _me.setStatus(GamePlayerStatus.waitRound);
-        await _firestoreAccessor.updateTargetPlayer(_me.isParent ? 0 : 1, _me);
+        await _firestoreAccessor.updateTargetPlayer(_myUid == _hostUid, _me);
         await _processRoundEnd();
         if (_gamePlayers.every(
             (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
