@@ -34,6 +34,7 @@ import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/utils/firestore_accessor.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
+import 'package:one_on_one_mahjong/utils/tiles_util.dart';
 
 const maxTrashCount = 17;
 
@@ -286,8 +287,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
       if (!_isFuriten &&
           targetTile != null &&
-          _reachResult.containsKey(targetTile)) {
-        WinResult winResult = _reachResult[targetTile]!;
+          _reachResult.containsKey(convertRedTile(targetTile))) {
+        WinResult winResult = _reachResult[convertRedTile(targetTile)]!;
         if (winResult.yakumanCount == 0) {
           if (_isFinalTileWin) winResult.addFinalTileWin();
           if (_isFirstTurnWin) winResult.addFirstTurnWin();
