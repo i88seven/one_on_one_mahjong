@@ -457,7 +457,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       return;
     }
 
-    if (_isTapping || _isRoundEnd) {
+    if (_isTapping || _me.status == GamePlayerStatus.waitRound) {
       return;
     }
     if (_me.status == GamePlayerStatus.selectTrash &&
@@ -618,10 +618,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   bool get _canFixHands {
     return _me.status == GamePlayerStatus.selectHands &&
         _handsMe.tileCount == 13;
-  }
-
-  bool get _isRoundEnd {
-    return _me.status == GamePlayerStatus.waitRound;
   }
 
   Future<void> _gameEnd() async {
