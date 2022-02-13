@@ -209,7 +209,7 @@ class SeventeenGame extends FlameGame with TapDetector {
             ? _trashesOther.tiles.last
             : _trashesMe.tiles.last;
         List<AllTileKinds> winnerHands = winner != null
-            ? await _firestoreAccessor.fetchOtherHands(winner.uid)
+            ? await _firestoreAccessor.fetchWinnerHands(winner.uid)
             : [];
         if (winner != null && _gameRoundResult == null) {
           _gameRoundResult = GameRoundResult(
