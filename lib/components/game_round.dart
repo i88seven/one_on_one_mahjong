@@ -19,15 +19,10 @@ class GameRound {
   int get wind => _wind;
   int get round => _round;
   bool get isFinalGame => _wind == 4 && _round == 2;
-  bool get isGameEnded => _wind > 4;
 
-  void setRound({int? wind, int? round}) {
-    if (wind != null) {
-      _wind = wind;
-    }
-    if (round != null) {
-      _round = round;
-    }
+  void setRound({required int wind, required int round}) {
+    _wind = wind;
+    _round = round;
     render();
   }
 

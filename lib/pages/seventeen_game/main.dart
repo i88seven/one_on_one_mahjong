@@ -28,6 +28,7 @@ import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
+import 'package:one_on_one_mahjong/constants/game_status.dart';
 import 'package:one_on_one_mahjong/constants/reach_state.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
@@ -57,6 +58,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late Trashes _trashesOther;
   late GameResult? _gameResult;
   late GameRoundResult? _gameRoundResult;
+  GameStatus _gameStatus = GameStatus.init;
   final String _hostUid;
   GameTextButton? _fixHandsButton;
   GameDialog? _gameDialog;
@@ -98,10 +100,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       );
       _gamePlayers.add(gamePlayer);
       await _firestoreAccessor.initializePlayerTiles(member.uid);
-      if (member.uid != _myUid) {
-        _firestoreAccessor.listenPlayerTilesDoc(
-            member.uid, _onChangeOtherTiles);
-      }
     }
     await _firestoreAccessor.initializeGame(_hostUid, _gameRound, _gamePlayers);
     await _deal();
@@ -115,21 +113,23 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gameRound = GameRound(this, 1, 1);
     _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     final gameSnapshot = await _firestoreAccessor.getGameSnapshot();
-    await _onChangeGame(gameSnapshot);
+    final gameData = gameSnapshot.data()!;
+    final hostPlayerJson = gameData['player-host'];
+    final clientPlayerJson = gameData['player-client'];
+    GamePlayer hostPlayer = GamePlayer.fromJson(
+        this, hostPlayerJson['uid'] == _myUid, hostPlayerJson);
+    _gamePlayers.add(hostPlayer);
+    _initializeOtherTiles();
 
-    for (GamePlayer gamePlayer in _gamePlayers) {
-      if (gamePlayer.uid != _myUid) {
-        _firestoreAccessor.listenPlayerTilesDoc(
-            gamePlayer.uid, _onChangeOtherTiles);
-        final tilesSnapshot =
-            await _firestoreAccessor.getTilesSnapshot(gamePlayer.uid);
-        await _onChangeOtherTiles(tilesSnapshot);
-      } else {
-        final tilesSnapshot =
-            await _firestoreAccessor.fetchTilesData(gamePlayer.uid);
-        await _initializeMyTiles(tilesSnapshot);
-      }
-    }
+    GamePlayer clientPlayer = GamePlayer.fromJson(
+        this, clientPlayerJson['uid'] == _myUid, clientPlayerJson);
+    _gamePlayers.add(clientPlayer);
+    final clientTilesSnapshot =
+        await _firestoreAccessor.getTilesSnapshot(clientPlayer.uid);
+    await _initializeMyTiles(clientTilesSnapshot.data());
+
+    addAll(_gamePlayers);
+
     _firestoreAccessor.deleteRoomOnStartGame();
     add(_handsMe);
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
@@ -163,41 +163,46 @@ class SeventeenGame extends FlameGame with TapDetector {
       return;
     }
 
-    if (gameData['current'] != null) {
-      _currentOrder = gameData['current'];
-    }
+    updatePlayers(gameData);
 
-    if (gameData['wind'] != null) {
-      _gameRound.setRound(wind: gameData['wind']);
-      if (gameData['wind'] == 5) {
-        await _processGameEnd();
-        return;
+    if (gameData['gameStatus'] != null &&
+        _gameStatus.name != gameData['gameStatus']) {
+      _gameStatus =
+          EnumToString.fromString(GameStatus.values, gameData['gameStatus']) ??
+              GameStatus.init;
+      if (_gameStatus == GameStatus.newRound &&
+          gameData['wind'] != null &&
+          gameData['round'] != null) {
+        _isFuriten = false;
+        _reachResult = {};
+        _gameRound.setRound(wind: gameData['wind'], round: gameData['round']);
+        _initializeOtherTiles();
       }
-    }
-    if (gameData['round'] != null) {
-      _gameRound.setRound(round: gameData['round']);
-    }
 
-    final hostPlayerJson = gameData['player-host'];
-    final clientPlayerJson = gameData['player-client'];
-    if (_gamePlayers.isEmpty) {
-      if (hostPlayerJson != null && clientPlayerJson != null) {
-        GamePlayer hostPlayer = GamePlayer.fromJson(
-            this, hostPlayerJson['uid'] == _myUid, hostPlayerJson);
-        _gamePlayers.add(hostPlayer);
-        GamePlayer clientPlayer = GamePlayer.fromJson(
-            this, clientPlayerJson['uid'] == _myUid, clientPlayerJson);
-        _gamePlayers.add(clientPlayer);
-        addAll(_gamePlayers);
+      if (_gameStatus == GameStatus.dealt && gameData['doras'] != null) {
+        final dorasJson = gameData['doras'];
+        if (dorasJson is List<dynamic>) {
+          if (!listEquals(
+              dorasJson, _doras.tiles.map((e) => e.name).toList())) {
+            List<AllTileKinds> doras = dorasJson
+                .map((tileString) =>
+                    EnumToString.fromString(AllTileKinds.values, tileString) ??
+                    AllTileKinds.m1)
+                .toList();
+            _doras.initialize(doras);
+          }
+        }
+        _initializeOtherTiles();
+        final myTilesSnapshot =
+            await _firestoreAccessor.getTilesSnapshot(_myUid);
+        await _initializeMyTiles(myTilesSnapshot.data());
       }
-    } else if (!mapEquals(hostPlayerJson, _gamePlayers[0].toJson()) ||
-        !mapEquals(clientPlayerJson, _gamePlayers[1].toJson())) {
-      GamePlayerStatus oldMyStatus = _me.status;
-      GamePlayerStatus oldOtherStatus = _other.status;
-      _gamePlayers[0].updateFromJson(hostPlayerJson);
-      _gamePlayers[1].updateFromJson(clientPlayerJson);
-      if (_me.status == GamePlayerStatus.roundResult &&
-          _gameRoundResult == null) {
+
+      if (_gameStatus == GameStatus.trash) {
+        // NOP
+      }
+
+      if (_gameStatus == GameStatus.ron) {
         final winner = _gamePlayers
             .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
         AllTileKinds targetTile = winner?.uid == _me.uid
@@ -217,112 +222,46 @@ class SeventeenGame extends FlameGame with TapDetector {
           add(_gameRoundResult!);
         }
       }
-      if (_gamePlayers.every(
-          (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
-        await _processNewRound(isDrawnGame: false);
-      }
-      if (oldMyStatus == GamePlayerStatus.waitRound &&
-          _me.status == GamePlayerStatus.selectHands) {
-        final tilesSnapshot = await _firestoreAccessor.fetchTilesData(_myUid);
-        await _initializeMyTiles(tilesSnapshot);
+
+      if (_gameStatus == GameStatus.gameResult) {
+        await _processGameEnd();
+        return;
       }
     }
 
-    if (_isDrawnGame) {
-      await _processRoundEnd();
-      return;
-    }
-
-    final dorasJson = gameData['doras'] as List<dynamic>?;
-    if (dorasJson is List<dynamic>) {
-      if (!listEquals(dorasJson, _doras.tiles.map((e) => e.name).toList())) {
-        List<AllTileKinds> doras = dorasJson
-            .map((tileString) =>
-                EnumToString.fromString(AllTileKinds.values, tileString) ??
-                AllTileKinds.m1)
-            .toList();
-        _doras.initialize(doras);
-      }
-    }
-
-    bool isHandsFixed = _gamePlayers.every(
-        (gamePlayer) => gamePlayer.status == GamePlayerStatus.fixedHands);
-    if (_myUid == _hostUid && isHandsFixed) {
-      for (GamePlayer gamePlayer in _gamePlayers) {
-        gamePlayer.setStatus(GamePlayerStatus.selectTrash);
-      }
-      await _firestoreAccessor.updateGamePlayers(_gamePlayers);
+    if (gameData['current'] != null && _currentOrder != gameData['current']) {
+      _currentOrder = gameData['current'];
+      final tilesSnapshot =
+          await _firestoreAccessor.getTilesSnapshot(_other.uid);
+      await _onChangeTrashesOther(tilesSnapshot.data());
     }
   }
 
-  Future<void> _onChangeOtherTiles(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) async {
-    Map<String, dynamic>? otherTilesData = snapshot.data();
-    if (otherTilesData == null) {
-      return;
+  Future<void> updatePlayers(Map<String, dynamic> gameData) async {
+    final hostPlayerJson = gameData['player-host'];
+    final clientPlayerJson = gameData['player-client'];
+    if (!mapEquals(hostPlayerJson, _gamePlayers[0].toJson()) ||
+        !mapEquals(clientPlayerJson, _gamePlayers[1].toJson())) {
+      _gamePlayers[0].updateFromJson(hostPlayerJson);
+      _gamePlayers[1].updateFromJson(clientPlayerJson);
     }
 
-    final dealtsJson = otherTilesData['dealts'] as List<dynamic>?;
-    if (dealtsJson is List<dynamic>) {
-      _dealtsOther.initialize(dealtsJson.length);
+    if (_gamePlayers.every(
+            (gamePlayer) => gamePlayer.status == GamePlayerStatus.fixedHands) &&
+        _myUid == _hostUid) {
+      for (GamePlayer gamePlayer in _gamePlayers) {
+        gamePlayer.setStatus(GamePlayerStatus.selectTrash);
+      }
+      await _firestoreAccessor.updateGameOnStartTrash(_gamePlayers);
     }
 
-    final trashesJson = otherTilesData['trashes'] as List<dynamic>?;
-    if (trashesJson is List<dynamic>) {
-      List<AllTileKinds> trashes = trashesJson
-          .map((tileString) =>
-              EnumToString.fromString(AllTileKinds.values, tileString) ??
-              AllTileKinds.m1)
-          .toList();
-      AllTileKinds? targetTile;
-      switch (trashes.length - _trashesOther.tileCount) {
-        case 0:
-          break;
-        case 1:
-          _trashesOther.add(trashes.last);
-          targetTile = trashes.last;
-          break;
-        default:
-          _trashesOther.initialize(trashes);
-      }
-      if (!_isFuriten &&
-          targetTile != null &&
-          _reachResult.containsKey(convertRedTile(targetTile))) {
-        WinResult winResult = _reachResult[convertRedTile(targetTile)]!;
-        if (winResult.yakumanCount == 0) {
-          if (_isFinalTileWin) winResult.addFinalTileWin();
-          if (_isFirstTurnWin) winResult.addFirstTurnWin();
-        }
-        if (winResult.hans >= 4 || winResult.yakumanCount >= 1) {
-          // ロン!!!
-          _me.setWinResult(winResult);
-          _gamePlayers.asMap().forEach((index, gamePlayer) {
-            gamePlayer.setStatus(GamePlayerStatus.roundResult);
-          });
-          await _firestoreAccessor.updateGamePlayers(_gamePlayers);
-          if (_gameRoundResult == null) {
-            _gameRoundResult = GameRoundResult(
-                game: this,
-                screenSize: screenSize,
-                winResult: winResult,
-                tiles: _handsMe.tiles,
-                winTile: targetTile,
-                doras: _doras.tiles);
-            add(_gameRoundResult!);
-          }
-          return;
-        } else {
-          _isFuriten = true;
-        }
-      }
-      if (_myUid == _hostUid && _isDrawnGame) {
-        await _processRoundEnd();
-      }
+    if (_gamePlayers.every(
+        (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
+      await _processNewRound(isDrawnGame: false);
     }
   }
 
   Future<void> _initializeMyTiles(Map<String, dynamic>? myTilesData) async {
-    print({'_initializeMyTiles': myTilesData});
     if (myTilesData == null) {
       return;
     }
@@ -358,6 +297,66 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
   }
 
+  void _initializeOtherTiles() {
+    _handsOther.initialize();
+    _dealtsOther.initialize(34);
+    _trashesOther.initialize([]);
+  }
+
+  Future<void> _onChangeTrashesOther(
+      Map<String, dynamic>? otherTilesData) async {
+    if (otherTilesData == null) {
+      return;
+    }
+
+    final trashesJson = otherTilesData['trashes'];
+    if (trashesJson is List<dynamic>) {
+      List<AllTileKinds> trashes = trashesJson
+          .map((tileString) =>
+              EnumToString.fromString(AllTileKinds.values, tileString) ??
+              AllTileKinds.m1)
+          .toList();
+
+      AllTileKinds? targetTile;
+      switch (trashes.length - _trashesOther.tileCount) {
+        case 0:
+          break;
+        case 1:
+          _trashesOther.add(trashes.last);
+          targetTile = trashes.last;
+          break;
+        default:
+          _trashesOther.initialize(trashes);
+      }
+      if (!_isFuriten &&
+          targetTile != null &&
+          _reachResult.containsKey(convertRedTile(targetTile))) {
+        WinResult winResult = _reachResult[convertRedTile(targetTile)]!;
+        if (winResult.yakumanCount == 0) {
+          if (_isFinalTileWin) winResult.addFinalTileWin();
+          if (_isFirstTurnWin) winResult.addFirstTurnWin();
+        }
+        if (winResult.hans >= 4 || winResult.yakumanCount >= 1) {
+          // ロン!!!
+          _me.setWinResult(winResult);
+          _gamePlayers.asMap().forEach((index, gamePlayer) {
+            gamePlayer.setStatus(GamePlayerStatus.roundResult);
+          });
+          await _firestoreAccessor.updateGameOnRon(_gamePlayers);
+          return;
+        } else {
+          _isFuriten = true;
+        }
+      }
+      if (_isDrawnGame && _me.isParent) {
+        _gamePlayers.asMap().forEach((index, gamePlayer) {
+          gamePlayer.setStatus(GamePlayerStatus.waitRound);
+        });
+        await _firestoreAccessor.updateGamePlayers(_gamePlayers);
+      }
+    }
+  }
+
   Future<void> _deal() async {
     List<AllTileKinds> stocks = [...allTiles];
     stocks.shuffle();
@@ -370,6 +369,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _doras.initialize(stocks.sublist(0, 2));
     stocks.removeRange(0, 2);
     _handsMe.initialize([]);
+    _trashesMe.initialize([]);
 
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       gamePlayer.setStatus(GamePlayerStatus.selectHands);
@@ -387,14 +387,6 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _processRoundEnd() async {
     if (_myUid != _hostUid) {
-      return;
-    }
-    if (_isDrawnGame) {
-      _gamePlayers.asMap().forEach((index, gamePlayer) {
-        gamePlayer.setStatus(GamePlayerStatus.waitRound);
-      });
-      await _firestoreAccessor.updateGamePlayers(_gamePlayers);
-      await _processNewRound(isDrawnGame: true);
       return;
     }
     GamePlayer? winPlayer = _gamePlayers
@@ -416,36 +408,23 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> _processNewRound({required bool isDrawnGame}) async {
-    _isFuriten = false;
-    _reachResult = {};
-    _trashesMe.initialize([]);
-    _trashesOther.initialize([]);
-    _handsMe.initialize([]);
     if (_myUid != _hostUid) {
       return;
     }
     if (_gameRound.isFinalGame && !isDrawnGame) {
-      _currentOrder = 0;
-      _gameRound.setRound(wind: 5, round: 1);
-      await _firestoreAccessor.updateGameOnNewRound(
-          _currentOrder, _gameRound, _gamePlayers);
-      await _processGameEnd();
+      await _firestoreAccessor.updateGameOnGameEnd();
       return;
     }
-    await _initOnRoundMaster(isDrawnGame: isDrawnGame);
-    await _deal();
-  }
 
-  Future<void> _initOnRoundMaster({required bool isDrawnGame}) async {
-    _currentOrder = 0;
     for (GamePlayer gamePlayer in _gamePlayers) {
       gamePlayer.initOnRound(!isDrawnGame);
     }
     if (!isDrawnGame) {
       _gameRound.setNewRound();
     }
-    await _firestoreAccessor.updateGameOnNewRound(
-        _currentOrder, _gameRound, _gamePlayers);
+    await _firestoreAccessor.updateGameOnNewRound(_gameRound, _gamePlayers);
+
+    await _deal();
   }
 
   Future<void> _processGameEnd() async {
@@ -463,7 +442,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   @override
   Future<void> onTapUp(info) async {
-    if (_gameRound.isGameEnded) {
+    if (_gameStatus == GameStatus.gameResult) {
       for (final t in children) {
         if (t is GameTextButton &&
             t.toRect().contains(info.eventPosition.global.toOffset()) &&
@@ -537,10 +516,6 @@ class SeventeenGame extends FlameGame with TapDetector {
         _me.setStatus(GamePlayerStatus.waitRound);
         await _firestoreAccessor.updateTargetPlayer(_myUid == _hostUid, _me);
         await _processRoundEnd();
-        if (_gamePlayers.every(
-            (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
-          await _processNewRound(isDrawnGame: false);
-        }
         break;
       }
       if (c is Hands) {

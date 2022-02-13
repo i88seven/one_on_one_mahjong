@@ -11,6 +11,7 @@ import 'package:one_on_one_mahjong/components/hands.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/components/trashes.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
+import 'package:one_on_one_mahjong/constants/game_status.dart';
 
 class FirestoreAccessor {
   late final DocumentReference<Map<String, dynamic>> _roomDoc;
@@ -86,6 +87,7 @@ class FirestoreAccessor {
       'round': gameRound.round,
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
+      'gameStatus': GameStatus.init.name,
     });
   }
 
@@ -95,17 +97,32 @@ class FirestoreAccessor {
       'doras': doras.jsonValue,
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
+      'gameStatus': GameStatus.dealt.name,
     });
   }
 
-  Future<void> updateGameOnNewRound(int currentOrder, GameRound gameRound,
-      List<GamePlayer> gamePlayers) async {
+  Future<void> updateGameOnNewRound(
+      GameRound gameRound, List<GamePlayer> gamePlayers) async {
     await _gameDoc.update({
-      'current': currentOrder,
+      'current': 0,
       'wind': gameRound.wind,
       'round': gameRound.round,
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
+    });
+  }
+
+  Future<void> updateGameOnGameEnd() async {
+    await _gameDoc.update({
+      'gameStatus': GameStatus.gameResult.name,
+    });
+  }
+
+  Future<void> updateGameOnStartTrash(List<GamePlayer> gamePlayers) async {
+    await _gameDoc.update({
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
+      'gameStatus': GameStatus.trash.name,
     });
   }
 
@@ -119,6 +136,14 @@ class FirestoreAccessor {
     await _gameDoc.update({
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
+    });
+  }
+
+  Future<void> updateGameOnRon(List<GamePlayer> gamePlayers) async {
+    await _gameDoc.update({
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
+      'gameStatus': GameStatus.ron.name,
     });
   }
 
@@ -139,14 +164,6 @@ class FirestoreAccessor {
   }
 
   // PlayerTiles
-
-  void listenPlayerTilesDoc(String uid, dynamic onChangeOtherTiles) async {
-    _streams.add(_gameDoc
-        .collection('player_tiles')
-        .doc(uid)
-        .snapshots()
-        .listen(onChangeOtherTiles));
-  }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getTilesSnapshot(
       String uid) async {
@@ -178,12 +195,6 @@ class FirestoreAccessor {
           .toList();
     }
     return [];
-  }
-
-  Future<Map<String, dynamic>?> fetchTilesData(String uid) async {
-    final tilesSnapshot =
-        await _gameDoc.collection('player_tiles').doc(uid).get();
-    return tilesSnapshot.data();
   }
 
   Future<void> setTiles({
