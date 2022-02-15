@@ -180,6 +180,10 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
 
       if (_gameStatus == GameStatus.dealt && gameData['doras'] != null) {
+        _initializeOtherTiles();
+        if (_myUid == _hostUid) {
+          return;
+        }
         final dorasJson = gameData['doras'];
         if (dorasJson is List<dynamic>) {
           if (!listEquals(
@@ -192,7 +196,6 @@ class SeventeenGame extends FlameGame with TapDetector {
             _doras.initialize(doras);
           }
         }
-        _initializeOtherTiles();
         final myTilesSnapshot =
             await _firestoreAccessor.getTilesSnapshot(_myUid);
         await _initializeMyTiles(myTilesSnapshot.data());
