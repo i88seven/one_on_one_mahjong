@@ -57,7 +57,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late Trashes _trashesMe;
   late Trashes _trashesOther;
   late GameResult? _gameResult;
-  late GameRoundResult? _gameRoundResult;
+  GameRoundResult? _gameRoundResult;
   GameStatus _gameStatus = GameStatus.init;
   final String _hostUid;
   GameTextButton? _fixHandsButton;
@@ -78,7 +78,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     _trashesMe = Trashes(this, true);
     _trashesOther = Trashes(this, false);
     // this.add(GameBackground(this));
-    _gameRoundResult = null;
   }
 
   Future<void> initializeHost() async {
