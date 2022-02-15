@@ -90,15 +90,6 @@ class GameRoundResult extends PositionComponent {
       ..x = 13.5 * tileSize.width + 5
       ..y = size.y - tileSize.height - 120);
 
-    _tiles.asMap().forEach((index, tile) {
-      FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);
-      add(tileObject
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = index * tileSize.width
-        ..y = size.y - tileSize.height - 120);
-    });
-
     final _winNameRenderer = TextPaint(
         config: const TextPaintConfig(fontSize: 50.0, color: Colors.black54));
     add(TextComponent(
