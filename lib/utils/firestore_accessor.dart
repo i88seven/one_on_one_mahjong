@@ -147,6 +147,12 @@ class FirestoreAccessor {
     });
   }
 
+  Future<void> updateGameOnDrawnRound() async {
+    await _gameDoc.update({
+      'gameStatus': GameStatus.drawnRound.name,
+    });
+  }
+
   Future<void> updateTargetPlayer(bool isHost, GamePlayer gamePlayer) async {
     String key = isHost ? 'host' : 'client';
     await _gameDoc.update({

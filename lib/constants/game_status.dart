@@ -4,5 +4,6 @@ enum GameStatus {
   dealt,
   trash,
   ron,
+  drawnRound,
   gameResult,
 }

@@ -163,7 +163,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       return;
     }
 
-    updatePlayers(gameData);
+    await updatePlayers(gameData);
 
     if (gameData['gameStatus'] != null &&
         _gameStatus.name != gameData['gameStatus']) {
@@ -223,6 +223,16 @@ class SeventeenGame extends FlameGame with TapDetector {
         }
       }
 
+      if (_gameStatus == GameStatus.drawnRound) {
+        if (_hostUid == _myUid) {
+          _gamePlayers.asMap().forEach((index, gamePlayer) {
+            gamePlayer.setStatus(GamePlayerStatus.waitRound);
+          });
+          await _firestoreAccessor.updateGamePlayers(_gamePlayers);
+        }
+        return;
+      }
+
       if (_gameStatus == GameStatus.gameResult) {
         await _processGameEnd();
         return;
@@ -257,7 +267,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
     if (_gamePlayers.every(
         (gamePlayer) => gamePlayer.status == GamePlayerStatus.waitRound)) {
-      await _processNewRound(isDrawnGame: false);
+      await _processNewRound();
     }
   }
 
@@ -348,11 +358,10 @@ class SeventeenGame extends FlameGame with TapDetector {
           _isFuriten = true;
         }
       }
-      if (_isDrawnGame && _me.isParent) {
-        _gamePlayers.asMap().forEach((index, gamePlayer) {
-          gamePlayer.setStatus(GamePlayerStatus.waitRound);
-        });
-        await _firestoreAccessor.updateGamePlayers(_gamePlayers);
+      if (_trashesOther.tileCount == maxTrashCount &&
+          _trashesMe.tileCount == maxTrashCount &&
+          _currentOrder == 0) {
+        await _firestoreAccessor.updateGameOnDrawnRound();
       }
     }
   }
@@ -407,19 +416,19 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _firestoreAccessor.updateGamePlayers(_gamePlayers);
   }
 
-  Future<void> _processNewRound({required bool isDrawnGame}) async {
+  Future<void> _processNewRound() async {
     if (_myUid != _hostUid) {
       return;
     }
-    if (_gameRound.isFinalGame && !isDrawnGame) {
+    if (_gameRound.isFinalGame && _gameStatus != GameStatus.drawnRound) {
       await _firestoreAccessor.updateGameOnGameEnd();
       return;
     }
 
     for (GamePlayer gamePlayer in _gamePlayers) {
-      gamePlayer.initOnRound(!isDrawnGame);
+      gamePlayer.initOnRound(_gameStatus != GameStatus.drawnRound);
     }
-    if (!isDrawnGame) {
+    if (_gameStatus != GameStatus.drawnRound) {
       _gameRound.setNewRound();
     }
     await _firestoreAccessor.updateGameOnNewRound(_gameRound, _gamePlayers);
