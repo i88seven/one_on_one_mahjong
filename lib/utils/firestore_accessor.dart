@@ -111,6 +111,7 @@ class FirestoreAccessor {
       'round': gameRound.round,
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
+      'gameStatus': GameStatus.newRound.name,
     });
   }
 
