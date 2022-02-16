@@ -632,14 +632,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     return _gamePlayers.firstWhere((gamePlayer) => gamePlayer.uid != _myUid);
   }
 
-  bool get _isDrawnGame {
-    return _trashesMe.tileCount == _trashesOther.tileCount &&
-        _trashesMe.tileCount == maxTrashCount &&
-        _gamePlayers.every((gamePlayer) =>
-            gamePlayer.status == GamePlayerStatus.selectTrash) &&
-        _currentOrder == 0;
-  }
-
   bool get _canFixHands {
     return _me.status == GamePlayerStatus.selectHands &&
         _handsMe.tileCount == 13;
