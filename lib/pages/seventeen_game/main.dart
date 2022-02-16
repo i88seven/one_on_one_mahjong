@@ -262,6 +262,13 @@ class SeventeenGame extends FlameGame with TapDetector {
       _gamePlayers[1].updateFromJson(clientPlayerJson);
     }
 
+    if (_gamePlayers[0].points != gameData['points-host']) {
+      _gamePlayers[0].setPoints(gameData['points-host']);
+    }
+    if (_gamePlayers[1].points != gameData['points-client']) {
+      _gamePlayers[1].setPoints(gameData['points-client']);
+    }
+
     if (_gamePlayers.every(
             (gamePlayer) => gamePlayer.status == GamePlayerStatus.fixedHands) &&
         _myUid == _hostUid) {
@@ -419,7 +426,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         gamePlayer.addPoints(winResult.winPoints * -1);
       }
     });
-    await _firestoreAccessor.updateGamePlayers(_gamePlayers);
+    await _firestoreAccessor.updateGameRound(_gamePlayers);
   }
 
   Future<void> _processNewRound() async {
@@ -529,8 +536,11 @@ class SeventeenGame extends FlameGame with TapDetector {
         remove(_gameRoundResult!);
         _gameRoundResult = null;
         _me.setStatus(GamePlayerStatus.waitRound);
-        await _firestoreAccessor.updateTargetPlayer(_myUid == _hostUid, _me);
-        await _processRoundEnd();
+        if (_myUid == _hostUid) {
+          await _processRoundEnd();
+        } else {
+          await _firestoreAccessor.updateTargetPlayer(_myUid == _hostUid, _me);
+        }
         break;
       }
       if (c is Hands) {

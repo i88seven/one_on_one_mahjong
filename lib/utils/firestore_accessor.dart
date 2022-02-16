@@ -87,6 +87,8 @@ class FirestoreAccessor {
       'round': gameRound.round,
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
+      'points-host': gamePlayers[0].points,
+      'points-client': gamePlayers[1].points,
       'gameStatus': GameStatus.init.name,
     });
   }
@@ -144,6 +146,15 @@ class FirestoreAccessor {
       'player-host': gamePlayers[0].toJson(),
       'player-client': gamePlayers[1].toJson(),
       'gameStatus': GameStatus.ron.name,
+    });
+  }
+
+  Future<void> updateGameRound(List<GamePlayer> gamePlayers) async {
+    await _gameDoc.update({
+      'points-host': gamePlayers[0].points,
+      'points-client': gamePlayers[1].points,
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
     });
   }
 

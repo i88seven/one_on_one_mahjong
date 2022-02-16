@@ -9,7 +9,7 @@ import 'package:one_on_one_mahjong/types/win_result.dart';
 class GamePlayer extends PositionComponent {
   final String _uid;
   final String _name;
-  late int _points;
+  int _points = 25000;
   GamePlayerStatus _status;
   WinResult? _winResult;
   final bool _isMe;
@@ -28,7 +28,6 @@ class GamePlayer extends PositionComponent {
         _status = status,
         _isMe = isMe,
         _isParent = isParent {
-    _points = 25000;
     final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
     position = Vector2(10, _posY);
     size = Vector2(100.0, _isMe ? 24.0 : 12.0);
@@ -38,7 +37,6 @@ class GamePlayer extends PositionComponent {
   GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)
       : _uid = json['uid'],
         _name = json['name'],
-        _points = json['points'] ?? 0,
         _status =
             EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
                 GamePlayerStatus.ready,
@@ -51,7 +49,6 @@ class GamePlayer extends PositionComponent {
   }
 
   void updateFromJson(json) {
-    _points = json['points'] ?? 0;
     _status =
         EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
             GamePlayerStatus.ready;
@@ -99,6 +96,11 @@ class GamePlayer extends PositionComponent {
     _rerender();
   }
 
+  void setPoints(int points) {
+    _points = points;
+    _rerender();
+  }
+
   void _rerender() {
     if (_textObject != null) {
       _textObject!.text = _text;
@@ -121,7 +123,6 @@ class GamePlayer extends PositionComponent {
       'uid': _uid,
       'name': _name,
       'status': _status.name,
-      'points': _points,
       'isParent': _isParent,
     };
     if (_winResult != null) {
