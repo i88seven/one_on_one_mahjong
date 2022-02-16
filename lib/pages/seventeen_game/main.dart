@@ -72,7 +72,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   SeventeenGame(this._roomId, this._hostUid, this.screenSize, this.onGameEnd) {
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(game: this);
-    _doras = Doras(this);
+    _doras = Doras(game: this);
     _handsMe = Hands(game: this);
     _handsOther = OtherHands(this);
     _trashesMe = Trashes(this, true);
@@ -105,6 +105,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _firestoreAccessor.notifyStartToGame();
     addAll(_gamePlayers);
     add(_dealtsOther);
+    add(_doras);
     add(_handsMe);
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
@@ -132,6 +133,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
     _firestoreAccessor.deleteRoomOnStartGame();
     add(_dealtsOther);
+    add(_doras);
     add(_handsMe);
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
