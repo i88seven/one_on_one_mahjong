@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -59,6 +60,21 @@ class _LoginPageState extends State<LoginPage> {
                         email: email,
                         password: password,
                       );
+
+                      String uid = result.user!.uid;
+                      final LocalStorage _storage =
+                          LocalStorage('one_one_one_mahjong');
+                      await _storage.ready;
+                      _storage.setItem('myUid', result.user!.uid);
+                      DocumentReference userRef = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(uid);
+                      await userRef.set({
+                        'name': '',
+                        'createdAt': Timestamp.now(),
+                        'updatedAt': Timestamp.now(),
+                      });
+
                       await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           return const PreparationMainPage();
