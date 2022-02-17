@@ -43,8 +43,11 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               Container(
-                padding: const EdgeInsets.all(8),
-                child: Text(infoText),
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  infoText,
+                  style: TextStyle(color: Colors.yellow[300]),
+                ),
               ),
               SizedBox(
                 width: double.infinity,
@@ -62,9 +65,15 @@ class _LoginPageState extends State<LoginPage> {
                           return CreateRoomPage(result.user!);
                         }),
                       );
-                    } catch (e) {
+                    } on FirebaseAuthException catch (e) {
+                      const errorMap = {
+                        'email-already-in-use': 'すでに登録されています。',
+                        'invalid-email': '不正なメールアドレスです。',
+                        'operation-not-allowed': '許可されていない操作です。',
+                        'weak-password': '強力なパスワードにしてください。',
+                      };
                       setState(() {
-                        infoText = "登録に失敗しました：${e.toString()}";
+                        infoText = "登録に失敗しました。\n${errorMap[e.code]}";
                       });
                     }
                   },
