@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:one_on_one_mahjong/pages/login_page.dart';
+import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/create.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/search.dart';
 
