@@ -96,7 +96,7 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
         setState(() {
           _roomId = null;
           _host = null;
-          _hasResult = false;
+          _hasResult = true;
         });
         return;
       }
@@ -135,7 +135,7 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
         setState(() {
           _roomId = null;
           _host = null;
-          _hasResult = true;
+          _hasResult = false;
         });
       }
     } catch (e) {
