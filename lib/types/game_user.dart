@@ -4,8 +4,8 @@ class GameUser {
 
   GameUser(this._uid, this._name);
 
-  get uid => _uid;
-  get name => _name;
+  String get uid => _uid;
+  String get name => _name;
 
   void updateFromJson(userJson) {
     _uid = userJson['uid'];

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class GameUserNameInput extends StatefulWidget {
   final Function(String name) onSubmit;
+  final String? initialName;
 
   const GameUserNameInput({
     required this.onSubmit,
+    this.initialName,
     Key? key,
   }) : super(key: key);
 
@@ -19,10 +21,7 @@ class _GameUserNameInputState extends State<GameUserNameInput> {
   @override
   void initState() {
     super.initState();
-
-    Future(() async {
-      // _myNameController.text = _storage.getItem('myName');
-    });
+    _myNameController.text = widget.initialName ?? '';
   }
 
   @override

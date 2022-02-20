@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
 import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/create.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/search.dart';
@@ -12,12 +13,24 @@ class PreparationMainPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameUserModel = ref.read(gameUserProvider);
-    final _myUid = gameUserModel.gameUser.uid;
     final _myName = gameUserModel.gameUser.name;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('タイマン麻雀'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              // TODO アカウント画面を作成
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) {
+                  return UpdateGameUserNamePage(initialName: _myName);
+                }),
+              );
+            },
+          ),
+        ],
       ),
       body: Builder(builder: (BuildContext context) {
         return ListView(
@@ -27,6 +40,7 @@ class PreparationMainPage extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Text("あなたの名前 : $_myName"),
                 Container(
                   padding: const EdgeInsets.only(top: 16.0),
                   alignment: Alignment.center,
@@ -47,6 +61,7 @@ class PreparationMainPage extends ConsumerWidget {
                     },
                   ),
                 ),
+                const SizedBox(height: 32),
                 IconButton(
                   icon: const Icon(Icons.logout),
                   onPressed: () async {

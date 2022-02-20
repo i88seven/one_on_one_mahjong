@@ -7,7 +7,10 @@ import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 import 'package:one_on_one_mahjong/types/game_user.dart';
 
 class UpdateGameUserNamePage extends ConsumerWidget {
-  const UpdateGameUserNamePage({Key? key}) : super(key: key);
+  final String? _initialName;
+  const UpdateGameUserNamePage({String? initialName, Key? key})
+      : _initialName = initialName,
+        super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +45,10 @@ class UpdateGameUserNamePage extends ConsumerWidget {
           padding: const EdgeInsets.all(8),
           scrollDirection: Axis.vertical,
           children: <Widget>[
-            GameUserNameInput(onSubmit: _updateName),
+            GameUserNameInput(
+              onSubmit: _updateName,
+              initialName: _initialName,
+            ),
           ],
         );
       }),
