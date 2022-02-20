@@ -3,15 +3,16 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
+import 'package:one_on_one_mahjong/provider/game_user_model.dart';
+import 'package:one_on_one_mahjong/provider/room_model.dart';
 
 class RoomWaitPage extends StatefulWidget {
-  String title = '待機中...';
   final String roomId;
 
-  RoomWaitPage({Key? key, required this.roomId}) : super(key: key);
+  const RoomWaitPage({Key? key, required this.roomId}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RoomWaitPageState();
@@ -21,24 +22,20 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
   late DocumentReference _roomDoc;
   late StreamSubscription _changeSubscription;
   late StreamSubscription _changeMember;
+  late String myUid;
   List<Member> _memberList = [];
   Member? _hostMember;
-  final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
-  String _myUid = '';
 
   int get _memberCount {
     return _memberList.length;
   }
 
   bool get _isHost {
-    return _hostMember != null && _myUid == _hostMember!.uid;
+    return _hostMember != null && myUid == _hostMember!.uid;
   }
 
   @override
   void initState() {
-    super.initState();
-
-    widget.title = "${widget.roomId} 待機中...";
     _memberList = [];
     _roomDoc = FirebaseFirestore.instance
         .collection('preparationRooms')
@@ -55,10 +52,6 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
     });
 
     super.initState();
-    Future(() async {
-      await _storage.ready;
-      _myUid = _storage.getItem('myUid');
-    });
   }
 
   @override
@@ -70,12 +63,15 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
         Navigator.of(context).pop(true);
         return Future.value(false);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Builder(builder: (BuildContext context) {
-          return ListView(
+      child: Consumer(builder: (context, ref, child) {
+        final gameUserModel = ref.watch(gameUserProvider);
+        myUid = gameUserModel.gameUser.uid;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("${widget.roomId} 待機中..."),
+          ),
+          body: ListView(
             padding: const EdgeInsets.all(8),
             scrollDirection: Axis.vertical,
             children: <Widget>[
@@ -104,9 +100,9 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
                   ),
                 ),
             ],
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 
@@ -147,6 +143,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       Size screenSize = MediaQuery.of(context).size;
       final game = SeventeenGame(
         widget.roomId,
+        myUid,
         _hostMember!.uid,
         Vector2(screenSize.width, screenSize.height),
         _onGameEnd,

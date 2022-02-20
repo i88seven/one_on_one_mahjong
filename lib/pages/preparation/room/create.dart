@@ -1,126 +1,70 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/pages/preparation/room/room_id_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/wait.dart';
+import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 
-class RoomCreatePage extends StatefulWidget {
-  final String title = '部屋の作成';
-  final String myName;
-
-  const RoomCreatePage({Key? key, required this.myName}) : super(key: key);
+class RoomCreatePage extends ConsumerWidget {
+  const RoomCreatePage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _RoomCreatePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameUserModel = ref.read(gameUserProvider);
+    final _myUid = gameUserModel.gameUser.uid;
+    final _myName = gameUserModel.gameUser.name;
 
-class _RoomCreatePageState extends State<RoomCreatePage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _roomIdController = TextEditingController();
-  final FirebaseFirestore _firestoreReference = FirebaseFirestore.instance;
-  final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
-  String _myUid = '';
+    void _createRoom(String roomId) async {
+      try {
+        // TODO すでに存在していて、自分以外が作っていたらエラー
+        DocumentReference _roomRef = FirebaseFirestore.instance
+            .collection('preparationRooms')
+            .doc(roomId);
+        _roomRef.set({
+          'hostUid': _myUid,
+          'hostName': _myName,
+          'status': 'wait',
+          'createdAt': Timestamp.now(),
+          'updatedAt': Timestamp.now(),
+        });
+        _roomRef.collection('members').doc(_myUid).set({'name': _myName});
 
-  @override
-  void initState() {
-    super.initState();
+        bool? shouldDelete = await Navigator.of(context).push(
+          MaterialPageRoute<bool>(
+            builder: (_) => RoomWaitPage(
+              roomId: roomId,
+            ),
+          ),
+        );
+        if (shouldDelete!) {
+          QuerySnapshot membersSnapshot =
+              await _roomRef.collection('members').get();
+          for (QueryDocumentSnapshot element in membersSnapshot.docs) {
+            element.reference.delete();
+          }
+          _roomRef.delete();
+        }
+      } catch (e) {
+        // TODO
+      }
+    }
 
-    Future(() async {
-      await _storage.ready;
-      _myUid = _storage.getItem('myUid');
-      _roomIdController.text = _storage.getItem('myRoomId');
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('部屋の作成'),
       ),
       body: Builder(builder: (BuildContext context) {
         return ListView(
           padding: const EdgeInsets.all(8),
           scrollDirection: Axis.vertical,
           children: <Widget>[
-            Form(
-              key: _formKey,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      TextFormField(
-                        controller: _roomIdController,
-                        decoration: const InputDecoration(labelText: '部屋ID'),
-                        maxLength: 10,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) return '入力してください';
-                          return null;
-                        },
-                      ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        alignment: Alignment.center,
-                        child: ElevatedButton(
-                          child: const Text('作成'),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              _createRoom();
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            RoomIdInput(
+              onSubmit: _createRoom,
+              buttonText: '作成',
+            )
           ],
         );
       }),
     );
-  }
-
-  @override
-  void dispose() {
-    _roomIdController.dispose();
-    super.dispose();
-  }
-
-  void _createRoom() async {
-    try {
-      // TODO すでに存在していて、自分以外が作っていたらエラー
-      DocumentReference roomRef = _firestoreReference
-          .collection('preparationRooms')
-          .doc(_roomIdController.text);
-      roomRef.set({
-        'hostUid': _myUid,
-        'hostName': widget.myName,
-        'status': 'wait',
-        'createdAt': Timestamp.now(),
-        'updatedAt': Timestamp.now(),
-      });
-      roomRef.collection('members').doc(_myUid).set({'name': widget.myName});
-      _storage.setItem('myRoomId', _roomIdController.text);
-
-      bool? shouldDelete = await Navigator.of(context).push(
-        MaterialPageRoute<bool>(
-          builder: (_) => RoomWaitPage(
-            roomId: _roomIdController.text,
-          ),
-        ),
-      );
-      if (shouldDelete!) {
-        QuerySnapshot membersSnapshot =
-            await roomRef.collection('members').get();
-        for (QueryDocumentSnapshot element in membersSnapshot.docs) {
-          element.reference.delete();
-        }
-        roomRef.delete();
-      }
-    } catch (e) {
-      // TODO
-    }
   }
 }

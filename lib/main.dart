@@ -6,7 +6,7 @@ import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const OneOnOneMahjongApp());
+  runApp(const ProviderScope(child: OneOnOneMahjongApp()));
 }
 
 class OneOnOneMahjongApp extends StatelessWidget {
@@ -14,12 +14,10 @@ class OneOnOneMahjongApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp(
-        title: 'タイマン麻雀',
-        theme: ThemeData.dark(),
-        home: const LoginPage(),
-      ),
+    return MaterialApp(
+      title: 'タイマン麻雀',
+      theme: ThemeData.dark(),
+      home: const LoginPage(),
     );
   }
 }

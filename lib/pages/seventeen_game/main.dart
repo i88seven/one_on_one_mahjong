@@ -10,7 +10,6 @@ import 'package:flame/assets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
@@ -42,8 +41,7 @@ const maxTrashCount = 17;
 class SeventeenGame extends FlameGame with TapDetector {
   late FirestoreAccessor _firestoreAccessor;
   Images gameImages = Images();
-  final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
-  late String _myUid;
+  final String _myUid;
   final String _roomId;
   bool _isTapping = false;
   Vector2 screenSize;
@@ -69,7 +67,8 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   static const playerCount = 2;
 
-  SeventeenGame(this._roomId, this._hostUid, this.screenSize, this.onGameEnd) {
+  SeventeenGame(this._roomId, this._myUid, this._hostUid, this.screenSize,
+      this.onGameEnd) {
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(game: this);
     _doras = Doras(game: this);
@@ -147,8 +146,6 @@ class SeventeenGame extends FlameGame with TapDetector {
       'tile-back.png',
       ...allTileImageName,
     ]);
-    await _storage.ready;
-    _myUid = _storage.getItem('myUid');
 
     if (_myUid == _hostUid) {
       await initializeHost();

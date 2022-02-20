@@ -8,7 +8,7 @@ class LoginPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameUserModel = ref.read(gameUserProvider);
+    final gameUserModel = ref.watch(gameUserProvider);
 
     Future<void> _onSubmit(Map<String, dynamic> gameUserJson) async {
       gameUserModel.updateFromJson(gameUserJson);

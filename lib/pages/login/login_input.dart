@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 
 class LoginInput extends StatefulWidget {
@@ -27,9 +27,6 @@ class _LoginInputState extends State<LoginInput> {
       );
 
       String uid = result.user!.uid;
-      final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
-      await _storage.ready;
-      _storage.setItem('myUid', uid);
       DocumentReference userRef =
           FirebaseFirestore.instance.collection('users').doc(uid);
       await userRef.set({
@@ -41,7 +38,7 @@ class _LoginInputState extends State<LoginInput> {
       await widget.onSubmit({'uid': uid, 'name': ''});
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) {
-          return PreparationMainPage();
+          return const UpdateGameUserNamePage();
         }),
       );
     } on FirebaseAuthException catch (e) {
@@ -66,14 +63,14 @@ class _LoginInputState extends State<LoginInput> {
       );
 
       String uid = result.user!.uid;
-      final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
-      await _storage.ready;
-      _storage.setItem('myUid', uid);
-      await widget.onSubmit({'uid': uid, 'name': ''});
+      DocumentReference userRef =
+          FirebaseFirestore.instance.collection('users').doc(uid);
+      final userData = await userRef.get();
+      await widget.onSubmit({'uid': uid, 'name': userData['name']});
 
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute<bool>(
-          builder: (context) => PreparationMainPage(),
+          builder: (context) => const PreparationMainPage(),
         ),
       );
     } catch (e) {
