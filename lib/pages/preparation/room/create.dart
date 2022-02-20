@@ -53,18 +53,16 @@ class RoomCreatePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('部屋の作成'),
       ),
-      body: Builder(builder: (BuildContext context) {
-        return ListView(
-          padding: const EdgeInsets.all(8),
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            RoomIdInput(
-              onSubmit: _createRoom,
-              buttonText: '作成',
-            )
-          ],
-        );
-      }),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        scrollDirection: Axis.vertical,
+        children: <Widget>[
+          RoomIdInput(
+            onSubmit: _createRoom,
+            buttonText: '作成',
+          )
+        ],
+      ),
     );
   }
 }

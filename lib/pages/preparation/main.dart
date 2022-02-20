@@ -32,52 +32,50 @@ class PreparationMainPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: Builder(builder: (BuildContext context) {
-        return ListView(
-          padding: const EdgeInsets.all(8),
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text("あなたの名前 : $_myName"),
-                Container(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    child: const Text('部屋を立てる'),
-                    onPressed: () async {
-                      _createRoom(context);
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    child: const Text('部屋を探す'),
-                    onPressed: () async {
-                      _searchRoom(context);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 32),
-                IconButton(
-                  icon: const Icon(Icons.logout),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        scrollDirection: Axis.vertical,
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("あなたの名前 : $_myName"),
+              Container(
+                padding: const EdgeInsets.only(top: 16.0),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: const Text('部屋を立てる'),
                   onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    await Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) {
-                        return const LoginPage();
-                      }),
-                    );
+                    _createRoom(context);
                   },
                 ),
-              ],
-            ),
-          ],
-        );
-      }),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 16.0),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: const Text('部屋を探す'),
+                  onPressed: () async {
+                    _searchRoom(context);
+                  },
+                ),
+              ),
+              const SizedBox(height: 32),
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  await Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) {
+                      return const LoginPage();
+                    }),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

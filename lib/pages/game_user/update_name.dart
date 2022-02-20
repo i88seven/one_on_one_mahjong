@@ -40,18 +40,16 @@ class UpdateGameUserNamePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('名前の変更'),
       ),
-      body: Builder(builder: (BuildContext context) {
-        return ListView(
-          padding: const EdgeInsets.all(8),
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            GameUserNameInput(
-              onSubmit: _updateName,
-              initialName: _initialName,
-            ),
-          ],
-        );
-      }),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        scrollDirection: Axis.vertical,
+        children: <Widget>[
+          GameUserNameInput(
+            onSubmit: _updateName,
+            initialName: _initialName,
+          ),
+        ],
+      ),
     );
   }
 }
