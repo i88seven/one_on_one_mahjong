@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
-import 'package:one_on_one_mahjong/provider/room_model.dart';
 
 class RoomWaitPage extends StatefulWidget {
   final String roomId;
