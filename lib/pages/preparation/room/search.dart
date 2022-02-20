@@ -5,21 +5,30 @@ import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/room_id_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/wait.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
+import 'package:one_on_one_mahjong/types/game_user.dart';
 
-class RoomSearchPage extends StatefulWidget {
+class RoomSearchPage extends ConsumerStatefulWidget {
   const RoomSearchPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _RoomSearchPageState();
+  _RoomSearchPageState createState() => _RoomSearchPageState();
 }
 
-class _RoomSearchPageState extends State<RoomSearchPage> {
+class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
+  late GameUser _gameUser;
   String? _roomId;
   Member? _host;
   bool _hasResult = false;
 
   bool get _hasRoom {
     return _roomId != null && _host != null && _host?.uid != null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final gameUserModel = ref.read(gameUserProvider);
+    _gameUser = gameUserModel.gameUser;
   }
 
   @override
@@ -30,40 +39,6 @@ class _RoomSearchPageState extends State<RoomSearchPage> {
       ),
       body: Builder(builder: (BuildContext context) {
         return Consumer(builder: (context, ref, child) {
-          final gameUserModel = ref.read(gameUserProvider);
-          final _myUid = gameUserModel.gameUser.uid;
-          final _myName = gameUserModel.gameUser.name;
-
-          void _participateGame({roomId}) async {
-            try {
-              DocumentReference _roomRef = FirebaseFirestore.instance
-                  .collection('preparationRooms')
-                  .doc(roomId);
-              DocumentReference memberDoc =
-                  _roomRef.collection('members').doc(_myUid);
-              memberDoc.set({'name': _myName});
-
-              bool? shouldDelete = await Navigator.of(context).push(
-                MaterialPageRoute<bool>(
-                  builder: (_) => RoomWaitPage(
-                    roomId: roomId,
-                  ),
-                ),
-              );
-              if (shouldDelete!) {
-                await memberDoc.delete();
-              } else {
-                setState(() {
-                  _roomId = null;
-                  _host = null;
-                  _hasResult = true;
-                });
-              }
-            } catch (e) {
-              // TODO
-            }
-          }
-
           return ListView(
             padding: const EdgeInsets.all(8),
             scrollDirection: Axis.vertical,
@@ -139,6 +114,35 @@ class _RoomSearchPageState extends State<RoomSearchPage> {
         );
         _hasResult = true;
       });
+    } catch (e) {
+      // TODO
+    }
+  }
+
+  void _participateGame({roomId}) async {
+    try {
+      DocumentReference _roomRef =
+          FirebaseFirestore.instance.collection('preparationRooms').doc(roomId);
+      DocumentReference memberDoc =
+          _roomRef.collection('members').doc(_gameUser.uid);
+      memberDoc.set({'name': _gameUser.name});
+
+      bool? shouldDelete = await Navigator.of(context).push(
+        MaterialPageRoute<bool>(
+          builder: (_) => RoomWaitPage(
+            roomId: roomId,
+          ),
+        ),
+      );
+      if (shouldDelete!) {
+        await memberDoc.delete();
+      } else {
+        setState(() {
+          _roomId = null;
+          _host = null;
+          _hasResult = true;
+        });
+      }
     } catch (e) {
       // TODO
     }
