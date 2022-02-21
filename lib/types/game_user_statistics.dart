@@ -9,14 +9,14 @@ class GameUserStatistics {
   int _drawGame = 0;
 
   int _totalRound = 0;
-  WinNameStatistics _parentWinRound = WinNameStatistics(prefix: 'parentWin');
-  WinNameStatistics _childWinRound = WinNameStatistics(prefix: 'childWin');
-  WinNameStatistics _parentLoseRound = WinNameStatistics(prefix: 'parentLose');
-  WinNameStatistics _childLoseRound = WinNameStatistics(prefix: 'childLose');
+  WinNameStatistics _parentWinRound = WinNameStatistics();
+  WinNameStatistics _childWinRound = WinNameStatistics();
+  WinNameStatistics _parentLoseRound = WinNameStatistics();
+  WinNameStatistics _childLoseRound = WinNameStatistics();
   int _parentDrawnRound = 0;
   int _childDrawnRound = 0;
-  YakuStatistics _winYaku = YakuStatistics(prefix: 'win');
-  YakuStatistics _loseYaku = YakuStatistics(prefix: 'lose');
+  YakuStatistics _winYaku = YakuStatistics();
+  YakuStatistics _loseYaku = YakuStatistics();
   int _parentWinPointAll = 0;
   int _childWinPointAll = 0;
   int _parentLosePointAll = 0;
@@ -31,21 +31,21 @@ class GameUserStatistics {
 
   GameUserStatistics(this._uid);
 
-  GameUserStatistics.fromJson(String uid, Map<String, int> json)
+  GameUserStatistics.fromJson(String uid, Map<String, dynamic> json)
       : _uid = uid,
         _totalGame = json['totalGame'] ?? 0,
         _winGame = json['winGame'] ?? 0,
         _loseGame = json['loseGame'] ?? 0,
         _drawGame = json['drawGame'] ?? 0,
         _totalRound = json['totalRound'] ?? 0,
-        _parentWinRound = WinNameStatistics.fromJson('parentWin', json),
-        _childWinRound = WinNameStatistics.fromJson('childWin', json),
-        _parentLoseRound = WinNameStatistics.fromJson('parentLose', json),
-        _childLoseRound = WinNameStatistics.fromJson('childLose', json),
+        _parentWinRound = WinNameStatistics.fromJson(json['parentWin']),
+        _childWinRound = WinNameStatistics.fromJson(json['childWin']),
+        _parentLoseRound = WinNameStatistics.fromJson(json['parentLose']),
+        _childLoseRound = WinNameStatistics.fromJson(json['childLose']),
         _parentDrawnRound = json['parentDrawnRound'] ?? 0,
         _childDrawnRound = json['childDrawnRound'] ?? 0,
-        _winYaku = YakuStatistics.fromJson('win', json),
-        _loseYaku = YakuStatistics.fromJson('lose', json),
+        _winYaku = YakuStatistics.fromJson(json['winYaku']),
+        _loseYaku = YakuStatistics.fromJson(json['loseYaku']),
         _parentWinPointAll = json['parentWinPointAll'] ?? 0,
         _childWinPointAll = json['childWinPointAll'] ?? 0,
         _parentLosePointAll = json['parentLosePointAll'] ?? 0,
@@ -68,14 +68,14 @@ class GameUserStatistics {
       'loseGame': _loseGame,
       'drawGame': _drawGame,
       'totalRound': _totalRound,
-      ..._parentWinRound.toJson(),
-      ..._childWinRound.toJson(),
-      ..._parentLoseRound.toJson(),
-      ..._childLoseRound.toJson(),
+      'parentWin': _parentWinRound.toJson(),
+      'childWin': _childWinRound.toJson(),
+      'parentLose': _parentLoseRound.toJson(),
+      'childLose': _childLoseRound.toJson(),
       'parentDrawnRound': _parentDrawnRound,
       'childDrawnRound': _childDrawnRound,
-      ..._winYaku.toJson(),
-      ..._loseYaku.toJson(),
+      'winYaku': _winYaku.toJson(),
+      'loseYaku': _loseYaku.toJson(),
       'parentWinPointAll': _parentWinPointAll,
       'childWinPointAll': _childWinPointAll,
       'parentLosePointAll': _parentLosePointAll,
