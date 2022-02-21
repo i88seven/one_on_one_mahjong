@@ -17,7 +17,7 @@ class YakuStatistics {
         _uraDoraAll = uraDoraAll ?? 0,
         _redFiveAll = redFiveAll ?? 0;
 
-  YakuStatistics.fromJson(Map<String, int> json)
+  YakuStatistics.fromJson(Map<String, dynamic> json)
       : _yakuMap = Map.fromIterables(
             Yaku.values, Yaku.values.map((yaku) => json[yaku.name] ?? 0)),
         _doraAll = json['doraAll'] ?? 0,

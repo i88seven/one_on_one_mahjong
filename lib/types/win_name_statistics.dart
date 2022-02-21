@@ -20,7 +20,7 @@ class WinNameStatistics {
         _yakuman = yakuman ?? 0,
         _kazoeYakuman = kazoeYakuman ?? 0;
 
-  WinNameStatistics.fromJson(Map<String, int> json)
+  WinNameStatistics.fromJson(Map<String, dynamic> json)
       : _mangan = json['mangan'] ?? 0,
         _haneman = json['haneman'] ?? 0,
         _baiman = json['baiman'] ?? 0,

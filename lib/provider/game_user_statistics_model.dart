@@ -16,7 +16,8 @@ class GameUserStatisticsModel extends ChangeNotifier {
         .doc(uid)
         .collection('statistics')
         .doc(uid);
-    final statisticsData = await statisticsRef.get() as Map<String, dynamic>;
+    final statisticsSnapshot = await statisticsRef.get();
+    final statisticsData = statisticsSnapshot.data() as Map<String, dynamic>;
     gameUserStatistics = GameUserStatistics.fromJson(uid, statisticsData);
     notifyListeners();
   }
