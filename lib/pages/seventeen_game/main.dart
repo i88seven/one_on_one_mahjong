@@ -115,9 +115,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     GamePlayer clientPlayer = GamePlayer.fromJson(
         this, clientPlayerJson['uid'] == _myUid, clientPlayerJson);
     _gamePlayers.add(clientPlayer);
-    final clientTilesSnapshot =
-        await _firestoreAccessor.getTilesSnapshot(clientPlayer.uid);
-    await _initializeMyTiles(clientTilesSnapshot.data());
     _firestoreAccessor.deleteRoomOnStartGame();
   }
 
@@ -188,7 +185,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         }
         final myTilesSnapshot =
             await _firestoreAccessor.getTilesSnapshot(_myUid);
-        await _initializeMyTiles(myTilesSnapshot.data());
+        _initializeMyTiles(myTilesSnapshot.data());
       }
 
       if (_gameStatus == GameStatus.trash) {
@@ -271,7 +268,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
   }
 
-  Future<void> _initializeMyTiles(Map<String, dynamic>? myTilesData) async {
+  void _initializeMyTiles(Map<String, dynamic>? myTilesData) {
     if (myTilesData == null) {
       return;
     }
