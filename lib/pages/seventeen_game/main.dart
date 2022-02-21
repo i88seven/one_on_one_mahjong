@@ -30,6 +30,7 @@ import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/game_status.dart';
 import 'package:one_on_one_mahjong/constants/reach_state.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
+import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/utils/firestore_accessor.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
@@ -40,6 +41,7 @@ const maxTrashCount = 17;
 
 class SeventeenGame extends FlameGame with TapDetector {
   late FirestoreAccessor _firestoreAccessor;
+  GameUserStatisticsModel gameUserStatisticsModel;
   Images gameImages = Images();
   final String _myUid;
   final String _roomId;
@@ -68,7 +70,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   static const playerCount = 2;
 
   SeventeenGame(this._roomId, this._myUid, this._hostUid, this.screenSize,
-      this.onGameEnd) {
+      this.onGameEnd, this.gameUserStatisticsModel) {
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(game: this);
     _doras = Doras(game: this);
@@ -140,6 +142,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     add(_doras);
     add(_handsMe);
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
+    await gameUserStatisticsModel.countOnGameStart(uid: _myUid);
     _handsOther.initialize();
   }
 
@@ -220,6 +223,14 @@ class SeventeenGame extends FlameGame with TapDetector {
           });
           await _firestoreAccessor.updateGamePlayers(_gamePlayers);
         }
+        await gameUserStatisticsModel.countOnRoundEnd(
+          uid: _myUid,
+          isParent: _me.isParent,
+          isWinner: true,
+          winResult: null,
+          step: maxTrashCount,
+          doraTrashes: [0, 0, 0], // TODO
+        );
         return;
       }
 
@@ -437,6 +448,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     _gameResult = GameResult(
         game: this, screenSize: screenSize, gamePlayers: _gamePlayers);
     add(_gameResult!);
+    await gameUserStatisticsModel.countOnGameEnd(
+      uid: _myUid,
+      pointDiff: _me.points - _other.points,
+    );
     await _firestoreAccessor.cancelStream();
   }
 
@@ -516,6 +531,17 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
       if (c is GameRoundResult &&
           c.button.toRect().contains(info.eventPosition.global.toOffset())) {
+        final winner = _gamePlayers
+            .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
+        final isWinner = winner?.uid == _me.uid;
+        await gameUserStatisticsModel.countOnRoundEnd(
+          uid: _myUid,
+          isParent: _me.isParent,
+          isWinner: isWinner,
+          winResult: winner?.winResult,
+          step: isWinner ? _trashesMe.tileCount : _trashesOther.tileCount,
+          doraTrashes: [0, 0, 0], // TODO
+        );
         remove(_gameRoundResult!.button);
         remove(_gameRoundResult!);
         _gameRoundResult = null;

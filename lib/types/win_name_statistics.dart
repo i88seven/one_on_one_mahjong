@@ -1,10 +1,10 @@
 class WinNameStatistics {
-  final int _mangan;
-  final int _haneman;
-  final int _baiman;
-  final int _sanbaiman;
-  final int _yakuman;
-  final int _kazoeYakuman;
+  int _mangan;
+  int _haneman;
+  int _baiman;
+  int _sanbaiman;
+  int _yakuman;
+  int _kazoeYakuman;
 
   WinNameStatistics({
     int? mangan,
@@ -27,6 +27,31 @@ class WinNameStatistics {
         _sanbaiman = json['sanbaiman'] ?? 0,
         _yakuman = json['yakuman'] ?? 0,
         _kazoeYakuman = json['kazoeYakuman'] ?? 0;
+
+  void count({required String winName}) {
+    // TODO switch 使わない形にしたい
+    switch (winName) {
+      case '満貫':
+        _mangan++;
+        break;
+      case '跳満':
+        _haneman++;
+        break;
+      case '倍満':
+        _baiman++;
+        break;
+      case '三倍満':
+        _sanbaiman++;
+        break;
+      case '数え役満':
+        _kazoeYakuman++;
+        break;
+      case 'エラー':
+        break;
+      default:
+        _yakuman++;
+    }
+  }
 
   Map<String, int> toJson() {
     return {

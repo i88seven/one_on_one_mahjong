@@ -61,6 +61,9 @@ class WinResult {
     return 'エラー';
   }
 
+  List<Yaku> get yakuList => _yakuList;
+  List<int> get hansOfDoras => _hansOfDoras;
+
   @override
   String toString() {
     return "_yakuList: $_yakuList\n_hansOfDoras: $_hansOfDoras";

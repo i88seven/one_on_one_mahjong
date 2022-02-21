@@ -1,4 +1,5 @@
 import 'package:one_on_one_mahjong/types/win_name_statistics.dart';
+import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/types/yaku_statistics.dart';
 
 class GameUserStatistics {
@@ -59,6 +60,68 @@ class GameUserStatistics {
         _redFiveTrashAll = json['redFiveTrashAll'] ?? 0;
 
   int get disconnectionGame => _totalGame - _winGame - _loseGame - _drawGame;
+
+  void countOnGameStart() {
+    _totalGame++;
+  }
+
+  /// Count as statistics data.
+  ///
+  /// Consider as win if pointDiff > 0.
+  /// Consider as lose if pointDiff < 0.
+  /// Consider as draw if pointDiff == 0.
+  void countOnGameEnd({required int pointDiff}) {
+    if (pointDiff > 0) {
+      _winGame++;
+    } else if (pointDiff < 0) {
+      _loseGame++;
+    } else {
+      _drawGame++;
+    }
+  }
+
+  void countOnRoundEnd({
+    required bool isParent,
+    required bool isWinner,
+    required WinResult? winResult,
+    required int step,
+    required List<int> doraTrashes,
+  }) {
+    _totalRound++;
+    if (isParent) {
+      if (isWinner && winResult != null) {
+        _parentWinRound.count(winName: winResult.winName);
+        _parentWinPointAll += winResult.winPoints;
+        _parentWinStepAll += step;
+      } else if (!isWinner && winResult != null) {
+        _parentLoseRound.count(winName: winResult.winName);
+        _parentLosePointAll += winResult.winPoints;
+        _parentLoseStepAll += step;
+      } else if (winResult == null) {
+        _parentDrawnRound++;
+      }
+    } else {
+      if (isWinner && winResult != null) {
+        _childWinRound.count(winName: winResult.winName);
+        _childWinPointAll += winResult.winPoints;
+        _childWinStepAll += step;
+      } else if (!isWinner && winResult != null) {
+        _childLoseRound.count(winName: winResult.winName);
+        _childLosePointAll += winResult.winPoints;
+        _childLoseStepAll += step;
+      } else if (winResult == null) {
+        _childDrawnRound++;
+      }
+    }
+    if (isWinner && winResult != null) {
+      _winYaku.count(winResult: winResult);
+    } else if (!isWinner && winResult != null) {
+      _loseYaku.count(winResult: winResult);
+    }
+    _doraTrashAll += doraTrashes[0];
+    _uraDoraTrashAll += doraTrashes[1];
+    _redFiveTrashAll += doraTrashes[2];
+  }
 
   Map<String, dynamic> toJson() {
     return {

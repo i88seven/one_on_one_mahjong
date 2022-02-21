@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
+import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 
 class RoomWaitPage extends StatefulWidget {
   final String roomId;
@@ -18,6 +19,7 @@ class RoomWaitPage extends StatefulWidget {
 }
 
 class _RoomWaitPageState extends State<RoomWaitPage> {
+  late GameUserStatisticsModel _gameUserStatisticsModel;
   late DocumentReference _roomDoc;
   late StreamSubscription _changeSubscription;
   late StreamSubscription _changeMember;
@@ -65,6 +67,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       child: Consumer(builder: (context, ref, child) {
         final gameUserModel = ref.watch(gameUserProvider);
         myUid = gameUserModel.gameUser.uid;
+        _gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
 
         return Scaffold(
           appBar: AppBar(
@@ -146,6 +149,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
         _hostMember!.uid,
         Vector2(screenSize.width, screenSize.height),
         _onGameEnd,
+        _gameUserStatisticsModel,
       );
       await _changeSubscription.cancel();
       await _changeMember.cancel();
