@@ -230,7 +230,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           isWinner: true,
           winResult: null,
           step: maxTrashCount,
-          doraTrashes: [0, 0, 0], // TODO
+          doraTrashes: _doraTrashes,
         );
         return;
       }
@@ -549,7 +549,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           isWinner: isWinner,
           winResult: winner?.winResult,
           step: isWinner ? _trashesMe.tileCount : _trashesOther.tileCount,
-          doraTrashes: [0, 0, 0], // TODO
+          doraTrashes: _doraTrashes,
         );
         remove(_gameRoundResult!.button);
         remove(_gameRoundResult!);
@@ -654,6 +654,13 @@ class SeventeenGame extends FlameGame with TapDetector {
   bool get _canFixHands {
     return _me.status == GamePlayerStatus.selectHands &&
         _handsMe.tileCount == 13;
+  }
+
+  List<int> get _doraTrashes {
+    int doraTrash = fetchHansOfDora(_trashesMe.tiles, _doras.tiles[0]);
+    int uraDoraTrash = fetchHansOfDora(_trashesMe.tiles, _doras.tiles[1]);
+    int redFiveTrash = fetchHansOfRedFive(_trashesMe.tiles);
+    return [doraTrash, uraDoraTrash, redFiveTrash];
   }
 
   Future<void> _gameEnd() async {
