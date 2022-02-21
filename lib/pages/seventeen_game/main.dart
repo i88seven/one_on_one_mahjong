@@ -80,8 +80,6 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   Future<void> initializeHost() async {
-    _gameRound = GameRound(this, 1, 1);
-    _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     await _firestoreAccessor.deleteGame();
     List<Member> members = await _firestoreAccessor.getRoomMembers();
     members.sort((a, b) => a.uid == _hostUid ? -1 : 1);
@@ -102,16 +100,9 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _firestoreAccessor.initializeGame(_hostUid, _gameRound, _gamePlayers);
     await _deal();
     await _firestoreAccessor.notifyStartToGame();
-    addAll(_gamePlayers);
-    add(_dealtsOther);
-    add(_doras);
-    add(_handsMe);
-    _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
 
   Future<void> initializeClient() async {
-    _gameRound = GameRound(this, 1, 1);
-    _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     final gameSnapshot = await _firestoreAccessor.getGameSnapshot();
     final gameData = gameSnapshot.data()!;
     final hostPlayerJson = gameData['player-host'];
@@ -127,14 +118,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     final clientTilesSnapshot =
         await _firestoreAccessor.getTilesSnapshot(clientPlayer.uid);
     await _initializeMyTiles(clientTilesSnapshot.data());
-
-    addAll(_gamePlayers);
-
     _firestoreAccessor.deleteRoomOnStartGame();
-    add(_dealtsOther);
-    add(_doras);
-    add(_handsMe);
-    _firestoreAccessor.listenOnChangeGame(_onChangeGame);
   }
 
   @override
@@ -147,12 +131,18 @@ class SeventeenGame extends FlameGame with TapDetector {
       ...allTileImageName,
     ]);
 
+    _gameRound = GameRound(this, 1, 1);
+    _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
     if (_myUid == _hostUid) {
       await initializeHost();
     } else {
       await initializeClient();
     }
-
+    addAll(_gamePlayers);
+    add(_dealtsOther);
+    add(_doras);
+    add(_handsMe);
+    _firestoreAccessor.listenOnChangeGame(_onChangeGame);
     _handsOther.initialize();
   }
 
