@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 
@@ -30,10 +31,18 @@ class YakuStatistics {
         Yaku.values,
         Yaku.values.map((yaku) =>
             (_yakuMap[yaku] ?? 0) +
-            (winResult.yakuList.contains(yaku) ? 1 : 0)));
-    _doraAll = _doraAll + winResult.hansOfDoras[0];
-    _uraDoraAll = _uraDoraAll + winResult.hansOfDoras[1];
-    _redFiveAll = _redFiveAll + winResult.hansOfDoras[2];
+            (winResult.resultMap.map((result) => result.yaku).contains(yaku)
+                ? 1
+                : 0)));
+    List<int> countedDoras =
+        [Yaku.dora, Yaku.uraDora, Yaku.redFive].map((yaku) {
+      final doraResult =
+          winResult.resultMap.firstWhereOrNull((result) => result.yaku == yaku);
+      return doraResult != null ? doraResult.hans : 0;
+    }).toList();
+    _doraAll = countedDoras[0];
+    _uraDoraAll = countedDoras[1];
+    _redFiveAll = countedDoras[2];
   }
 
   Map<String, int> toJson() {

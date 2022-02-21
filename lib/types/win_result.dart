@@ -2,7 +2,7 @@ import 'package:one_on_one_mahjong/constants/yaku.dart';
 
 class WinResult {
   final List<Yaku> _yakuList;
-  final List<int> _hansOfDoras; // [ドラ, 裏ドラ, 赤ドラ]
+  List<int> _hansOfDoras; // [ドラ, 裏ドラ, 赤ドラ]
 
   WinResult({
     required List<Yaku>? yakuList,
@@ -16,6 +16,10 @@ class WinResult {
 
   void addFinalTileWin() {
     _yakuList.insert(0, Yaku.finalTileWin);
+  }
+
+  void updateHansOfUraDora(int hansOfUraDora) {
+    _hansOfDoras = [_hansOfDoras[0], hansOfUraDora, _hansOfDoras[2]];
   }
 
   int get hans => resultMap.fold(0, (int p, resultRow) => p + resultRow.hans);
@@ -60,9 +64,6 @@ class WinResult {
     if (hans >= 4) return '満貫';
     return 'エラー';
   }
-
-  List<Yaku> get yakuList => _yakuList;
-  List<int> get hansOfDoras => _hansOfDoras;
 
   @override
   String toString() {
