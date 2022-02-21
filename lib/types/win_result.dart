@@ -5,8 +5,8 @@ class WinResult {
   final List<int> _hansOfDoras; // [ドラ, 裏ドラ, 赤ドラ]
 
   WinResult({
-    required yakuList,
-    hansOfDoras,
+    required List<Yaku>? yakuList,
+    List<int>? hansOfDoras,
   })  : _yakuList = yakuList ?? [Yaku.reach],
         _hansOfDoras = hansOfDoras ?? [0, 0, 0];
 

@@ -33,6 +33,7 @@ import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/utils/firestore_accessor.dart';
+import 'package:one_on_one_mahjong/utils/han_util.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
 import 'package:one_on_one_mahjong/utils/tiles_util.dart';
@@ -349,7 +350,15 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (!_isFuriten &&
           targetTile != null &&
           _reachResult.containsKey(convertRedTile(targetTile))) {
-        WinResult winResult = _reachResult[convertRedTile(targetTile)]!;
+        // リーチの段階では裏ドラはカウントされていないので、ドラの判定し直し
+        final winTiles = [..._handsMe.tiles, targetTile];
+        final hansOfDora = fetchHansOfDora(winTiles, _doras.tiles[0]);
+        final hansOfUraDora = fetchHansOfDora(winTiles, _doras.tiles[1]);
+        final hansOfRedFive = fetchHansOfRedFive(winTiles);
+        WinResult winResult = WinResult(
+          yakuList: _reachResult[convertRedTile(targetTile)]!.yakuList,
+          hansOfDoras: [hansOfDora, hansOfUraDora, hansOfRedFive],
+        );
         if (winResult.yakumanCount == 0) {
           if (_isFinalTileWin) winResult.addFinalTileWin();
           if (_isFirstTurnWin) winResult.addFirstTurnWin();
