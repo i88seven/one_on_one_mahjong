@@ -10,6 +10,17 @@ final gameUserStatisticsProvider =
 class GameUserStatisticsModel extends ChangeNotifier {
   GameUserStatistics gameUserStatistics = GameUserStatistics('');
 
+  Future<void> login(String uid) async {
+    DocumentReference statisticsRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('statistics')
+        .doc(uid);
+    final statisticsData = await statisticsRef.get() as Map<String, int>;
+    gameUserStatistics = GameUserStatistics.fromJson(uid, statisticsData);
+    notifyListeners();
+  }
+
   Future<void> create(String uid) async {
     DocumentReference statisticsRef = FirebaseFirestore.instance
         .collection('users')
