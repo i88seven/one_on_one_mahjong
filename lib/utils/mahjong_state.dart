@@ -38,13 +38,13 @@ class MahjongState {
 }
 
 class ReachMahjongState {
-  List<AllTileKinds> doras;
+  AllTileKinds dora;
   int wind;
   int round;
   bool isParent;
 
   ReachMahjongState({
-    required this.doras,
+    required this.dora,
     required this.wind,
     required this.round,
     required this.isParent,

@@ -656,7 +656,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   void _fetchReachResult() {
     ReachMahjongState mahjongState = ReachMahjongState(
-      doras: _doras.tiles,
+      dora: _doras.tiles[0],
       wind: _gameRound.wind,
       round: _gameRound.round,
       isParent: _me.isParent,

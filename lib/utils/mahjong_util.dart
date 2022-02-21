@@ -59,12 +59,6 @@ Map<AllTileKinds, WinResult> fetchReachResult(
     return result;
   }
 
-  // ドラの翻
-  List<int> hansOfDoras = [];
-  hansOfDoras.add(fetchHansOfDora(tiles, reachMahjongState.doras[0]));
-  hansOfDoras.add(fetchHansOfDora(tiles, reachMahjongState.doras[1]));
-  hansOfDoras.add(fetchHansOfRedFive(tiles));
-
   // 七対子
   AllTileKinds? sevenPairsReachTile = fetchSevenPairsReachTile(tiles);
   if (sevenPairsReachTile != null) {
@@ -75,9 +69,13 @@ Map<AllTileKinds, WinResult> fetchReachResult(
         winTile: sevenPairsReachTile);
     final sevenPairsYaku =
         fetchSevenPairsYaku(mahjongState, [...tiles, sevenPairsReachTile]);
+
+    final hansOfDora = fetchHansOfDora(
+        [...tiles, sevenPairsReachTile], reachMahjongState.dora);
+    final hansOfRedFive = fetchHansOfRedFive(tiles);
     result[sevenPairsReachTile] = WinResult(
       yakuList: sevenPairsYaku,
-      hansOfDoras: hansOfDoras,
+      hansOfDoras: [hansOfDora, 0, hansOfRedFive],
     );
     // 七対子をアガっても二盃口などの上位役の可能性がある
   }
@@ -104,9 +102,12 @@ Map<AllTileKinds, WinResult> fetchReachResult(
       List<Yaku> yakuList =
           fetchYaku(winCandidate, mahjongState, [...tiles, winTile]);
       if (yakuList.isNotEmpty) {
+        final hansOfDora =
+            fetchHansOfDora([...tiles, winTile], reachMahjongState.dora);
+        final hansOfRedFive = fetchHansOfRedFive(tiles);
         WinResult temporaryWinResult = WinResult(
           yakuList: yakuList,
-          hansOfDoras: hansOfDoras,
+          hansOfDoras: [hansOfDora, 0, hansOfRedFive],
         );
         if (result[winTile] == null ||
             temporaryWinResult.hans > result[winTile]!.hans) {

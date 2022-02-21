@@ -6,13 +6,13 @@ import 'package:one_on_one_mahjong/utils/mahjong_state.dart';
 import 'package:one_on_one_mahjong/utils/mahjong_util.dart';
 
 ReachMahjongState fetchReachMahjongState({
-  List<AllTileKinds>? doras,
+  AllTileKinds? dora,
   int? wind,
   int? round,
   bool? isParent,
 }) {
   return ReachMahjongState(
-    doras: doras ?? [AllTileKinds.m1, AllTileKinds.j1],
+    dora: dora ?? AllTileKinds.m1,
     wind: wind ?? 1,
     round: round ?? 1,
     isParent: isParent ?? true,
@@ -318,7 +318,7 @@ void main() {
         ];
         Map<AllTileKinds, WinResult> expected = {
           AllTileKinds.p4: WinResult(
-              yakuList: [Yaku.reach, Yaku.sevenPairs], hansOfDoras: [0, 2, 0]),
+              yakuList: [Yaku.reach, Yaku.sevenPairs], hansOfDoras: [0, 0, 0]),
         };
         ReachMahjongState reachMahjongState = fetchReachMahjongState();
         fetchReachResultTest(tiles, reachMahjongState, expected);
