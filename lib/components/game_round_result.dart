@@ -55,7 +55,8 @@ class GameRoundResult extends PositionComponent {
     _winResult.resultMap.asMap().forEach((int i, ResultRow resultRow) {
       add(TextComponent(resultRow.toString(),
           textRenderer: _textRenderer,
-          position: Vector2(10 + (i > 7 ? size.x / 2 : 0), i * 28 + 40)));
+          position: Vector2(
+              10 + (i > 7 ? size.x / 2 : 0), (i > 7 ? i - 8 : i) * 28 + 40)));
     });
 
     for (var i = 0; i < 4; i++) {
