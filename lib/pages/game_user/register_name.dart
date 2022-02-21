@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name_input.dart';
@@ -21,13 +20,7 @@ class RegisterGameUserNamePage extends ConsumerWidget {
     Future<void> _registerName(String name) async {
       try {
         GameUser _gameUser = gameUserModel.gameUser;
-        DocumentReference userRef =
-            FirebaseFirestore.instance.collection('users').doc(_gameUser.uid);
-        await userRef.update({
-          'name': name,
-          'updatedAt': Timestamp.now(),
-        });
-        gameUserModel.updateFromJson({..._gameUser.toJson(), 'name': name});
+        gameUserModel.updateName(name);
 
         await gameUserStatisticsModel.create(_gameUser.uid);
 

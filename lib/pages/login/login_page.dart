@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/pages/game_user/register_name.dart';
 import 'package:one_on_one_mahjong/pages/login/login_input.dart';
+import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 
 class LoginPage extends ConsumerWidget {
@@ -10,14 +12,29 @@ class LoginPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gameUserModel = ref.watch(gameUserProvider);
 
-    Future<void> _onSubmit(Map<String, dynamic> gameUserJson) async {
-      gameUserModel.updateFromJson(gameUserJson);
+    Future<void> _onCreate(String uid) async {
+      await gameUserModel.create(uid);
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) {
+          return const RegisterGameUserNamePage();
+        }),
+      );
+    }
+
+    Future<void> _onLogin(String uid) async {
+      await gameUserModel.login(uid);
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute<bool>(
+          builder: (context) => const PreparationMainPage(),
+        ),
+      );
     }
 
     return Scaffold(
       body: Center(
         child: LoginInput(
-          onSubmit: _onSubmit,
+          onCreate: _onCreate,
+          onLogin: _onLogin,
         ),
       ),
     );

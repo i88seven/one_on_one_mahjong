@@ -1,13 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:one_on_one_mahjong/pages/game_user/register_name.dart';
-import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 
 class LoginInput extends StatefulWidget {
-  final Function(Map<String, dynamic> gameUserJson) onSubmit;
+  final Function(String uid) onCreate;
+  final Function(String uid) onLogin;
 
-  const LoginInput({required this.onSubmit, Key? key}) : super(key: key);
+  const LoginInput({required this.onCreate, required this.onLogin, Key? key})
+      : super(key: key);
 
   @override
   _LoginInputState createState() => _LoginInputState();
@@ -26,21 +26,7 @@ class _LoginInputState extends State<LoginInput> {
         password: _password.text,
       );
 
-      String uid = result.user!.uid;
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection('users').doc(uid);
-      await userRef.set({
-        'name': '',
-        'createdAt': Timestamp.now(),
-        'updatedAt': Timestamp.now(),
-      });
-
-      await widget.onSubmit({'uid': uid, 'name': ''});
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) {
-          return const RegisterGameUserNamePage();
-        }),
-      );
+      await widget.onCreate(result.user!.uid);
     } on FirebaseAuthException catch (e) {
       const errorMap = {
         'email-already-in-use': 'すでに登録されています。',
@@ -61,18 +47,7 @@ class _LoginInputState extends State<LoginInput> {
         email: _email.text,
         password: _password.text,
       );
-
-      String uid = result.user!.uid;
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection('users').doc(uid);
-      final userData = await userRef.get();
-      await widget.onSubmit({'uid': uid, 'name': userData['name']});
-
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute<bool>(
-          builder: (context) => const PreparationMainPage(),
-        ),
-      );
+      await widget.onLogin(result.user!.uid);
     } catch (e) {
       setState(() {
         infoText = "ログインに失敗しました：${e.toString()}";
