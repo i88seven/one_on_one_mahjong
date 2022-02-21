@@ -1,3 +1,4 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 
 class MahjongState {
@@ -53,7 +54,8 @@ class ReachMahjongState {
   });
 
   AllTileKinds get prevalentWindTile {
-    return wind == 1 ? AllTileKinds.j1 : AllTileKinds.j2;
+    AllTileKinds? tile = EnumToString.fromString(AllTileKinds.values, "j$wind");
+    return tile ?? AllTileKinds.j1;
   }
 
   AllTileKinds get seatWindTile {
