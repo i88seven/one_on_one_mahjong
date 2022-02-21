@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
+import 'package:one_on_one_mahjong/pages/game_user/register_name.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 
 class LoginInput extends StatefulWidget {
@@ -38,7 +38,7 @@ class _LoginInputState extends State<LoginInput> {
       await widget.onSubmit({'uid': uid, 'name': ''});
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) {
-          return const UpdateGameUserNamePage();
+          return const RegisterGameUserNamePage();
         }),
       );
     } on FirebaseAuthException catch (e) {
