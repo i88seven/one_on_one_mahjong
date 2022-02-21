@@ -63,6 +63,8 @@ class GamePlayer extends PositionComponent {
         hansOfDoras.add(hansString);
       }
       _winResult = WinResult(yakuList: yakuList, hansOfDoras: hansOfDoras);
+    } else {
+      _winResult = null;
     }
     _rerender();
   }
