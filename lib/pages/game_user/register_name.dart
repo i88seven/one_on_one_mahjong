@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
+import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/game_user.dart';
-import 'package:one_on_one_mahjong/types/game_user_statistics.dart';
 
 class RegisterGameUserNamePage extends ConsumerWidget {
   final String? _initialName;
@@ -16,6 +16,7 @@ class RegisterGameUserNamePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameUserModel = ref.read(gameUserProvider);
+    final gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
 
     Future<void> _registerName(String name) async {
       try {
@@ -28,14 +29,7 @@ class RegisterGameUserNamePage extends ConsumerWidget {
         });
         gameUserModel.updateFromJson({..._gameUser.toJson(), 'name': name});
 
-        final gameUserStatistics = GameUserStatistics(_gameUser.uid);
-        DocumentReference statisticsRef =
-            userRef.collection('statistics').doc(_gameUser.uid);
-        await statisticsRef.set({
-          ...gameUserStatistics.toJson(),
-          'createdAt': Timestamp.now(),
-          'updatedAt': Timestamp.now(),
-        });
+        await gameUserStatisticsModel.create(_gameUser.uid);
 
         await Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
