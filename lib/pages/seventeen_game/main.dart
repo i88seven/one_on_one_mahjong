@@ -544,7 +544,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           isParent: _me.isParent,
           isWinner: isWinner,
           winResult: winner?.winResult,
-          step: isWinner ? _trashesMe.tileCount : _trashesOther.tileCount,
+          step: _trashesMe.tileCount,
           doraTrashes: _doraTrashes,
         );
         remove(_gameRoundResult!.button);
