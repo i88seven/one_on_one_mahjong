@@ -94,6 +94,23 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
               "負け数 : ${_gameUserStatistics.toMap()['loseGame']} 回",
             ]),
           ),
+          ExpansionTile(
+            expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+            initiallyExpanded: true,
+            title: const Text('局集計'),
+            children: convertToStatisticsRow([
+              "総局数 : ${_gameUserStatistics.toMap()['totalRound']} 回",
+              "引き分け数 : ${_gameUserStatistics.summedUpMap['drawnRound']} 回",
+              "勝ち数 : ${_gameUserStatistics.summedUpMap['winRound']} 回",
+              "負け数 : ${_gameUserStatistics.summedUpMap['loseRound']} 回",
+              "満貫 : ${_gameUserStatistics.summedUpMap['winName']['win']['mangan']} 回",
+              "跳満 : ${_gameUserStatistics.summedUpMap['winName']['win']['haneman']} 回",
+              "倍満 : ${_gameUserStatistics.summedUpMap['winName']['win']['baiman']} 回",
+              "三倍満 : ${_gameUserStatistics.summedUpMap['winName']['win']['sanbaiman']} 回",
+              "役満 : ${_gameUserStatistics.summedUpMap['winName']['win']['yakuman']} 回",
+              "数え役満 : ${_gameUserStatistics.summedUpMap['winName']['win']['kazoeYakuman']} 回",
+            ]),
+          ),
         ],
       ),
     );

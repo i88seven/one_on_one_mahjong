@@ -36,4 +36,26 @@ class StatedStatistics {
       StatisticsKind.values.map((kind) => statistics[kind]!.toMap()),
     );
   }
+
+  Map<String, int> toMapWin() {
+    Map<String, int> summedUpMap = {};
+    statistics[StatisticsKind.parentWin]!.toMap().entries.forEach((entry) {
+      summedUpMap[entry.key] = (summedUpMap[entry.key] ?? 0) + entry.value;
+    });
+    statistics[StatisticsKind.childWin]!.toMap().entries.forEach((entry) {
+      summedUpMap[entry.key] = (summedUpMap[entry.key] ?? 0) + entry.value;
+    });
+    return summedUpMap;
+  }
+
+  Map<String, int> toMapLose() {
+    Map<String, int> summedUpMap = {};
+    statistics[StatisticsKind.parentLose]!.toMap().entries.forEach((entry) {
+      summedUpMap[entry.key] = (summedUpMap[entry.key] ?? 0) + entry.value;
+    });
+    statistics[StatisticsKind.childLose]!.toMap().entries.forEach((entry) {
+      summedUpMap[entry.key] = (summedUpMap[entry.key] ?? 0) + entry.value;
+    });
+    return summedUpMap;
+  }
 }

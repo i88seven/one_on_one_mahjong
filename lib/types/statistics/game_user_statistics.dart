@@ -123,4 +123,37 @@ class GameUserStatistics {
       'doraTrashAll': _doraTrashAll,
     };
   }
+
+  Map<String, dynamic> get summedUpMap {
+    return {
+      'uid': _uid,
+      'totalGame': _totalGame,
+      'winGame': _winGame,
+      'loseGame': _loseGame,
+      'drawGame': _drawGame,
+      'totalRound': _totalRound,
+      'winRound':
+          _winName.toMapWin().values.reduce((sum, value) => sum + value),
+      'loseRound':
+          _winName.toMapLose().values.reduce((sum, value) => sum + value),
+      'drawnRound': _parentDrawnRound + _childDrawnRound,
+      'winName': {
+        'win': _winName.toMapWin(),
+        'lose': _winName.toMapLose(),
+      },
+      'yaku': {
+        'win': _yaku.toMapWin(),
+        'lose': _yaku.toMapLose(),
+      },
+      'pointAll': {
+        'win': _pointAll.toMapWin(),
+        'lose': _pointAll.toMapLose(),
+      },
+      'stepAll': {
+        'win': _stepAll.toMapWin(),
+        'lose': _stepAll.toMapLose(),
+      },
+      'doraTrashAll': _doraTrashAll,
+    };
+  }
 }
