@@ -64,6 +64,7 @@ class GameUserStatistics {
       _winName.toMapLose().values.reduce((sum, value) => sum + value);
   Map<String, int> get winName => _winName.toMapWin();
   Map<String, int> get loseName => _winName.toMapLose();
+  Map<String, int> get winYaku => _yaku.toMapWin();
   int get winPointAll =>
       _pointAll.toMapWin().values.reduce((sum, value) => sum + value);
   int get losePointAll =>

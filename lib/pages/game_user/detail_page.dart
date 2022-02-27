@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
@@ -114,6 +115,36 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
               "平均負け点数 : ${_gameUserStatistics.losePointAverage} 点",
               "平均勝ち歩数 : ${_gameUserStatistics.winStepAverage} 歩",
               "平均負け歩数 : ${_gameUserStatistics.loseStepAverage} 歩",
+            ]),
+          ),
+          ExpansionTile(
+            expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+            initiallyExpanded: false,
+            title: const Text('役集計'),
+            children: convertToStatisticsRow([
+              "勝ち局数 : ${_gameUserStatistics.winRound} 局",
+              "",
+              ...Yaku.values.fold<List<String>>([], (currentList, yaku) {
+                currentList.add(
+                    "${nameMap[yaku]} : ${_gameUserStatistics.winYaku[yaku.name]} 回");
+                switch (yaku) {
+                  case Yaku.dora:
+                    currentList.add(
+                        "ドラ合計 : ${_gameUserStatistics.winYaku['doraAll']} 回");
+                    break;
+                  case Yaku.uraDora:
+                    currentList.add(
+                        "裏ドラ合計 : ${_gameUserStatistics.winYaku['uraDoraAll']} 回");
+                    break;
+                  case Yaku.redFive:
+                    currentList.add(
+                        "赤ドラ合計 : ${_gameUserStatistics.winYaku['redFiveAll']} 回");
+                    break;
+                  default:
+                  // NOP
+                }
+                return currentList;
+              }),
             ]),
           ),
         ],
