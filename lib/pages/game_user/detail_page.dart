@@ -34,13 +34,13 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
         Row(
           children: [
             Container(
-              width: (MediaQuery.of(context).size.width - 16) * 0.5,
+              width: (MediaQuery.of(context).size.width - 48) * 0.5,
               alignment: Alignment.centerLeft,
               child: Text(textList[i * 2]),
             ),
             textList.length > i * 2 + 1
                 ? Container(
-                    width: (MediaQuery.of(context).size.width - 16) * 0.5,
+                    width: (MediaQuery.of(context).size.width - 48) * 0.5,
                     alignment: Alignment.centerLeft,
                     child: Text(textList[i * 2 + 1]),
                   )
@@ -84,9 +84,12 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
           ExpansionTile(
             expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
             initiallyExpanded: true,
+            childrenPadding:
+                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             title: const Text('対戦集計'),
             children: convertToStatisticsRow([
               "総対戦数 : ${_gameUserStatistics.totalGame} 回",
@@ -99,6 +102,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
           ExpansionTile(
             expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
             initiallyExpanded: true,
+            childrenPadding:
+                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             title: const Text('局集計'),
             children: convertToStatisticsRow([
               "総局数 : ${_gameUserStatistics.totalRound} 局",
@@ -120,6 +125,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
           ExpansionTile(
             expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
             initiallyExpanded: false,
+            childrenPadding:
+                const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
             title: const Text('役集計'),
             children: convertToStatisticsRow([
               "勝ち局数 : ${_gameUserStatistics.winRound} 局",
