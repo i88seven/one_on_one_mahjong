@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:one_on_one_mahjong/types/game_user_statistics.dart';
+import 'package:one_on_one_mahjong/types/statistics/game_user_statistics.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 
 final gameUserStatisticsProvider =
@@ -31,7 +31,7 @@ class GameUserStatisticsModel extends ChangeNotifier {
         .doc(uid);
     gameUserStatistics = GameUserStatistics(uid);
     await statisticsRef.set({
-      ...gameUserStatistics.toJson(),
+      ...gameUserStatistics.toMap(),
       'createdAt': Timestamp.now(),
       'updatedAt': Timestamp.now(),
     });
@@ -46,7 +46,7 @@ class GameUserStatisticsModel extends ChangeNotifier {
         .doc(uid);
     gameUserStatistics.countOnGameStart();
     await statisticsRef.update({
-      ...gameUserStatistics.toJson(),
+      ...gameUserStatistics.toMap(),
       'updatedAt': Timestamp.now(),
     });
     notifyListeners();
@@ -63,7 +63,7 @@ class GameUserStatisticsModel extends ChangeNotifier {
         .doc(uid);
     gameUserStatistics.countOnGameEnd(pointDiff: pointDiff);
     await statisticsRef.update({
-      ...gameUserStatistics.toJson(),
+      ...gameUserStatistics.toMap(),
       'updatedAt': Timestamp.now(),
     });
     notifyListeners();
@@ -90,7 +90,7 @@ class GameUserStatisticsModel extends ChangeNotifier {
       doraTrashes: doraTrashes,
     );
     await statisticsRef.update({
-      ...gameUserStatistics.toJson(),
+      ...gameUserStatistics.toMap(),
       'updatedAt': Timestamp.now(),
     });
     notifyListeners();

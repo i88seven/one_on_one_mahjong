@@ -12,7 +12,7 @@ class GameUser {
     _name = userJson['name'];
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, String> toJson() {
     return {
       'uid': _uid,
       'name': _name,

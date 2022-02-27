@@ -1,4 +1,6 @@
-class WinNameStatistics {
+import 'package:one_on_one_mahjong/types/statistics/statistics_item.dart';
+
+class WinNameStatistics implements StatisticsItem {
   int _mangan;
   int _haneman;
   int _baiman;
@@ -20,7 +22,8 @@ class WinNameStatistics {
         _yakuman = yakuman ?? 0,
         _kazoeYakuman = kazoeYakuman ?? 0;
 
-  WinNameStatistics.fromJson(Map<String, dynamic> json)
+  @override
+  WinNameStatistics.fromJson(Map<String, int> json)
       : _mangan = json['mangan'] ?? 0,
         _haneman = json['haneman'] ?? 0,
         _baiman = json['baiman'] ?? 0,
@@ -28,8 +31,10 @@ class WinNameStatistics {
         _yakuman = json['yakuman'] ?? 0,
         _kazoeYakuman = json['kazoeYakuman'] ?? 0;
 
-  void count({required String winName}) {
+  @override
+  void count(value) {
     // TODO switch 使わない形にしたい
+    String winName = value;
     switch (winName) {
       case '満貫':
         _mangan++;
@@ -53,7 +58,8 @@ class WinNameStatistics {
     }
   }
 
-  Map<String, int> toJson() {
+  @override
+  Map<String, int> toMap() {
     return {
       'mangan': _mangan,
       'haneman': _haneman,

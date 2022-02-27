@@ -1,8 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
+import 'package:one_on_one_mahjong/types/statistics/statistics_item.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 
-class YakuStatistics {
+class YakuStatistics implements StatisticsItem {
   Map<Yaku, int> _yakuMap;
   int _doraAll;
   int _uraDoraAll;
@@ -19,14 +20,17 @@ class YakuStatistics {
         _uraDoraAll = uraDoraAll ?? 0,
         _redFiveAll = redFiveAll ?? 0;
 
-  YakuStatistics.fromJson(Map<String, dynamic> json)
+  @override
+  YakuStatistics.fromJson(Map<String, int> json)
       : _yakuMap = Map.fromIterables(
             Yaku.values, Yaku.values.map((yaku) => json[yaku.name] ?? 0)),
         _doraAll = json['doraAll'] ?? 0,
         _uraDoraAll = json['uraDoraAll'] ?? 0,
         _redFiveAll = json['redFiveAll'] ?? 0;
 
-  void count({required WinResult winResult}) {
+  @override
+  void count(value) {
+    WinResult winResult = value;
     _yakuMap = Map.fromIterables(
         Yaku.values,
         Yaku.values.map((yaku) =>
@@ -45,7 +49,8 @@ class YakuStatistics {
     _redFiveAll = countedDoras[2];
   }
 
-  Map<String, int> toJson() {
+  @override
+  Map<String, int> toMap() {
     return {
       ...Map.fromIterables(Yaku.values.map((yaku) => yaku.name),
           Yaku.values.map((yaku) => _yakuMap[yaku] ?? 0)),
