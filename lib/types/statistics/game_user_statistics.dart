@@ -75,8 +75,8 @@ class GameUserStatistics {
       _stepAll.toMapWin().values.reduce((sum, value) => sum + value);
   int get loseStepAll =>
       _stepAll.toMapLose().values.reduce((sum, value) => sum + value);
-  int get winStepAverage => (winStepAll / winRound).floor();
-  int get loseStepAverage => (loseStepAll / loseRound).floor();
+  double get winStepAverage => (winStepAll / winRound * 100).floor() / 100;
+  double get loseStepAverage => (loseStepAll / loseRound * 100).floor() / 100;
 
   void countOnGameStart() {
     _totalGame++;
