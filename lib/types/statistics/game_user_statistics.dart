@@ -51,6 +51,10 @@ class GameUserStatistics {
   int get loseGame => _loseGame;
   int get drawGame => _drawGame;
   int get disconnectionGame => _totalGame - _winGame - _loseGame - _drawGame;
+  int get winRate => (_winGame / _totalGame * 100).floor();
+  int get loseRate => (_loseGame / _totalGame * 100).floor();
+  int get drawRate => (_drawGame / _totalGame * 100).floor();
+  int get disconnectionRate => (disconnectionGame / _totalGame * 100).floor();
 
   int get totalRound => _totalRound;
   int get drawnRound => _parentDrawnRound + _childDrawnRound;
@@ -60,6 +64,18 @@ class GameUserStatistics {
       _winName.toMapLose().values.reduce((sum, value) => sum + value);
   Map<String, int> get winName => _winName.toMapWin();
   Map<String, int> get loseName => _winName.toMapLose();
+  int get winPointAll =>
+      _pointAll.toMapWin().values.reduce((sum, value) => sum + value);
+  int get losePointAll =>
+      _pointAll.toMapLose().values.reduce((sum, value) => sum + value);
+  int get winPointAverage => (winPointAll / winRound).floor();
+  int get losePointAverage => (losePointAll / loseRound).floor();
+  int get winStepAll =>
+      _stepAll.toMapWin().values.reduce((sum, value) => sum + value);
+  int get loseStepAll =>
+      _stepAll.toMapLose().values.reduce((sum, value) => sum + value);
+  int get winStepAverage => (winStepAll / winRound).floor();
+  int get loseStepAverage => (loseStepAll / loseRound).floor();
 
   void countOnGameStart() {
     _totalGame++;
