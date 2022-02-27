@@ -25,15 +25,15 @@ class GameUserStatistics {
 
   GameUserStatistics.fromJson(String uid, Map<String, dynamic> json)
       : _uid = uid,
-        _totalGame = json['totalGame'] ?? 0,
-        _winGame = json['winGame'] ?? 0,
-        _loseGame = json['loseGame'] ?? 0,
-        _drawGame = json['drawGame'] ?? 0,
-        _totalRound = json['totalRound'] ?? 0,
+        _totalGame = int.parse(json['totalGame'].toString()),
+        _winGame = int.parse(json['winGame'].toString()),
+        _loseGame = int.parse(json['loseGame'].toString()),
+        _drawGame = int.parse(json['drawGame'].toString()),
+        _totalRound = int.parse(json['totalRound'].toString()),
         _winName = StatedStatistics.fromJson(
             json['winName'], WinNameStatistics.fromJson),
-        _parentDrawnRound = json['parentDrawnRound'] ?? 0,
-        _childDrawnRound = json['childDrawnRound'] ?? 0,
+        _parentDrawnRound = int.parse(json['parentDrawnRound'].toString()),
+        _childDrawnRound = int.parse(json['childDrawnRound'].toString()),
         _yaku =
             StatedStatistics.fromJson(json['yaku'], YakuStatistics.fromJson),
         _pointAll =
@@ -41,9 +41,9 @@ class GameUserStatistics {
         _stepAll =
             StatedStatistics.fromJson(json['stepAll'], IntStatistics.fromJson),
         _doraTrashAll = [
-          json['doraTrashAll'][0] ?? 0,
-          json['doraTrashAll'][1] ?? 0,
-          json['doraTrashAll'][2] ?? 0
+          int.parse(json['doraTrashAll'][0].toString()),
+          int.parse(json['doraTrashAll'][1].toString()),
+          int.parse(json['doraTrashAll'][2].toString())
         ];
 
   int get disconnectionGame => _totalGame - _winGame - _loseGame - _drawGame;

@@ -22,11 +22,11 @@ class YakuStatistics implements StatisticsItem {
 
   @override
   YakuStatistics.fromJson(Map<String, int> json)
-      : _yakuMap = Map.fromIterables(
-            Yaku.values, Yaku.values.map((yaku) => json[yaku.name] ?? 0)),
-        _doraAll = json['doraAll'] ?? 0,
-        _uraDoraAll = json['uraDoraAll'] ?? 0,
-        _redFiveAll = json['redFiveAll'] ?? 0;
+      : _yakuMap = Map.fromIterables(Yaku.values,
+            Yaku.values.map((yaku) => int.parse(json[yaku.name].toString()))),
+        _doraAll = int.parse(json['doraAll'].toString()),
+        _uraDoraAll = int.parse(json['uraDoraAll'].toString()),
+        _redFiveAll = int.parse(json['redFiveAll'].toString());
 
   @override
   void count(value) {

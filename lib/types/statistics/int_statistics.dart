@@ -8,7 +8,8 @@ class IntStatistics implements StatisticsItem {
   }) : _value = value ?? 0;
 
   @override
-  IntStatistics.fromJson(Map<String, int> json) : _value = json['value']!;
+  IntStatistics.fromJson(Map<String, int> json)
+      : _value = int.parse(json['value'].toString());
 
   @override
   void count(value) {

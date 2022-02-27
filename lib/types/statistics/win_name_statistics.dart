@@ -24,12 +24,12 @@ class WinNameStatistics implements StatisticsItem {
 
   @override
   WinNameStatistics.fromJson(Map<String, int> json)
-      : _mangan = json['mangan'] ?? 0,
-        _haneman = json['haneman'] ?? 0,
-        _baiman = json['baiman'] ?? 0,
-        _sanbaiman = json['sanbaiman'] ?? 0,
-        _yakuman = json['yakuman'] ?? 0,
-        _kazoeYakuman = json['kazoeYakuman'] ?? 0;
+      : _mangan = int.parse(json['mangan'].toString()),
+        _haneman = int.parse(json['haneman'].toString()),
+        _baiman = int.parse(json['baiman'].toString()),
+        _sanbaiman = int.parse(json['sanbaiman'].toString()),
+        _yakuman = int.parse(json['yakuman'].toString()),
+        _kazoeYakuman = int.parse(json['kazoeYakuman'].toString());
 
   @override
   void count(value) {
