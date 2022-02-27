@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
+import 'package:one_on_one_mahjong/pages/game_user/detail_page.dart';
 import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/create.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/search.dart';
@@ -22,10 +22,9 @@ class PreparationMainPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
-              // TODO アカウント画面を作成
-              Navigator.of(context).pushReplacement(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
-                  return UpdateGameUserNamePage(initialName: _myName);
+                  return const UserDetailPage();
                 }),
               );
             },
