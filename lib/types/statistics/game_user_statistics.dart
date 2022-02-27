@@ -46,7 +46,20 @@ class GameUserStatistics {
           int.parse(json['doraTrashAll'][2].toString())
         ];
 
+  int get totalGame => _totalGame;
+  int get winGame => _winGame;
+  int get loseGame => _loseGame;
+  int get drawGame => _drawGame;
   int get disconnectionGame => _totalGame - _winGame - _loseGame - _drawGame;
+
+  int get totalRound => _totalRound;
+  int get drawnRound => _parentDrawnRound + _childDrawnRound;
+  int get winRound =>
+      _winName.toMapWin().values.reduce((sum, value) => sum + value);
+  int get loseRound =>
+      _winName.toMapLose().values.reduce((sum, value) => sum + value);
+  Map<String, int> get winName => _winName.toMapWin();
+  Map<String, int> get loseName => _winName.toMapLose();
 
   void countOnGameStart() {
     _totalGame++;
@@ -120,39 +133,6 @@ class GameUserStatistics {
       'yaku': _yaku.toMap(),
       'pointAll': _pointAll.toMap(),
       'stepAll': _stepAll.toMap(),
-      'doraTrashAll': _doraTrashAll,
-    };
-  }
-
-  Map<String, dynamic> get summedUpMap {
-    return {
-      'uid': _uid,
-      'totalGame': _totalGame,
-      'winGame': _winGame,
-      'loseGame': _loseGame,
-      'drawGame': _drawGame,
-      'totalRound': _totalRound,
-      'winRound':
-          _winName.toMapWin().values.reduce((sum, value) => sum + value),
-      'loseRound':
-          _winName.toMapLose().values.reduce((sum, value) => sum + value),
-      'drawnRound': _parentDrawnRound + _childDrawnRound,
-      'winName': {
-        'win': _winName.toMapWin(),
-        'lose': _winName.toMapLose(),
-      },
-      'yaku': {
-        'win': _yaku.toMapWin(),
-        'lose': _yaku.toMapLose(),
-      },
-      'pointAll': {
-        'win': _pointAll.toMapWin(),
-        'lose': _pointAll.toMapLose(),
-      },
-      'stepAll': {
-        'win': _stepAll.toMapWin(),
-        'lose': _stepAll.toMapLose(),
-      },
       'doraTrashAll': _doraTrashAll,
     };
   }
