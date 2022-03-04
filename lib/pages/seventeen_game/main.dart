@@ -10,6 +10,7 @@ import 'package:flame/assets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
@@ -42,6 +43,7 @@ const maxTrashCount = 17;
 
 class SeventeenGame extends FlameGame with TapDetector {
   late FirestoreAccessor _firestoreAccessor;
+  late final InterstitialAd _interstitialAd;
   GameUserStatisticsModel gameUserStatisticsModel;
   Images gameImages = Images();
   final String _myUid;
@@ -130,6 +132,20 @@ class SeventeenGame extends FlameGame with TapDetector {
       'tile-back.png',
       ...allTileImageName,
     ]);
+    // TODO
+    const adUnitId = 'ca-app-pub-3940256099942544/1033173712';
+    InterstitialAd.load(
+        adUnitId: adUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            _interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            // TODO catch
+            print('InterstitialAd failed to load: $error');
+          },
+        ));
 
     _gameRound = GameRound(this, 1, 1);
     _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
@@ -663,6 +679,20 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_myUid == _hostUid) {
       await _firestoreAccessor.deleteGame();
     }
+    _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+      },
+      onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
+    );
+    _interstitialAd.show();
     onGameEnd();
   }
 
