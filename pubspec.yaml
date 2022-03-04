@@ -24,6 +24,7 @@ dependencies:
   enum_to_string: ^2.0.1
   collection: ^1.15.0
   flutter_riverpod: ^1.0.3
+  google_mobile_ads: ^1.1.0
 
 dev_dependencies:
   flutter_test:
