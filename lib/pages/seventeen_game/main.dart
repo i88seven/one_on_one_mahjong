@@ -31,6 +31,7 @@ import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/game_status.dart';
 import 'package:one_on_one_mahjong/constants/reach_state.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
+import 'package:one_on_one_mahjong/constants/win_name.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 import 'package:one_on_one_mahjong/utils/firestore_accessor.dart';
@@ -126,11 +127,14 @@ class SeventeenGame extends FlameGame with TapDetector {
   @override
   Future<void>? onLoad() async {
     await super.onLoad();
-    List<String> allTileImageName =
+    List<String> allTileImages =
         allTileKinds.values.map((tileName) => "$tileName.png").toList();
+    List<String> allWinNameImages =
+        WinName.values.map((winName) => "${winName.name}.png").toList();
     await gameImages.loadAll([
       'tile-back.png',
-      ...allTileImageName,
+      ...allTileImages,
+      ...allWinNameImages,
     ]);
     // TODO
     const adUnitId = 'ca-app-pub-3940256099942544/1033173712';

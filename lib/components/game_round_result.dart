@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/components/back_tile.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
+import 'package:one_on_one_mahjong/components/win_name_component.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/tile_size.dart';
@@ -92,12 +93,17 @@ class GameRoundResult extends PositionComponent {
       ..x = 13.5 * tileSize.width + 5
       ..y = size.y - tileSize.height - 120);
 
+    WinNameComponent winNameComponent =
+        WinNameComponent(_gameImages, _winResult.winName!);
+    add(winNameComponent
+      ..x = 20
+      ..y = size.y - 104);
     final _winNameRenderer = TextPaint(
         config: const TextPaintConfig(fontSize: 50.0, color: Colors.black54));
     add(TextComponent(
       captionMap[_winResult.winName] ?? 'エラー',
       textRenderer: _winNameRenderer,
-      position: Vector2(20, size.y - 70),
+      position: Vector2(120, size.y - 70),
     ));
   }
 }
