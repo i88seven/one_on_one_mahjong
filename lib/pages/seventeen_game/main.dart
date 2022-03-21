@@ -88,7 +88,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     await _firestoreAccessor.deleteGame();
     List<Member> members = await _firestoreAccessor.getRoomMembers();
     members.sort((a, b) => a.uid == _hostUid ? -1 : 1);
-    int parentIndex = Random().nextInt(1);
+    int parentIndex = Random().nextInt(2);
     String parentUid = members[parentIndex].uid;
     for (Member member in members) {
       GamePlayer gamePlayer = GamePlayer(
