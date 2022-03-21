@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/pages/game_user/detail_page.dart';
-import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/create.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/search.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
@@ -58,18 +56,6 @@ class PreparationMainPage extends ConsumerWidget {
                     _searchRoom(context);
                   },
                 ),
-              ),
-              const SizedBox(height: 32),
-              IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  await Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) {
-                      return const LoginPage();
-                    }),
-                  );
-                },
               ),
             ],
           ),

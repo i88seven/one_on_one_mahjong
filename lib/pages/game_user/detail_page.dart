@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
+import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/game_user.dart';
@@ -153,6 +155,23 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                 return currentList;
               }),
             ]),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.logout),
+                label: const Text('ログアウト'),
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  await Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) {
+                      return const LoginPage();
+                    }),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
