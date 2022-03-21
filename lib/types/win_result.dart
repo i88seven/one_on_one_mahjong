@@ -1,3 +1,4 @@
+import 'package:one_on_one_mahjong/constants/win_name.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 
 class WinResult {
@@ -54,15 +55,14 @@ class WinResult {
     return 0; // TODO エラー
   }
 
-  String get winName {
-    if (yakumanCount >= 2) return yakumanCount.toString() + '倍役満';
-    if (yakumanCount == 1) return '役満';
-    if (hans >= 13) return '数え役満';
-    if (hans >= 11) return '三倍満';
-    if (hans >= 8) return '倍満';
-    if (hans >= 6) return '跳満';
-    if (hans >= 4) return '満貫';
-    return 'エラー';
+  WinName? get winName {
+    if (yakumanCount >= 1) return WinName.yakuman;
+    if (hans >= 13) return WinName.kazoeYakuman;
+    if (hans >= 11) return WinName.sanbaiman;
+    if (hans >= 8) return WinName.baiman;
+    if (hans >= 6) return WinName.haneman;
+    if (hans >= 4) return WinName.mangan;
+    return null;
   }
 
   @override

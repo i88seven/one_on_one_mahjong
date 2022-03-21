@@ -1,3 +1,4 @@
+import 'package:one_on_one_mahjong/constants/win_name.dart';
 import 'package:one_on_one_mahjong/types/statistics/statistics_item.dart';
 
 class WinNameStatistics implements StatisticsItem {
@@ -34,27 +35,28 @@ class WinNameStatistics implements StatisticsItem {
   @override
   void count(value) {
     // TODO switch 使わない形にしたい
-    String winName = value;
+    WinName winName = value;
     switch (winName) {
-      case '満貫':
+      case WinName.mangan:
         _mangan++;
         break;
-      case '跳満':
+      case WinName.haneman:
         _haneman++;
         break;
-      case '倍満':
+      case WinName.baiman:
         _baiman++;
         break;
-      case '三倍満':
+      case WinName.sanbaiman:
         _sanbaiman++;
         break;
-      case '数え役満':
+      case WinName.kazoeYakuman:
         _kazoeYakuman++;
         break;
-      case 'エラー':
+      case WinName.yakuman:
+        _yakuman++;
         break;
       default:
-        _yakuman++;
+      // NOP
     }
   }
 

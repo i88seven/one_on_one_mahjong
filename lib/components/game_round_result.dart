@@ -8,6 +8,7 @@ import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/tile_size.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
+import 'package:one_on_one_mahjong/constants/win_name.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
 
@@ -94,7 +95,7 @@ class GameRoundResult extends PositionComponent {
     final _winNameRenderer = TextPaint(
         config: const TextPaintConfig(fontSize: 50.0, color: Colors.black54));
     add(TextComponent(
-      _winResult.winName,
+      captionMap[_winResult.winName] ?? 'エラー',
       textRenderer: _winNameRenderer,
       position: Vector2(20, size.y - 70),
     ));
