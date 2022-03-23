@@ -135,6 +135,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       'tile-back.png',
       ...allTileImages,
       ...allWinNameImages,
+      'win.png',
+      'lose.png',
     ]);
     // TODO
     const adUnitId = 'ca-app-pub-3940256099942544/1033173712';
@@ -471,7 +473,11 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   Future<void> _processGameEnd() async {
     _gameResult = GameResult(
-        game: this, screenSize: screenSize, gamePlayers: _gamePlayers);
+      game: this,
+      screenSize: screenSize,
+      gamePlayers: _gamePlayers,
+      myPoints: _me.points,
+    );
     add(_gameResult!);
     await gameUserStatisticsModel.countOnGameEnd(
       uid: _myUid,
