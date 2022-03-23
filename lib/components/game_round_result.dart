@@ -38,11 +38,16 @@ class GameRoundResult extends PositionComponent {
     final okButton = GameTextButton(
       'OK',
       GameButtonKind.roundResultOk,
-      position: Vector2(screenSize.x - 100, screenSize.y - 50),
+      position: Vector2(screenSize.x - 80, screenSize.y - 50),
       priority: 20,
     );
     _button = okButton;
     add(_button);
+    WinNameComponent winNameComponent =
+        WinNameComponent(_gameImages, _winResult.winName!);
+    add(winNameComponent
+      ..x = 20
+      ..y = size.y - 104);
   }
 
   get button => _button;
@@ -93,11 +98,6 @@ class GameRoundResult extends PositionComponent {
       ..x = 13.5 * tileSize.width + 5
       ..y = size.y - tileSize.height - 120);
 
-    WinNameComponent winNameComponent =
-        WinNameComponent(_gameImages, _winResult.winName!);
-    add(winNameComponent
-      ..x = 20
-      ..y = size.y - 104);
     final _winNameRenderer = TextPaint(
         config: const TextPaintConfig(fontSize: 50.0, color: Colors.black54));
     add(TextComponent(
