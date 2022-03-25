@@ -197,95 +197,7 @@ class SeventeenGame extends FlameGame with TapDetector {
 
     if (gameData['gameStatus'] != null &&
         _gameStatus.name != gameData['gameStatus']) {
-      _gameStatus =
-          EnumToString.fromString(GameStatus.values, gameData['gameStatus']) ??
-              GameStatus.init;
-      if (_gameStatus == GameStatus.newRound &&
-          gameData['wind'] != null &&
-          gameData['round'] != null) {
-        _isFuriten = false;
-        _reachResult = {};
-        _gameRound.setRound(wind: gameData['wind'], round: gameData['round']);
-        _initializeOtherTiles();
-      }
-
-      if (_gameStatus == GameStatus.dealt && gameData['doras'] != null) {
-        _initializeOtherTiles();
-        if (_myUid == _hostUid) {
-          return;
-        }
-        final dorasJson = gameData['doras'];
-        if (dorasJson is List<dynamic>) {
-          if (!listEquals(
-              dorasJson, _doras.tiles.map((e) => e.name).toList())) {
-            List<AllTileKinds> doras = dorasJson
-                .map((tileString) =>
-                    EnumToString.fromString(AllTileKinds.values, tileString) ??
-                    AllTileKinds.m1)
-                .toList();
-            _doras.initialize(doras);
-          }
-        }
-        final myTilesSnapshot =
-            await _firestoreAccessor.getTilesSnapshot(_myUid);
-        _initializeMyTiles(myTilesSnapshot.data());
-      }
-
-      if (_gameStatus == GameStatus.trash) {
-        if (_canPlayBgm) {
-          await _prepareBgmPlayer?.stop();
-          _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
-        }
-      }
-
-      if (_gameStatus == GameStatus.ron) {
-        final winner = _gamePlayers
-            .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
-        AllTileKinds targetTile = winner?.uid == _me.uid
-            ? _trashesOther.tiles.last
-            : _trashesMe.tiles.last;
-        List<AllTileKinds> winnerHands = winner != null
-            ? await _firestoreAccessor.fetchWinnerHands(winner.uid)
-            : [];
-        if (winner != null && _gameRoundResult == null) {
-          _gameRoundResult = GameRoundResult(
-              game: this,
-              screenSize: screenSize,
-              winResult: winner.winResult!,
-              tiles: winnerHands,
-              winTile: targetTile,
-              doras: _doras.tiles);
-          add(_gameRoundResult!);
-          if (_canPlayBgm) {
-            await _battleBgmPlayer?.stop();
-            _prepareBgmPlayer =
-                await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
-          }
-        }
-      }
-
-      if (_gameStatus == GameStatus.drawnRound) {
-        if (_hostUid == _myUid) {
-          _gamePlayers.asMap().forEach((index, gamePlayer) {
-            gamePlayer.setStatus(GamePlayerStatus.waitRound);
-          });
-          await _firestoreAccessor.updateGamePlayers(_gamePlayers);
-        }
-        await gameUserStatisticsModel.countOnRoundEnd(
-          uid: _myUid,
-          isParent: _me.isParent,
-          isWinner: true,
-          winResult: null,
-          step: maxTrashCount,
-          doraTrashes: _doraTrashes,
-        );
-        return;
-      }
-
-      if (_gameStatus == GameStatus.gameResult) {
-        await _processGameEnd();
-        return;
-      }
+      await _onChangeGameStatus(gameData);
     }
 
     if (gameData['current'] != null && _currentOrder != gameData['current']) {
@@ -293,6 +205,99 @@ class SeventeenGame extends FlameGame with TapDetector {
       final tilesSnapshot =
           await _firestoreAccessor.getTilesSnapshot(_other.uid);
       await _onChangeTrashesOther(tilesSnapshot.data());
+    }
+  }
+
+  Future<void> _onChangeGameStatus(Map<String, dynamic> gameData) async {
+    if (_gameStatus == GameStatus.trash && gameData['gameStatus'] == 'dealt') {
+      return;
+    }
+    _gameStatus =
+        EnumToString.fromString(GameStatus.values, gameData['gameStatus']) ??
+            GameStatus.init;
+    if (_gameStatus == GameStatus.newRound &&
+        gameData['wind'] != null &&
+        gameData['round'] != null) {
+      _isFuriten = false;
+      _reachResult = {};
+      _gameRound.setRound(wind: gameData['wind'], round: gameData['round']);
+      _initializeOtherTiles();
+    }
+
+    if (_gameStatus == GameStatus.dealt && gameData['doras'] != null) {
+      _initializeOtherTiles();
+      if (_myUid == _hostUid) {
+        return;
+      }
+      final dorasJson = gameData['doras'];
+      if (dorasJson is List<dynamic>) {
+        if (!listEquals(dorasJson, _doras.tiles.map((e) => e.name).toList())) {
+          List<AllTileKinds> doras = dorasJson
+              .map((tileString) =>
+                  EnumToString.fromString(AllTileKinds.values, tileString) ??
+                  AllTileKinds.m1)
+              .toList();
+          _doras.initialize(doras);
+        }
+      }
+      final myTilesSnapshot = await _firestoreAccessor.getTilesSnapshot(_myUid);
+      _initializeMyTiles(myTilesSnapshot.data());
+    }
+
+    if (_gameStatus == GameStatus.trash) {
+      if (_canPlayBgm) {
+        await _prepareBgmPlayer?.stop();
+        _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
+      }
+    }
+
+    if (_gameStatus == GameStatus.ron) {
+      final winner = _gamePlayers
+          .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
+      AllTileKinds targetTile = winner?.uid == _me.uid
+          ? _trashesOther.tiles.last
+          : _trashesMe.tiles.last;
+      List<AllTileKinds> winnerHands = winner != null
+          ? await _firestoreAccessor.fetchWinnerHands(winner.uid)
+          : [];
+      if (winner != null && _gameRoundResult == null) {
+        _gameRoundResult = GameRoundResult(
+            game: this,
+            screenSize: screenSize,
+            winResult: winner.winResult!,
+            tiles: winnerHands,
+            winTile: targetTile,
+            doras: _doras.tiles);
+        add(_gameRoundResult!);
+        if (_canPlayBgm) {
+          await _battleBgmPlayer?.stop();
+          _prepareBgmPlayer =
+              await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+        }
+      }
+    }
+
+    if (_gameStatus == GameStatus.drawnRound) {
+      if (_hostUid == _myUid) {
+        _gamePlayers.asMap().forEach((index, gamePlayer) {
+          gamePlayer.setStatus(GamePlayerStatus.waitRound);
+        });
+        await _firestoreAccessor.updateGamePlayers(_gamePlayers);
+      }
+      await gameUserStatisticsModel.countOnRoundEnd(
+        uid: _myUid,
+        isParent: _me.isParent,
+        isWinner: true,
+        winResult: null,
+        step: maxTrashCount,
+        doraTrashes: _doraTrashes,
+      );
+      return;
+    }
+
+    if (_gameStatus == GameStatus.gameResult) {
+      await _processGameEnd();
+      return;
     }
   }
 
