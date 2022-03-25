@@ -25,6 +25,7 @@ dependencies:
   collection: ^1.15.0
   flutter_riverpod: ^1.0.3
   google_mobile_ads: ^1.1.0
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,4 @@ flutter:
 
   assets:
     - assets/images/
+    - .env

@@ -10,6 +10,7 @@ import 'package:flame/assets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
@@ -138,8 +139,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       'win.png',
       'lose.png',
     ]);
-    // TODO
-    const adUnitId = 'ca-app-pub-3940256099942544/1033173712';
+    String adUnitId = dotenv.env['AD_UNIT_ID'] ?? '';
     InterstitialAd.load(
         adUnitId: adUnitId,
         request: const AdRequest(),
