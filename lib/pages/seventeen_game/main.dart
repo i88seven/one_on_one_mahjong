@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:collection/collection.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/game.dart';
@@ -48,6 +49,9 @@ class SeventeenGame extends FlameGame with TapDetector {
   late final InterstitialAd _interstitialAd;
   GameUserStatisticsModel gameUserStatisticsModel;
   Images gameImages = Images();
+  final AudioCache _audioCache = AudioCache();
+  AudioPlayer? _prepareBgmPlayer;
+  AudioPlayer? _battleBgmPlayer;
   final String _myUid;
   final String _roomId;
   bool _isTapping = false;
@@ -152,6 +156,8 @@ class SeventeenGame extends FlameGame with TapDetector {
             print('InterstitialAd failed to load: $error');
           },
         ));
+    _prepareBgmPlayer =
+        await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
 
     _gameRound = GameRound(this, 1, 1);
     _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
@@ -167,6 +173,14 @@ class SeventeenGame extends FlameGame with TapDetector {
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
     await gameUserStatisticsModel.countOnGameStart(uid: _myUid);
     _handsOther.initialize();
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    _prepareBgmPlayer?.stop().then((value) => _prepareBgmPlayer?.dispose());
+    _battleBgmPlayer?.stop().then((value) => _battleBgmPlayer?.dispose());
+    _audioCache.clearAll();
   }
 
   Future<void> _onChangeGame(
@@ -215,7 +229,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
 
       if (_gameStatus == GameStatus.trash) {
-        // NOP
+        await _prepareBgmPlayer?.stop();
+        _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
       }
 
       if (_gameStatus == GameStatus.ron) {
@@ -236,6 +251,9 @@ class SeventeenGame extends FlameGame with TapDetector {
               winTile: targetTile,
               doras: _doras.tiles);
           add(_gameRoundResult!);
+          await _battleBgmPlayer?.stop();
+          _prepareBgmPlayer =
+              await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
         }
       }
 
