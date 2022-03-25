@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:collection/collection.dart';
@@ -156,8 +157,10 @@ class SeventeenGame extends FlameGame with TapDetector {
             print('InterstitialAd failed to load: $error');
           },
         ));
-    _prepareBgmPlayer =
-        await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+    if (_canPlayBgm) {
+      _prepareBgmPlayer =
+          await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+    }
 
     _gameRound = GameRound(this, 1, 1);
     _firestoreAccessor = FirestoreAccessor(roomId: _roomId, hostUid: _hostUid);
@@ -229,8 +232,10 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
 
       if (_gameStatus == GameStatus.trash) {
-        await _prepareBgmPlayer?.stop();
-        _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
+        if (_canPlayBgm) {
+          await _prepareBgmPlayer?.stop();
+          _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
+        }
       }
 
       if (_gameStatus == GameStatus.ron) {
@@ -251,9 +256,11 @@ class SeventeenGame extends FlameGame with TapDetector {
               winTile: targetTile,
               doras: _doras.tiles);
           add(_gameRoundResult!);
-          await _battleBgmPlayer?.stop();
-          _prepareBgmPlayer =
-              await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+          if (_canPlayBgm) {
+            await _battleBgmPlayer?.stop();
+            _prepareBgmPlayer =
+                await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+          }
         }
       }
 
@@ -752,5 +759,10 @@ class SeventeenGame extends FlameGame with TapDetector {
       return ReachState.notEnough;
     }
     return ReachState.undecided;
+  }
+
+  // Android では BGM を流すと大量のログが流れるので開発中は BGM を OFF
+  bool get _canPlayBgm {
+    return dotenv.env['MODE'] != 'dev' || !Platform.isAndroid;
   }
 }
