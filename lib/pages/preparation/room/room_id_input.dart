@@ -42,7 +42,7 @@ class _RoomIdInputState extends State<RoomIdInput> {
       key: _formKey,
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(28.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

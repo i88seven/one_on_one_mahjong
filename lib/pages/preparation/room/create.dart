@@ -57,10 +57,13 @@ class RoomCreatePage extends ConsumerWidget {
         padding: const EdgeInsets.all(8),
         scrollDirection: Axis.vertical,
         children: <Widget>[
-          RoomIdInput(
-            onSubmit: _createRoom,
-            buttonText: '作成',
-          )
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: RoomIdInput(
+              onSubmit: _createRoom,
+              buttonText: '作成',
+            ),
+          ),
         ],
       ),
     );

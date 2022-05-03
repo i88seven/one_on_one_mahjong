@@ -36,9 +36,12 @@ class PreparationMainPage extends ConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("あなたの名前 : $_myName"),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text("あなたの名前 : $_myName"),
+              ),
+              const SizedBox(height: 40),
               Container(
-                padding: const EdgeInsets.only(top: 16.0),
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   child: const Text('部屋を立てる'),
@@ -47,8 +50,8 @@ class PreparationMainPage extends ConsumerWidget {
                   },
                 ),
               ),
+              const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.only(top: 16.0),
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   child: const Text('部屋を探す'),

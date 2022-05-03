@@ -86,7 +86,6 @@ class _LoginInputState extends State<LoginInput> {
               },
             ),
           ),
-          const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(

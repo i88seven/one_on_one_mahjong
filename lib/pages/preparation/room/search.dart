@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/room_id_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/wait.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
@@ -37,53 +38,61 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
       appBar: AppBar(
         title: const Text('部屋を検索'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          RoomIdInput(
-            onSubmit: _searchRoom,
-            buttonText: '検索',
-          ),
-          if (_hasResult && !_hasRoom)
-            ListView(
-              children: [
-                Text(
-                  '見つかりませんでした',
-                    style:
-                        TextStyle(fontSize: 15.0, color: AppColor.errorColor),
-                ),
-              ],
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          scrollDirection: Axis.vertical,
+          children: <Widget>[
+            RoomIdInput(
+              onSubmit: _searchRoom,
+              buttonText: '検索',
             ),
-          if (_hasRoom)
-            ListView(
-              children: [
-                Text(
-                  "部屋ID: $_roomId",
-                  style: const TextStyle(fontSize: 18.0),
-                ),
-                Text(
-                  "リーダー: ${_host?.name}",
-                  style: const TextStyle(fontSize: 18.0),
-                ),
-              ],
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-            ),
-          if (_hasRoom)
-            Container(
-              padding: const EdgeInsets.only(top: 16.0),
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                child: const Text('入る'),
-                onPressed: () async {
-                  _participateGame(roomId: _roomId);
-                },
+            if (_hasResult && !_hasRoom)
+              ListView(
+                children: const [
+                  SizedBox(height: 12),
+                  Text(
+                    '見つかりませんでした',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: AppColor.errorColor,
+                    ),
+                  ),
+                ],
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
               ),
-            ),
-        ],
+            if (_hasRoom)
+              ListView(
+                children: [
+                  const SizedBox(height: 60),
+                  Text(
+                    "部屋ID: $_roomId",
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "リーダー: ${_host?.name}",
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ],
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+              ),
+            if (_hasRoom)
+              Container(
+                padding: const EdgeInsets.only(top: 32.0),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: const Text('入る'),
+                  onPressed: () async {
+                    _participateGame(roomId: _roomId);
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
