@@ -50,7 +50,8 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
               children: [
                 Text(
                   '見つかりませんでした',
-                  style: TextStyle(fontSize: 18.0, color: Colors.yellow[300]),
+                    style:
+                        TextStyle(fontSize: 15.0, color: AppColor.errorColor),
                 ),
               ],
               shrinkWrap: true,

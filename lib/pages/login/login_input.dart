@@ -75,7 +75,6 @@ class _LoginInputState extends State<LoginInput> {
             padding: const EdgeInsets.all(12),
             child: Text(
               infoText,
-              style: TextStyle(color: Colors.yellow[300]),
             ),
           ),
           SizedBox(

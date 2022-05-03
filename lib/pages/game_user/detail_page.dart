@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
 import 'package:one_on_one_mahjong/pages/login/login_page.dart';
@@ -92,7 +93,12 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
             initiallyExpanded: true,
             childrenPadding:
                 const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-            title: const Text('対戦集計'),
+            title: const Text(
+              '対戦集計',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            textColor: AppColor.primaryColorMain,
+            iconColor: AppColor.primaryColorMain,
             children: convertToStatisticsRow([
               "総対戦数 : ${_gameUserStatistics.totalGame} 回",
               "通信切断 : ${_gameUserStatistics.disconnectionGame} 回 (${_gameUserStatistics.disconnectionRate} %)",
@@ -106,7 +112,12 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
             initiallyExpanded: true,
             childrenPadding:
                 const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-            title: const Text('局集計'),
+            title: const Text(
+              '局集計',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            textColor: AppColor.primaryColorMain,
+            iconColor: AppColor.primaryColorMain,
             children: convertToStatisticsRow([
               "総局数 : ${_gameUserStatistics.totalRound} 局",
               "流局 : ${_gameUserStatistics.drawnRound} 局",
@@ -129,7 +140,12 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
             initiallyExpanded: false,
             childrenPadding:
                 const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-            title: const Text('役集計'),
+            title: const Text(
+              '役集計',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            textColor: AppColor.primaryColorMain,
+            iconColor: AppColor.primaryColorMain,
             children: convertToStatisticsRow([
               "勝ち局数 : ${_gameUserStatistics.winRound} 局",
               "",
@@ -159,17 +175,20 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.logout),
-                label: const Text('ログアウト'),
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  await Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) {
-                      return const LoginPage();
-                    }),
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.logout),
+                  label: const Text('ログアウト'),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    await Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) {
+                        return const LoginPage();
+                      }),
+                    );
+                  },
+                ),
               ),
             ],
           ),
