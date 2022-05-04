@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/room_id_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/wait.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
@@ -53,16 +54,21 @@ class RoomCreatePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('部屋の作成'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: RoomIdInput(
-              onSubmit: _createRoom,
-              buttonText: '作成',
-            ),
+      body: Stack(
+        children: [
+          const PreparationBackground(),
+          ListView(
+            padding: const EdgeInsets.all(8),
+            scrollDirection: Axis.vertical,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: RoomIdInput(
+                  onSubmit: _createRoom,
+                  buttonText: '作成',
+                ),
+              ),
+            ],
           ),
         ],
       ),

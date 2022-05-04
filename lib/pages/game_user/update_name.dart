@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
@@ -31,13 +32,18 @@ class UpdateGameUserNamePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('名前の変更'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          GameUserNameInput(
-            onSubmit: _updateName,
-            initialName: _initialName,
+      body: Stack(
+        children: [
+          const PreparationBackground(),
+          ListView(
+            padding: const EdgeInsets.all(8),
+            scrollDirection: Axis.vertical,
+            children: <Widget>[
+              GameUserNameInput(
+                onSubmit: _updateName,
+                initialName: _initialName,
+              ),
+            ],
           ),
         ],
       ),

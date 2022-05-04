@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
+import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
@@ -73,49 +74,56 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
           appBar: AppBar(
             title: Text("${widget.roomId} 待機中..."),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Card(
-              child: SizedBox(
-                height: _isHost ? 200 : 146,
-                child: Padding(
-                  padding: const EdgeInsets.all(28.0),
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: <Widget>[
-                      ListView.builder(
-                        itemExtent: 30,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, index) {
-                          String _namePrefix = myUid == _memberList[index].uid
-                              ? 'あなたの名前: '
-                              : '相手の名前: ';
-                          return ListTile(
-                            title: Text(_namePrefix + _memberList[index].name),
-                          );
-                        },
-                        itemCount: _memberCount,
-                      ),
-                      if (_isHost)
-                        Container(
-                          padding: const EdgeInsets.only(top: 24.0),
-                          alignment: Alignment.center,
-                          child: ElevatedButton(
-                            child: const Text('始める'),
-                            onPressed: () async {
-                              if (_memberCount < 2) {
-                                return;
-                              }
-                              _startGame();
+          body: Stack(
+            children: [
+              const PreparationBackground(),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Card(
+                  child: SizedBox(
+                    height: _isHost ? 200 : 146,
+                    child: Padding(
+                      padding: const EdgeInsets.all(28.0),
+                      child: ListView(
+                        scrollDirection: Axis.vertical,
+                        children: <Widget>[
+                          ListView.builder(
+                            itemExtent: 30,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext context, index) {
+                              String _namePrefix =
+                                  myUid == _memberList[index].uid
+                                      ? 'あなたの名前: '
+                                      : '相手の名前: ';
+                              return ListTile(
+                                title:
+                                    Text(_namePrefix + _memberList[index].name),
+                              );
                             },
+                            itemCount: _memberCount,
                           ),
-                        ),
-                    ],
+                          if (_isHost)
+                            Container(
+                              padding: const EdgeInsets.only(top: 24.0),
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
+                                child: const Text('始める'),
+                                onPressed: () async {
+                                  if (_memberCount < 2) {
+                                    return;
+                                  }
+                                  _startGame();
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       }),

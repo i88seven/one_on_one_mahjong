@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/game_user/detail_page.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/create.dart';
 import 'package:one_on_one_mahjong/pages/preparation/room/search.dart';
@@ -29,36 +30,41 @@ class PreparationMainPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        scrollDirection: Axis.vertical,
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: [
+          const PreparationBackground(),
+          ListView(
+            padding: const EdgeInsets.all(8),
+            scrollDirection: Axis.vertical,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text("あなたの名前 : $_myName"),
-              ),
-              const SizedBox(height: 40),
-              Container(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  child: const Text('部屋を立てる'),
-                  onPressed: () async {
-                    _createRoom(context);
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  child: const Text('部屋を探す'),
-                  onPressed: () async {
-                    _searchRoom(context);
-                  },
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text("あなたの名前 : $_myName"),
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      child: const Text('部屋を立てる'),
+                      onPressed: () async {
+                        _createRoom(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      child: const Text('部屋を探す'),
+                      onPressed: () async {
+                        _searchRoom(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
