@@ -249,6 +249,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         await _prepareBgmPlayer?.stop();
         _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
       }
+      _dealtsOther.initialize(21);
     }
 
     if (_gameStatus == GameStatus.ron) {
@@ -422,6 +423,10 @@ class SeventeenGame extends FlameGame with TapDetector {
         } else {
           _isFuriten = true;
         }
+      }
+      final dealtsJson = otherTilesData['dealts'];
+      if (dealtsJson is List<dynamic>) {
+        _dealtsOther.initialize(dealtsJson.length);
       }
       if (_trashesOther.tileCount == maxTrashCount &&
           _trashesMe.tileCount == maxTrashCount &&

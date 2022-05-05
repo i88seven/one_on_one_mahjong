@@ -18,8 +18,10 @@ class OtherDeals extends PositionComponent {
   }
 
   void initialize(int tileCount) {
-    _tileCount = tileCount;
-    _rerender();
+    if (_tileCount != tileCount) {
+      _tileCount = tileCount;
+      _rerender();
+    }
   }
 
   void _rerender() {
