@@ -674,7 +674,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _handsMe.addTile(tile.tileKind);
     if (_canFixHands) {
       _fixHandsButton = GameTextButton('確定', GameButtonKind.fixHands,
-          position: Vector2(screenSize.x - 100, screenSize.y - 150));
+          position: Vector2(screenSize.x - 140, screenSize.y - 150));
       add(_fixHandsButton!);
     }
 

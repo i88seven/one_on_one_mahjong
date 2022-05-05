@@ -39,7 +39,7 @@ class GameRoundResult extends PositionComponent {
     final okButton = GameTextButton(
       'OK',
       GameButtonKind.roundResultOk,
-      position: Vector2(screenSize.x - 80, screenSize.y - 50),
+      position: Vector2(screenSize.x - 152, screenSize.y - 70),
       priority: 20,
     );
     _button = okButton;

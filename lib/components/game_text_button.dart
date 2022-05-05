@@ -4,7 +4,6 @@ import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 
 class GameTextButton extends PositionComponent {
-  static Vector2 padding = Vector2(8, 4);
   final String _text;
   final GameButtonKind _kind;
 
@@ -19,15 +18,22 @@ class GameTextButton extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
-    final textRenderer =
-        TextPaint(
-        config: const TextPaintConfig(color: AppColor.gameDialogText));
+    final textRenderer = TextPaint(
+      config: const TextPaintConfig(
+        fontSize: 16,
+        color: AppColor.gameDialogText,
+      ),
+    );
     final textWidth = textRenderer.measureTextWidth(_text);
     final textHeight = textRenderer.measureTextHeight(_text);
-    size = Vector2(textWidth + padding.x * 2, textHeight + padding.y * 2);
+    size = Vector2(120, 40);
+    Vector2 padding =
+        Vector2((size.x - textWidth) / 2, (size.y - textHeight) / 2);
     super.render(canvas);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = AppColor.primaryGameButton);
+    final BorderRadius borderRadius = BorderRadius.circular(10);
+    final Rect rect = Rect.fromLTWH(0, 0, size.x, size.y);
+    final RRect outer = borderRadius.toRRect(rect);
+    canvas.drawRRect(outer, Paint()..color = AppColor.primaryGameButton);
     textRenderer.render(canvas, _text, padding);
   }
 }

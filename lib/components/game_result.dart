@@ -27,7 +27,7 @@ class GameResult extends PositionComponent {
     _endButton = GameTextButton(
       '終了',
       GameButtonKind.gameEnd,
-      position: Vector2(240, screenSize.x + 110),
+      position: Vector2(screenSize.x - 150, screenSize.x + 110),
       priority: 20,
     );
     game.add(_endButton);
