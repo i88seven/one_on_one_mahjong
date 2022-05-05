@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/reach_state.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
@@ -43,9 +44,10 @@ class GameDialog extends PositionComponent {
   void render(Canvas canvas) {
     super.render(canvas);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = const Color(0xFFC9FEF5));
+        Paint()..color = AppColor.gameDialogBackground);
     final _textRenderer = TextPaint(
-        config: const TextPaintConfig(fontSize: 20.0, color: Colors.black54));
+        config: const TextPaintConfig(
+            fontSize: 20.0, color: AppColor.gameDialogText));
     final textWidth = _textRenderer.measureTextWidth(_text);
     _textRenderer.render(
       canvas,

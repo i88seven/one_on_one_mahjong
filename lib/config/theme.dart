@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AppColor {
   static const primaryColorMain = Color(0xFFCBC943);
   static const primaryBackgroundColor = Color(0xFFB90001);
+  static const primaryGameButton = Color(0xFFBAECD2);
+  static const gameDialogBackground = Color(0xFFF3FCF3);
+  static const gameDialogText = Color(0xFF4C3B3B);
   static const errorColor = Color(0xFFDD4B39);
   static const textBaseColor = Color(0xFF333333);
   static const textSubColor = Color(0xFF999999);

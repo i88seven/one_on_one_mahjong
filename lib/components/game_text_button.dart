@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 
 class GameTextButton extends PositionComponent {
@@ -19,13 +20,14 @@ class GameTextButton extends PositionComponent {
   @override
   void render(Canvas canvas) {
     final textRenderer =
-        TextPaint(config: const TextPaintConfig(color: Colors.white));
+        TextPaint(
+        config: const TextPaintConfig(color: AppColor.gameDialogText));
     final textWidth = textRenderer.measureTextWidth(_text);
     final textHeight = textRenderer.measureTextHeight(_text);
     size = Vector2(textWidth + padding.x * 2, textHeight + padding.y * 2);
     super.render(canvas);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = const Color(0xFF39C23F));
+        Paint()..color = AppColor.primaryGameButton);
     textRenderer.render(canvas, _text, padding);
   }
 }

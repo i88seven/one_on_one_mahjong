@@ -5,6 +5,7 @@ import 'package:one_on_one_mahjong/components/back_tile.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
 import 'package:one_on_one_mahjong/components/win_name_component.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/all_tiles.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/tile_size.dart';
@@ -56,9 +57,10 @@ class GameRoundResult extends PositionComponent {
   void render(Canvas canvas) {
     super.render(canvas);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = const Color(0xFFC9FEF5));
+        Paint()..color = AppColor.gameDialogBackground);
     final _textRenderer = TextPaint(
-        config: const TextPaintConfig(fontSize: 20.0, color: Colors.black54));
+        config: const TextPaintConfig(
+            fontSize: 20.0, color: AppColor.gameDialogText));
     _winResult.resultMap.asMap().forEach((int i, ResultRow resultRow) {
       add(TextComponent(resultRow.toString(),
           textRenderer: _textRenderer,
@@ -99,7 +101,8 @@ class GameRoundResult extends PositionComponent {
       ..y = size.y - tileSize.height - 120);
 
     final _winNameRenderer = TextPaint(
-        config: const TextPaintConfig(fontSize: 50.0, color: Colors.black54));
+        config: const TextPaintConfig(
+            fontSize: 50.0, color: AppColor.gameDialogText));
     add(TextComponent(
       captionMap[_winResult.winName] ?? 'エラー',
       textRenderer: _winNameRenderer,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result_component.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 
@@ -50,7 +51,8 @@ class GameResult extends PositionComponent {
         Paint()..color = const Color(0xFFC9FEF5));
 
     final _textRenderer = TextPaint(
-        config: const TextPaintConfig(fontSize: 20.0, color: Colors.black54));
+        config: const TextPaintConfig(
+            fontSize: 20.0, color: AppColor.gameDialogText));
     _gamePlayers.sort((a, b) => b.points - a.points);
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       final _text = "${gamePlayer.name} : ${gamePlayer.points}";
