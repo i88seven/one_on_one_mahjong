@@ -19,8 +19,8 @@ class WinResult {
     _yakuList.insert(0, Yaku.finalTileWin);
   }
 
-  void updateHansOfUraDora(int hansOfUraDora) {
-    _hansOfDoras = [_hansOfDoras[0], hansOfUraDora, _hansOfDoras[2]];
+  void updateHansOfDoras(int hansOfUraDora, int hansOfRedFive) {
+    _hansOfDoras = [_hansOfDoras[0], hansOfUraDora, hansOfRedFive];
   }
 
   int get hans => resultMap.fold(0, (int p, resultRow) => p + resultRow.hans);
