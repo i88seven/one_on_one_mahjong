@@ -202,6 +202,9 @@ class SeventeenGame extends FlameGame with TapDetector {
 
     if (gameData['current'] != null && _currentOrder != gameData['current']) {
       _currentOrder = gameData['current'];
+      _gamePlayers.asMap().forEach((index, gamePlayer) {
+        gamePlayer.setCurrentOrder(_currentOrder);
+      });
       final tilesSnapshot =
           await _firestoreAccessor.getTilesSnapshot(_other.uid);
       await _onChangeTrashesOther(tilesSnapshot.data());
@@ -221,6 +224,9 @@ class SeventeenGame extends FlameGame with TapDetector {
       _isFuriten = false;
       _reachResult = {};
       _gameRound.setRound(wind: gameData['wind'], round: gameData['round']);
+      _gamePlayers.asMap().forEach((index, gamePlayer) {
+        gamePlayer.setCurrentOrder(_currentOrder);
+      });
       _initializeOtherTiles();
     }
 
@@ -245,6 +251,9 @@ class SeventeenGame extends FlameGame with TapDetector {
     }
 
     if (_gameStatus == GameStatus.trash) {
+      _gamePlayers.asMap().forEach((index, gamePlayer) {
+        gamePlayer.setCurrentOrder(_currentOrder);
+      });
       if (_canPlayBgm) {
         await _prepareBgmPlayer?.stop();
         _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');

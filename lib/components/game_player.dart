@@ -1,6 +1,7 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
@@ -13,6 +14,7 @@ class GamePlayer extends PositionComponent {
   GamePlayerStatus _status;
   WinResult? _winResult;
   final bool _isMe;
+  int _currentOrder = 0;
   TextComponent? _textObject;
   bool _isParent;
 
@@ -75,6 +77,13 @@ class GamePlayer extends PositionComponent {
   WinResult? get winResult => _winResult;
   bool get isMe => _isMe;
   String get _text => "$_name: $_points ${_status.name}";
+  bool get _isMyTurn {
+    if (_status != GamePlayerStatus.selectTrash) {
+      return false;
+    }
+    return (_currentOrder == 0 && _isParent) ||
+        (_currentOrder == 1 && !_isParent);
+  }
 
   void setWinResult(WinResult winResult) {
     _winResult = winResult;
@@ -90,7 +99,12 @@ class GamePlayer extends PositionComponent {
 
   void setStatus(GamePlayerStatus status) {
     _status = status;
-    _rerender();
+    _rerender(shouldUpdate: true);
+  }
+
+  void setCurrentOrder(int currentOrder) {
+    _currentOrder = currentOrder;
+    _rerender(shouldUpdate: true);
   }
 
   void addPoints(int points) {
@@ -103,13 +117,16 @@ class GamePlayer extends PositionComponent {
     _rerender();
   }
 
-  void _rerender() {
-    if (_textObject != null) {
+  void _rerender({bool shouldUpdate = false}) {
+    if (_textObject != null && !shouldUpdate) {
       _textObject!.text = _text;
       return;
     }
-    final textRenderer =
-        TextPaint(config: const TextPaintConfig(color: Colors.white));
+    if (_textObject != null) {
+      _textObject!.removeFromParent();
+    }
+    final textColor = _isMyTurn ? AppColor.primaryColorMain : Colors.white;
+    final textRenderer = TextPaint(config: TextPaintConfig(color: textColor));
     _textObject = TextComponent(
       _text,
       textRenderer: textRenderer,
