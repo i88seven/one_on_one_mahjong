@@ -93,12 +93,15 @@ Map<AllTileKinds, WinResult> fetchReachResult(
       if (yakumanList.isNotEmpty) {
         WinResult temporaryWinResult = WinResult(yakuList: yakumanList);
         if (result[winTile] == null ||
-            temporaryWinResult.hans > result[winTile]!.hans) {
+            temporaryWinResult.yakumanCount > result[winTile]!.yakumanCount) {
           result[winTile] = temporaryWinResult;
         }
         continue; // 他の高い役満があるかもしれない e.g. 緑一色 + 四暗刻
       }
 
+      if (result[winTile] != null && result[winTile]!.yakumanCount > 0) {
+        continue;
+      }
       List<Yaku> yakuList =
           fetchYaku(winCandidate, mahjongState, [...tiles, winTile]);
       if (yakuList.isNotEmpty) {

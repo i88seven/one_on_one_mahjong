@@ -296,6 +296,60 @@ void main() {
         ReachMahjongState reachMahjongState = fetchReachMahjongState();
         fetchReachResultTest(tiles, reachMahjongState, expected);
       });
+
+      test('FourConcealedTriples', () {
+        List<AllTileKinds> tiles = [
+          AllTileKinds.p3,
+          AllTileKinds.p3,
+          AllTileKinds.p3,
+          AllTileKinds.p5,
+          AllTileKinds.s3,
+          AllTileKinds.s3,
+          AllTileKinds.s3,
+          AllTileKinds.s5,
+          AllTileKinds.s5,
+          AllTileKinds.sr,
+          AllTileKinds.s7,
+          AllTileKinds.s7,
+          AllTileKinds.s7,
+        ];
+        Map<AllTileKinds, WinResult> expected = {
+          AllTileKinds.p4: WinResult(
+            yakuList: [Yaku.reach, Yaku.allSimples, Yaku.threeConcealedTriples],
+            hansOfDoras: [0, 0, 1],
+          ),
+          AllTileKinds.p5: WinResult(yakuList: [Yaku.fourConcealedTriples]),
+        };
+        ReachMahjongState reachMahjongState = fetchReachMahjongState();
+        fetchReachResultTest(tiles, reachMahjongState, expected);
+      });
+
+      test('FourConcealedTriples with runs', () {
+        List<AllTileKinds> tiles = [
+          AllTileKinds.p3,
+          AllTileKinds.p3,
+          AllTileKinds.p3,
+          AllTileKinds.p5,
+          AllTileKinds.s5,
+          AllTileKinds.s5,
+          AllTileKinds.sr,
+          AllTileKinds.s6,
+          AllTileKinds.s6,
+          AllTileKinds.s6,
+          AllTileKinds.s7,
+          AllTileKinds.s7,
+          AllTileKinds.s7,
+        ];
+        Map<AllTileKinds, WinResult> expected = {
+          AllTileKinds.p4: WinResult(
+            yakuList: [Yaku.reach, Yaku.allSimples, Yaku.threeConcealedTriples],
+            hansOfDoras: [0, 0, 1],
+          ),
+          AllTileKinds.p5: WinResult(yakuList: [Yaku.fourConcealedTriples]),
+        };
+        ReachMahjongState reachMahjongState = fetchReachMahjongState();
+        fetchReachResultTest(tiles, reachMahjongState, expected);
+      });
       // TODO 他の役満のテスト
     });
 
