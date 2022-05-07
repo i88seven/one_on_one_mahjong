@@ -25,9 +25,17 @@ class Trashes {
   void _render(AllTileKinds tileKind) {
     FrontTile tileObject =
         FrontTile(_game.gameImages, tileKind, TileState.trash);
-    _game.add(tileObject
-      ..x = tileSize.width * tileCount
-      ..y = _isMe ? _game.screenSize.y - tileSize.height * 3 - 42 : 250);
+    if (tileCount <= maxTileCount) {
+      _game.add(tileObject
+        ..x = tileSize.width * tileCount
+        ..y = _isMe ? _game.screenSize.y - tileSize.height * 3 - 72 : 250);
+    } else {
+      _game.add(tileObject
+        ..x = tileSize.width * (tileCount - maxTileCount)
+        ..y = _isMe
+            ? _game.screenSize.y - tileSize.height * 2 - 62
+            : 240 - tileSize.height);
+    }
     _tileObjects.add(tileObject);
   }
 
@@ -40,10 +48,8 @@ class Trashes {
   }
 
   List<AllTileKinds> get tiles => _tiles;
-
-  int get tileCount {
-    return _tiles.length;
-  }
+  int get tileCount => _tiles.length;
+  int get maxTileCount => (_game.screenSize.x ~/ tileSize.width) - 2;
 
   List<String> get jsonValue {
     return _tiles.map((e) => e.name).toList();
