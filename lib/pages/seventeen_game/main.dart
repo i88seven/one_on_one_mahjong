@@ -441,7 +441,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
       if (_trashesOther.tileCount == maxTrashCount &&
           _trashesMe.tileCount == maxTrashCount &&
-          _currentOrder == 0) {
+          _currentOrder == 0 &&
+          _me.isParent) {
         await _firestoreAccessor.updateGameOnDrawnRound();
       }
     }
