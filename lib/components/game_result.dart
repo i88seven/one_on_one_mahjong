@@ -34,7 +34,7 @@ class GameResult extends PositionComponent {
 
     GameResultComponent gameResultComponent = GameResultComponent(
       _gameImages,
-      _myPoints >= 25000, // TODO 引き分け
+      _myPoints - 25000,
       size.x - 60,
     );
     add(gameResultComponent

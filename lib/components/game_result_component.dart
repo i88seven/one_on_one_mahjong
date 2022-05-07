@@ -8,9 +8,14 @@ class GameResultComponent extends PositionComponent {
   final Images _gameImages;
   late Sprite _gameResultImage;
 
-  GameResultComponent(this._gameImages, bool isWin, double componentWidth) {
+  GameResultComponent(this._gameImages, int winPoints, double componentWidth) {
     size = Vector2(componentWidth, componentWidth);
-    final image = _gameImages.fromCache(isWin ? 'win.png' : 'lose.png');
+    final resultName = winPoints > 0
+        ? 'win'
+        : winPoints < 0
+            ? 'lose'
+            : 'draw';
+    final image = _gameImages.fromCache('$resultName.png');
     _gameResultImage = Sprite(image);
   }
 

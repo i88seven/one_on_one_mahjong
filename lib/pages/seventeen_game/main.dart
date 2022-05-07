@@ -143,6 +143,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       ...allWinNameImages,
       'win.png',
       'lose.png',
+      'draw.png',
     ]);
     String adUnitId = dotenv.env['AD_UNIT_ID'] ?? '';
     InterstitialAd.load(
