@@ -418,8 +418,8 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (winResult.yakumanCount == 0) {
           final winTiles = [..._handsMe.tiles, targetTile];
           final hansOfUraDora = fetchHansOfDora(winTiles, _doras.tiles[1]);
-          final hansOfRedFice = fetchHansOfRedFive(winTiles);
-          winResult.updateHansOfDoras(hansOfUraDora, hansOfRedFice);
+          final hansOfRedFive = fetchHansOfRedFive(winTiles);
+          winResult.updateHansOfDoras(hansOfUraDora, hansOfRedFive);
           if (_isFinalTileWin) winResult.addFinalTileWin();
           if (_isFirstTurnWin) winResult.addFirstTurnWin();
         }
