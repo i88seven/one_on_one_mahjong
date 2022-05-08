@@ -28,7 +28,7 @@ class GameResult extends PositionComponent {
     _endButton = GameTextButton(
       '終了',
       GameButtonKind.gameEnd,
-      position: Vector2(screenSize.x - 150, screenSize.x + 110),
+      position: Vector2(screenSize.x - 152, screenSize.y - 72),
       priority: 20,
     );
     game.add(_endButton);
@@ -52,14 +52,15 @@ class GameResult extends PositionComponent {
 
     final _textRenderer = TextPaint(
         config: const TextPaintConfig(
-            fontSize: 20.0, color: AppColor.gameDialogText));
+            fontSize: 24.0, color: AppColor.gameDialogText));
     _gamePlayers.sort((a, b) => b.points - a.points);
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       final _text = "${gamePlayer.name} : ${gamePlayer.points}";
       _textRenderer.render(
         canvas,
         _text,
-        Vector2(30, (index * 50 + size.x + 10).toDouble()),
+        Vector2(size.x / 2, size.y - 216 + index * 42),
+        anchor: Anchor.topCenter,
       );
     });
   }
