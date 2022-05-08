@@ -11,7 +11,7 @@ class WinNameComponent extends PositionComponent {
   late Sprite _winNameImage;
 
   WinNameComponent(this._gameImages, this.winName) {
-    size = Vector2(90, 90);
+    size = Vector2(84, 84);
     final image = _gameImages.fromCache("${winName.name}.png");
     _winNameImage = Sprite(image);
   }

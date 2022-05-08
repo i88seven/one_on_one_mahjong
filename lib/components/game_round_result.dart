@@ -40,7 +40,7 @@ class GameRoundResult extends PositionComponent {
     final okButton = GameTextButton(
       'OK',
       GameButtonKind.roundResultOk,
-      position: Vector2(screenSize.x - 152, screenSize.y - 70),
+      position: Vector2(screenSize.x - 152, screenSize.y - 72),
       priority: 20,
     );
     _button = okButton;
@@ -48,8 +48,8 @@ class GameRoundResult extends PositionComponent {
     WinNameComponent winNameComponent =
         WinNameComponent(_gameImages, _winResult.winName!);
     add(winNameComponent
-      ..x = 20
-      ..y = size.y - 104);
+      ..x = 70
+      ..y = size.y - 160);
   }
 
   get button => _button;
@@ -66,7 +66,7 @@ class GameRoundResult extends PositionComponent {
       add(TextComponent(resultRow.toString(),
           textRenderer: _textRenderer,
           position: Vector2(
-              10 + (i > 7 ? size.x / 2 : 0), (i > 7 ? i - 8 : i) * 28 + 40)));
+              32 + (i > 7 ? size.x / 2 : 0), (i > 7 ? i - 8 : i) * 28 + 60)));
     });
 
     for (var i = 0; i < 4; i++) {
@@ -81,8 +81,8 @@ class GameRoundResult extends PositionComponent {
       add(tile
         ..width = tileSize.width
         ..height = tileSize.height
-        ..x = 200 + tileSize.width * i
-        ..y = size.y - tileSize.height - 170);
+        ..x = size.x + tileSize.width * i - 174
+        ..y = size.y - tileSize.height - 250);
     }
 
     _tiles.asMap().forEach((index, tile) {
@@ -91,7 +91,7 @@ class GameRoundResult extends PositionComponent {
         ..width = tileSize.width
         ..height = tileSize.height
         ..x = (index + 0.5) * tileSize.width
-        ..y = size.y - tileSize.height - 120);
+        ..y = size.y - tileSize.height - 200);
     });
 
     FrontTile tileObject = FrontTile(_gameImages, _winTile, TileState.result);
@@ -99,15 +99,16 @@ class GameRoundResult extends PositionComponent {
       ..width = tileSize.width
       ..height = tileSize.height
       ..x = 13.5 * tileSize.width + 5
-      ..y = size.y - tileSize.height - 120);
+      ..y = size.y - tileSize.height - 200);
 
     final _winNameRenderer = TextPaint(
         config: const TextPaintConfig(
-            fontSize: 50.0, color: AppColor.gameDialogText));
-    add(TextComponent(
+            fontSize: 28.0, color: AppColor.gameDialogText));
+    _winNameRenderer.render(
+      canvas,
       captionMap[_winResult.winName] ?? 'エラー',
-      textRenderer: _winNameRenderer,
-      position: Vector2(120, size.y - 70),
-    ));
+      Vector2(size.x - 124, size.y - 136),
+      anchor: Anchor.topCenter,
+    );
   }
 }

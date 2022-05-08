@@ -59,7 +59,7 @@ class GameResult extends PositionComponent {
       _textRenderer.render(
         canvas,
         _text,
-        Vector2(size.x / 2, size.y - 216 + index * 42),
+        Vector2(size.x / 2, size.y - 220 + index * 46),
         anchor: Anchor.topCenter,
       );
     });
