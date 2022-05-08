@@ -5,8 +5,13 @@ class AppColor {
   static const primaryColorMain = Color(0xFFCBC943);
   static const primaryBackgroundColor = Color(0xFFB90001);
   static const primaryGameButton = Color(0xFFBAECD2);
-  static const gameDialogBackground = Color(0xFFF3FCF3);
+  static const gameDialogBackground = Color(0xFFFFFFFF);
   static const gameDialogText = Color(0xFF4C3B3B);
+  static const gradientBackground = [
+    Color(0xFF007D3C),
+    Color(0xFFBAECD2),
+    Color(0xFF4C0EBA),
+  ];
   static const errorColor = Color(0xFFDD4B39);
   static const textBaseColor = Color(0xFF333333);
   static const textSubColor = Color(0xFF999999);

@@ -13,6 +13,7 @@ import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/constants/win_name.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/types/win_result.dart';
+import 'package:one_on_one_mahjong/utils/flame_renderer.dart';
 
 class GameRoundResult extends PositionComponent {
   final Images _gameImages;
@@ -56,8 +57,8 @@ class GameRoundResult extends PositionComponent {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = AppColor.gameDialogBackground);
+    renderResultBackgroud(canvas, size);
+
     final _textRenderer = TextPaint(
         config: const TextPaintConfig(
             fontSize: 20.0, color: AppColor.gameDialogText));

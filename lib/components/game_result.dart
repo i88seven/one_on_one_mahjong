@@ -7,6 +7,7 @@ import 'package:one_on_one_mahjong/components/game_text_button.dart';
 import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
+import 'package:one_on_one_mahjong/utils/flame_renderer.dart';
 
 class GameResult extends PositionComponent {
   final Images _gameImages;
@@ -47,8 +48,7 @@ class GameResult extends PositionComponent {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
-        Paint()..color = const Color(0xFFC9FEF5));
+    renderResultBackgroud(canvas, size);
 
     final _textRenderer = TextPaint(
         config: const TextPaintConfig(
