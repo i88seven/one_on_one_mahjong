@@ -36,8 +36,9 @@ class GameRound {
     render();
   }
 
+  String get text => "${windMap[_wind]}${roundMap[_round]}局";
+
   void render() {
-    String text = "${windMap[_wind]}${roundMap[_round]}局";
     if (_textObject != null) {
       _textObject!.text = text;
       return;

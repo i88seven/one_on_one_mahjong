@@ -159,8 +159,10 @@ class FirestoreAccessor {
     });
   }
 
-  Future<void> updateGameOnDrawnRound() async {
+  Future<void> updateGameOnDrawnRound(List<GamePlayer> gamePlayers) async {
     await _gameDoc.update({
+      'player-host': gamePlayers[0].toJson(),
+      'player-client': gamePlayers[1].toJson(),
       'gameStatus': GameStatus.drawnRound.name,
     });
   }

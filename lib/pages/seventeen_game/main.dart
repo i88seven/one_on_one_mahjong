@@ -18,6 +18,7 @@ import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
 import 'package:one_on_one_mahjong/components/game_dialog.dart';
+import 'package:one_on_one_mahjong/components/game_drawn_round_result.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
 import 'package:one_on_one_mahjong/components/game_result.dart';
 import 'package:one_on_one_mahjong/components/game_round.dart';
@@ -68,6 +69,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   late Trashes _trashesOther;
   late GameResult? _gameResult;
   GameRoundResult? _gameRoundResult;
+  GameDrawnRoundResult? _gameDrawnRoundResult;
   GameStatus _gameStatus = GameStatus.init;
   final String _hostUid;
   GameTextButton? _fixHandsButton;
@@ -141,6 +143,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       'tile-back.png',
       ...allTileImages,
       ...allWinNameImages,
+      'drawnRound.png',
       'win.png',
       'lose.png',
       'draw.png',
@@ -288,21 +291,22 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
     }
 
-    if (_gameStatus == GameStatus.drawnRound) {
-      if (_hostUid == _myUid) {
-        _gamePlayers.asMap().forEach((index, gamePlayer) {
-          gamePlayer.setStatus(GamePlayerStatus.waitRound);
-        });
-        await _firestoreAccessor.updateGamePlayers(_gamePlayers);
-      }
-      await gameUserStatisticsModel.countOnRoundEnd(
-        uid: _myUid,
-        isParent: _me.isParent,
-        isWinner: true,
-        winResult: null,
-        step: maxTrashCount,
-        doraTrashes: _doraTrashes,
+    if (_gameStatus == GameStatus.drawnRound &&
+        _me.status == GamePlayerStatus.roundResult &&
+        _other.status == GamePlayerStatus.roundResult &&
+        _gameDrawnRoundResult == null) {
+      _gameDrawnRoundResult = GameDrawnRoundResult(
+        game: this,
+        screenSize: screenSize,
+        trashesOther: _trashesOther.tiles,
+        trashesMe: _trashesMe.tiles,
+        handsMe: _handsMe.tiles,
+        doras: _doras.tiles,
+        meName: _me.name,
+        otherName: _other.name,
+        gameRoundName: _gameRound.text,
       );
+      add(_gameDrawnRoundResult!);
       return;
     }
 
@@ -439,8 +443,11 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (dealtsJson is List<dynamic>) {
         _dealtsOther.initialize(dealtsJson.length);
       }
-        await _firestoreAccessor.updateGameOnDrawnRound();
       if (_isDrawnRound) {
+        _gamePlayers.asMap().forEach((index, gamePlayer) {
+          gamePlayer.setStatus(GamePlayerStatus.roundResult);
+        });
+        await _firestoreAccessor.updateGameOnDrawnRound(_gamePlayers);
       }
     }
   }
@@ -626,6 +633,23 @@ class SeventeenGame extends FlameGame with TapDetector {
         } else {
           await _firestoreAccessor.updateTargetPlayer(_myUid == _hostUid, _me);
         }
+        break;
+      }
+      if (c is GameDrawnRoundResult &&
+          c.button.toRect().contains(info.eventPosition.global.toOffset())) {
+        await gameUserStatisticsModel.countOnRoundEnd(
+          uid: _myUid,
+          isParent: _me.isParent,
+          isWinner: true,
+          winResult: null,
+          step: maxTrashCount,
+          doraTrashes: _doraTrashes,
+        );
+        remove(_gameDrawnRoundResult!.button);
+        remove(_gameDrawnRoundResult!);
+        _gameDrawnRoundResult = null;
+        _me.setStatus(GamePlayerStatus.waitRound);
+        await _firestoreAccessor.updateTargetPlayer(_myUid == _hostUid, _me);
         break;
       }
       if (c is Hands) {
