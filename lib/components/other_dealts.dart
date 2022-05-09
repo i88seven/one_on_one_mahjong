@@ -11,10 +11,10 @@ class OtherDeals extends PositionComponent {
 
   OtherDeals({required SeventeenGame game}) : _gameImages = game.gameImages {
     position = Vector2(0, 150);
-    double tileWidth = smallTileSize.width;
+    double tileWidth = smallTileSize.x;
     double tileAreaWidth = game.screenSize.x - tileWidth * 2;
     tileAreaWidth = (tileAreaWidth ~/ tileWidth) * tileWidth;
-    size = Vector2(tileAreaWidth, smallTileSize.height * 2.3);
+    size = Vector2(tileAreaWidth, smallTileSize.y * 2.3);
   }
 
   void initialize(int tileCount) {
@@ -29,14 +29,14 @@ class OtherDeals extends PositionComponent {
     _tileObjects = [];
 
     for (int index = 0; index < _tileCount; index++) {
-      double tileWidth = smallTileSize.width;
+      double tileWidth = smallTileSize.x;
       double x = tileWidth * index;
       int tileRowCount = x ~/ size.x;
       x -= (size.x - 1) * tileRowCount;
       BackTile tileObject = BackTile(_gameImages, isSmall: true);
       add(tileObject
         ..x = x + tileWidth * 0.7
-        ..y = tileRowCount * tileSize.height * 1.3);
+        ..y = tileRowCount * tileSize.y * 1.3);
       _tileObjects.add(tileObject);
     }
   }

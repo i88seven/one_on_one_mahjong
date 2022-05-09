@@ -76,9 +76,7 @@ class GameDrawnRoundResult extends PositionComponent {
         tile = BackTile(_gameImages);
       }
       add(tile
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = size.x / 2 + tileSize.width * (i + 0.5)
+        ..x = size.x / 2 + tileSize.x * (i + 0.5)
         ..y = size.y / 2 - 76);
     }
 
@@ -87,18 +85,14 @@ class GameDrawnRoundResult extends PositionComponent {
       FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);
       if (index < trashTilesCountOfRow) {
         add(tileObject
-          ..width = tileSize.width
-          ..height = tileSize.height
           ..x =
-              size.x / 2 + tileSize.width * (index - trashTilesCountOfRow * 0.5)
-          ..y = 108 + tileSize.height);
+              size.x / 2 + tileSize.x * (index - trashTilesCountOfRow * 0.5)
+          ..y = 108 + tileSize.y);
       } else {
         add(tileObject
-          ..width = tileSize.width
-          ..height = tileSize.height
           ..x =
-              size.x / 2 + tileSize.width * (index - trashTilesCountOfRow * 1.5)
-          ..y = 120 + tileSize.height * 2);
+              size.x / 2 + tileSize.x * (index - trashTilesCountOfRow * 1.5)
+          ..y = 120 + tileSize.y * 2);
       }
     });
 
@@ -106,37 +100,29 @@ class GameDrawnRoundResult extends PositionComponent {
       FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);
       if (index < trashTilesCountOfRow) {
         add(tileObject
-          ..width = tileSize.width
-          ..height = tileSize.height
           ..x =
-              size.x / 2 + tileSize.width * (index - trashTilesCountOfRow * 0.5)
+              size.x / 2 + tileSize.x * (index - trashTilesCountOfRow * 0.5)
           ..y = size.y / 2 - 26);
       } else {
         add(tileObject
-          ..width = tileSize.width
-          ..height = tileSize.height
           ..x =
-              size.x / 2 + tileSize.width * (index - trashTilesCountOfRow * 1.5)
-          ..y = size.y / 2 - 14 + tileSize.height);
+              size.x / 2 + tileSize.x * (index - trashTilesCountOfRow * 1.5)
+          ..y = size.y / 2 - 14 + tileSize.y);
       }
     });
 
     // 相手の手配
     for (var i = 0; i < 13; i++) {
       add(BackTile(_gameImages)
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = size.x / 2 + tileSize.width * (i - 6.5)
+        ..x = size.x / 2 + tileSize.x * (i - 6.5)
         ..y = 96);
     }
 
     _handsMe.asMap().forEach((index, tile) {
       FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);
       add(tileObject
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = size.x / 2 + tileSize.width * (index - 6.5)
-        ..y = size.y / 2 + 4 + tileSize.height * 2);
+        ..x = size.x / 2 + tileSize.x * (index - 6.5)
+        ..y = size.y / 2 + 4 + tileSize.y * 2);
     });
 
     final _nameRenderer = TextPaint(
@@ -145,7 +131,7 @@ class GameDrawnRoundResult extends PositionComponent {
     _nameRenderer.render(
       canvas,
       _meName,
-      Vector2(size.x / 2, size.y / 2 + 20 + tileSize.height * 3),
+      Vector2(size.x / 2, size.y / 2 + 20 + tileSize.y * 3),
       anchor: Anchor.topCenter,
     );
     _nameRenderer.render(

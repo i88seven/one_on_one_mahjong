@@ -13,7 +13,7 @@ class Doras extends PositionComponent {
   final List<PositionComponent> _tileObjects = [];
 
   Doras({required SeventeenGame game}) : _gameImages = game.gameImages {
-    position = Vector2(200, game.screenSize.y - tileSize.height - 300);
+    position = Vector2(200, game.screenSize.y - tileSize.y - 300);
   }
 
   List<AllTileKinds> get tiles => _tiles;
@@ -30,9 +30,7 @@ class Doras extends PositionComponent {
       BackTile backTile = BackTile(_gameImages);
       _tileObjects.add(i == 1 ? dora : backTile);
       add(i == 1 ? dora : backTile
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = tileSize.width * i);
+        ..x = tileSize.x * i);
     }
   }
 

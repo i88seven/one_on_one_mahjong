@@ -46,8 +46,11 @@ class GameDialog extends PositionComponent {
     canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y),
         Paint()..color = AppColor.gameDialogBackground);
     final _textRenderer = TextPaint(
-        config: const TextPaintConfig(
-            fontSize: 20.0, color: AppColor.gameDialogText));
+      config: const TextPaintConfig(
+        fontSize: 20.0,
+        color: AppColor.gameDialogText,
+      ),
+    );
     final textWidth = _textRenderer.measureTextWidth(_text);
     _textRenderer.render(
       canvas,

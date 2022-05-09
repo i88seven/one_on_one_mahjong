@@ -51,7 +51,7 @@ class GameRound {
       size: Vector2(60.0, 12.0),
     );
     _game.add(_textObject!
-      ..x = tileSize.width * 0.7
+      ..x = tileSize.x * 0.7
       ..y = _game.screenSize.y - 330);
   }
 

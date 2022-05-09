@@ -14,6 +14,7 @@ class BackTile extends PositionComponent {
     final image = _gameImages.fromCache('tile-back.png');
     _tileImage = Sprite(image);
     _isSmall = isSmall ?? false;
+    size = _isSmall ? smallTileSize : tileSize;
   }
 
   @override
@@ -24,11 +25,7 @@ class BackTile extends PositionComponent {
   }
 
   _renderTile(Canvas c) {
-    Rect rect = Rect.fromLTWH(
-        0,
-        0,
-        _isSmall ? smallTileSize.width : tileSize.width,
-        _isSmall ? smallTileSize.height : tileSize.height);
+    Rect rect = Rect.fromLTWH(0, 0, size.x, size.y);
     _tileImage.renderRect(c, rect);
   }
 }

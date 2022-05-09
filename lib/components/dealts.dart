@@ -38,17 +38,15 @@ class Dealts {
     _game.removeAll(_tileObjects);
     _tileObjects = [];
     _tiles.asMap().forEach((index, tile) {
-      double tileAreaWidth = _game.screenSize.x - tileSize.width * 2;
-      tileAreaWidth = (tileAreaWidth ~/ tileSize.width) * tileSize.width;
-      double x = tileSize.width * index;
+      double tileAreaWidth = _game.screenSize.x - tileSize.x * 2;
+      tileAreaWidth = (tileAreaWidth ~/ tileSize.x) * tileSize.x;
+      double x = tileSize.x * index;
       int tileRowCount = x ~/ tileAreaWidth;
       x -= tileAreaWidth * tileRowCount;
       FrontTile tileObject = FrontTile(_game.gameImages, tile, TileState.dealt);
       _game.add(tileObject
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = x + tileSize.width * 0.7
-        ..y = _game.screenSize.y - 280 + tileRowCount * tileSize.height * 1.3);
+        ..x = x + tileSize.x * 0.7
+        ..y = _game.screenSize.y - 280 + tileRowCount * tileSize.y * 1.3);
       _tileObjects.add(tileObject);
     });
   }

@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flame/components.dart';
 
-const Size tileSize = Size(24, 36);
-const Size smallTileSize = Size(24 * 15 / 19, 36 * 15 / 19);
+Vector2 tileSize = Vector2(24, 36);
+Vector2 smallTileSize = Vector2(24 * 15 / 19, 36 * 15 / 19);

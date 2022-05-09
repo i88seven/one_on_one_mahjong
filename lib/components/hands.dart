@@ -12,8 +12,7 @@ class Hands extends PositionComponent {
   List<FrontTile> _tileObjects = [];
 
   Hands({required SeventeenGame game}) : _gameImages = game.gameImages {
-    position =
-        Vector2(tileSize.width, game.screenSize.y - tileSize.height - 42);
+    position = Vector2(tileSize.x, game.screenSize.y - tileSize.y - 42);
   }
 
   void initialize(List<AllTileKinds> tiles) {
@@ -27,10 +26,7 @@ class Hands extends PositionComponent {
     _tileObjects = [];
     _tiles.asMap().forEach((index, tile) {
       FrontTile tileObject = FrontTile(_gameImages, tile, TileState.hand);
-      add(tileObject
-        ..width = tileSize.width
-        ..height = tileSize.height
-        ..x = index * tileSize.width);
+      add(tileObject..x = index * tileSize.x);
       _tileObjects.add(tileObject);
     });
   }
