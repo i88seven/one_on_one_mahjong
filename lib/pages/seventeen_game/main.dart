@@ -439,11 +439,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (dealtsJson is List<dynamic>) {
         _dealtsOther.initialize(dealtsJson.length);
       }
-      if (_trashesOther.tileCount == maxTrashCount &&
-          _trashesMe.tileCount == maxTrashCount &&
-          _currentOrder == 0 &&
-          _me.isParent) {
         await _firestoreAccessor.updateGameOnDrawnRound();
+      if (_isDrawnRound) {
       }
     }
   }
@@ -646,7 +643,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           }
         }
       }
-      if (c is FrontTile && _gameDialog == null) {
+      if (c is FrontTile && _gameDialog == null && !_isDrawnRound) {
         if (c.toRect().overlaps(touchArea)) {
           if (c.state == TileState.dealt &&
               _me.status == GamePlayerStatus.selectHands) {
@@ -763,6 +760,11 @@ class SeventeenGame extends FlameGame with TapDetector {
     _reachResult = fetchReachResult(_handsMe.tiles, mahjongState);
   }
 
+  bool get _isDrawnRound =>
+      _trashesOther.tileCount == maxTrashCount &&
+      _trashesMe.tileCount == maxTrashCount &&
+      _currentOrder == 0 &&
+      _me.isParent;
   bool get _isFirstTurnWin => _trashesOther.tileCount == 1;
   bool get _isFinalTileWin =>
       _trashesMe.tileCount == _trashesOther.tileCount &&
