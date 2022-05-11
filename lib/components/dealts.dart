@@ -45,8 +45,8 @@ class Dealts {
       x -= tileAreaWidth * tileRowCount;
       FrontTile tileObject = FrontTile(_game.gameImages, tile, TileState.dealt);
       _game.add(tileObject
-        ..x = x + tileSize.x * 0.7
-        ..y = _game.screenSize.y - 280 + tileRowCount * tileSize.y * 1.3);
+        ..x = x + paddingX
+        ..y = _game.screenSize.y - 264 + tileRowCount * (tileSize.y + 12));
       _tileObjects.add(tileObject);
     });
   }

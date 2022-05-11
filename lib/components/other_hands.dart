@@ -15,8 +15,8 @@ class OtherHands {
     for (int i = 0; i < 13; i++) {
       BackTile tileObject = BackTile(_game.gameImages);
       _game.add(tileObject
-        ..x = (i + 1) * tileSize.x
-        ..y = 80.0);
+        ..x = i * tileSize.x + paddingX
+        ..y = 84.0);
     }
   }
 }

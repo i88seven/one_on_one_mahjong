@@ -34,6 +34,7 @@ import 'package:one_on_one_mahjong/constants/game_button_kind.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/game_status.dart';
 import 'package:one_on_one_mahjong/constants/reach_state.dart';
+import 'package:one_on_one_mahjong/constants/tile_size.dart';
 import 'package:one_on_one_mahjong/constants/tile_state.dart';
 import 'package:one_on_one_mahjong/constants/win_name.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
@@ -705,7 +706,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     _handsMe.addTile(tile.tileKind);
     if (_canFixHands) {
       _fixHandsButton = GameTextButton('確定', GameButtonKind.fixHands,
-          position: Vector2(screenSize.x - 140, screenSize.y - 150));
+          position: Vector2(screenSize.x - 120 - paddingX, screenSize.y - 172));
       add(_fixHandsButton!);
     }
 

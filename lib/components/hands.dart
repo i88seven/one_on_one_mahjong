@@ -12,7 +12,7 @@ class Hands extends PositionComponent {
   List<FrontTile> _tileObjects = [];
 
   Hands({required SeventeenGame game}) : _gameImages = game.gameImages {
-    position = Vector2(tileSize.x, game.screenSize.y - tileSize.y - 42);
+    position = Vector2(tileSize.x, game.screenSize.y - tileSize.y - 84);
   }
 
   void initialize(List<AllTileKinds> tiles) {

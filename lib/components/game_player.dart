@@ -53,7 +53,7 @@ class GamePlayer extends PositionComponent {
                 GamePlayerStatus.ready,
         _isMe = isMe,
         _isParent = json['isParent'] ?? false {
-    final double _posY = _isMe ? game.screenSize.y - 48.0 : 30.0;
+    final double _posY = _isMe ? game.screenSize.y - 72.0 : 24.0;
     position = Vector2(10, _posY);
     size = Vector2(game.screenSize.x, 48.0);
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
