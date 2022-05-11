@@ -1,6 +1,8 @@
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:flame/assets.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:one_on_one_mahjong/components/image_component.dart';
 import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/game_player_status.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
@@ -17,9 +19,13 @@ class GamePlayer extends PositionComponent {
   int _currentOrder = 0;
   TextComponent? _textObject;
   bool _isParent;
+  late Sprite _parentImage;
+  late Sprite _childImage;
+  ImageComponent? imageComponent;
 
   GamePlayer(
       {required SeventeenGame game,
+      required Images gameImages,
       required String uid,
       required String name,
       required GamePlayerStatus status,
@@ -30,13 +36,16 @@ class GamePlayer extends PositionComponent {
         _status = status,
         _isMe = isMe,
         _isParent = isParent {
-    final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
+    final double _posY = _isMe ? game.screenSize.y - 72.0 : 24.0;
     position = Vector2(10, _posY);
-    size = Vector2(100.0, _isMe ? 24.0 : 12.0);
+    size = Vector2(game.screenSize.x - 48.0, 48.0);
+    _parentImage = Sprite(gameImages.fromCache('parent.png'));
+    _childImage = Sprite(gameImages.fromCache('child.png'));
     _rerender();
   }
 
-  GamePlayer.fromJson(SeventeenGame game, bool isMe, Map<String, dynamic> json)
+  GamePlayer.fromJson(SeventeenGame game, Images gameImages, bool isMe,
+      Map<String, dynamic> json)
       : _uid = json['uid'],
         _name = json['name'],
         _status =
@@ -44,9 +53,11 @@ class GamePlayer extends PositionComponent {
                 GamePlayerStatus.ready,
         _isMe = isMe,
         _isParent = json['isParent'] ?? false {
-    final double _posY = _isMe ? game.screenSize.y - 30.0 : 30.0;
+    final double _posY = _isMe ? game.screenSize.y - 48.0 : 30.0;
     position = Vector2(10, _posY);
-    size = Vector2(100.0, _isMe ? 24.0 : 12.0);
+    size = Vector2(game.screenSize.x, 48.0);
+    _parentImage = Sprite(gameImages.fromCache('parent.png'));
+    _childImage = Sprite(gameImages.fromCache('child.png'));
     updateFromJson(json);
   }
 
@@ -76,7 +87,7 @@ class GamePlayer extends PositionComponent {
   GamePlayerStatus get status => _status;
   WinResult? get winResult => _winResult;
   bool get isMe => _isMe;
-  String get _text => "$_name: $_points ${_status.name}";
+  String get _text => "$_name : $_points";
   bool get _isMyTurn {
     if (_status != GamePlayerStatus.selectTrash) {
       return false;
@@ -131,7 +142,16 @@ class GamePlayer extends PositionComponent {
       _text,
       textRenderer: textRenderer,
     );
-    add(_textObject!);
+    add(_textObject!
+      ..position = Vector2(size.x / 2, size.y / 2)
+      ..anchor = Anchor.center);
+
+    if (imageComponent != null) {
+      remove(imageComponent!);
+    }
+    imageComponent =
+        ImageComponent.fromSprite(_isParent ? _parentImage : _childImage);
+    add(imageComponent!..size = Vector2(48, 48));
   }
 
   int get points => _points;

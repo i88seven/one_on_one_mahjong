@@ -102,6 +102,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     for (Member member in members) {
       GamePlayer gamePlayer = GamePlayer(
         game: this,
+        gameImages: gameImages,
         uid: member.uid,
         name: member.name,
         status: GamePlayerStatus.selectHands,
@@ -122,12 +123,12 @@ class SeventeenGame extends FlameGame with TapDetector {
     final hostPlayerJson = gameData['player-host'];
     final clientPlayerJson = gameData['player-client'];
     GamePlayer hostPlayer = GamePlayer.fromJson(
-        this, hostPlayerJson['uid'] == _myUid, hostPlayerJson);
+        this, gameImages, hostPlayerJson['uid'] == _myUid, hostPlayerJson);
     _gamePlayers.add(hostPlayer);
     _initializeOtherTiles();
 
     GamePlayer clientPlayer = GamePlayer.fromJson(
-        this, clientPlayerJson['uid'] == _myUid, clientPlayerJson);
+        this, gameImages, clientPlayerJson['uid'] == _myUid, clientPlayerJson);
     _gamePlayers.add(clientPlayer);
     _firestoreAccessor.deleteRoomOnStartGame();
   }
@@ -143,6 +144,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       'tile-back.png',
       ...allTileImages,
       ...allWinNameImages,
+      'parent.png',
+      'child.png',
       'drawnRound.png',
       'win.png',
       'lose.png',
