@@ -307,6 +307,11 @@ class SeventeenGame extends FlameGame with TapDetector {
         gameRoundName: _gameRound.text,
       );
       add(_gameDrawnRoundResult!);
+      if (_canPlayBgm) {
+        await _battleBgmPlayer?.stop();
+        _prepareBgmPlayer =
+            await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+      }
       return;
     }
 
