@@ -7,11 +7,10 @@ import 'package:one_on_one_mahjong/constants/tile_size.dart';
 // 裏向きのカード描画
 class BackTile extends PositionComponent {
   late Sprite _tileImage;
-  final Images _gameImages;
   bool _isSmall = false;
 
-  BackTile(this._gameImages, {isSmall}) {
-    final image = _gameImages.fromCache('tile-back.png');
+  BackTile(Images gameImages, {isSmall}) {
+    final image = gameImages.fromCache('tile-back.png');
     _tileImage = Sprite(image);
     _isSmall = isSmall ?? false;
     size = _isSmall ? smallTileSize : tileSize;

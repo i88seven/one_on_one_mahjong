@@ -5,17 +5,16 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 class GameResultComponent extends PositionComponent {
-  final Images _gameImages;
   late Sprite _gameResultImage;
 
-  GameResultComponent(this._gameImages, int winPoints, double componentWidth) {
+  GameResultComponent(Images gameImages, int winPoints, double componentWidth) {
     size = Vector2(componentWidth, componentWidth);
     final resultName = winPoints > 0
         ? 'win'
         : winPoints < 0
             ? 'lose'
             : 'draw';
-    final image = _gameImages.fromCache('$resultName.png');
+    final image = gameImages.fromCache('$resultName.png');
     _gameResultImage = Sprite(image);
   }
 

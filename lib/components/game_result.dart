@@ -10,7 +10,6 @@ import 'package:one_on_one_mahjong/pages/seventeen_game/main.dart';
 import 'package:one_on_one_mahjong/utils/flame_renderer.dart';
 
 class GameResult extends PositionComponent {
-  final Images _gameImages;
   final List<GamePlayer> _gamePlayers;
   final int _myPoints;
   late GameTextButton _endButton;
@@ -21,7 +20,6 @@ class GameResult extends PositionComponent {
     required List<GamePlayer> gamePlayers,
     required int myPoints,
   })  : _gamePlayers = gamePlayers,
-        _gameImages = game.gameImages,
         _myPoints = myPoints {
     size = screenSize;
     position = Vector2(0, 0);
@@ -34,7 +32,7 @@ class GameResult extends PositionComponent {
     game.add(_endButton);
 
     GameResultComponent gameResultComponent = GameResultComponent(
-      _gameImages,
+      game.gameImages,
       _myPoints - 25000,
       size.x - 60,
     );

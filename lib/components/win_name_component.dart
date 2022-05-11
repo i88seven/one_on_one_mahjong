@@ -6,13 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/constants/win_name.dart';
 
 class WinNameComponent extends PositionComponent {
-  final Images _gameImages;
   final WinName winName;
   late Sprite _winNameImage;
 
-  WinNameComponent(this._gameImages, this.winName) {
+  WinNameComponent(Images gameImages, this.winName) {
     size = Vector2(84, 84);
-    final image = _gameImages.fromCache("${winName.name}.png");
+    final image = gameImages.fromCache("${winName.name}.png");
     _winNameImage = Sprite(image);
   }
 
