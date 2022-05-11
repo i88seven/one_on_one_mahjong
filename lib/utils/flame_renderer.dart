@@ -43,6 +43,8 @@ void renderResultBackgroud(Canvas canvas, Vector2 size) {
     ),
     Paint()
       ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
         colors: AppColor.gradientBackground,
       ).createShader(
         Rect.fromLTRB(
