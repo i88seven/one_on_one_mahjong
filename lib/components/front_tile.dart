@@ -13,10 +13,11 @@ class FrontTile extends PositionComponent {
   final TileState state;
   late Sprite _tileImage;
 
-  FrontTile(Images gameImages, this.tileKind, this.state) {
+  FrontTile(Images gameImages, this.tileKind, this.state,
+      {bool isSmallSize = false}) {
     final image = gameImages.fromCache("${tileKind.name}.png");
     _tileImage = Sprite(image);
-    size = tileSize;
+    size = isSmallSize ? smallTileSize : tileSize;
   }
 
   @override
@@ -27,7 +28,7 @@ class FrontTile extends PositionComponent {
   }
 
   rendertile(Canvas canvas) {
-    Rect rect = Rect.fromLTWH(0, 0, tileSize.x, tileSize.y);
+    Rect rect = Rect.fromLTWH(0, 0, size.x, size.y);
     _tileImage.renderRect(canvas, rect);
   }
 }

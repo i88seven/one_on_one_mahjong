@@ -23,19 +23,15 @@ class Trashes {
   }
 
   void _render(AllTileKinds tileKind) {
-    FrontTile tileObject =
-        FrontTile(_game.gameImages, tileKind, TileState.trash);
-    if (tileCount <= maxTileCount) {
-      _game.add(tileObject
-        ..x = tileSize.x * tileCount
-        ..y = _isMe ? _game.screenSize.y - tileSize.y * 3 - 72 : 250);
-    } else {
-      _game.add(tileObject
-        ..x = tileSize.x * (tileCount - maxTileCount)
-        ..y = _isMe
-            ? _game.screenSize.y - tileSize.y * 2 - 62
-            : 240 - tileSize.y);
-    }
+    FrontTile tileObject = FrontTile(
+      _game.gameImages,
+      tileKind,
+      TileState.trash,
+      isSmallSize: true,
+    );
+    _game.add(tileObject
+      ..x = smallTileSize.x * (tileCount - 1) + paddingX
+      ..y = _isMe ? _game.screenSize.y - smallTileSize.y - 136 : 238);
     _tileObjects.add(tileObject);
   }
 
@@ -49,7 +45,6 @@ class Trashes {
 
   List<AllTileKinds> get tiles => _tiles;
   int get tileCount => _tiles.length;
-  int get maxTileCount => (_game.screenSize.x ~/ tileSize.x) - 2;
 
   List<String> get jsonValue {
     return _tiles.map((e) => e.name).toList();
