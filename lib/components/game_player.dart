@@ -37,8 +37,8 @@ class GamePlayer extends PositionComponent {
         _isMe = isMe,
         _isParent = isParent {
     final double _posY = _isMe ? game.screenSize.y - 72.0 : 24.0;
-    position = Vector2(10, _posY);
-    size = Vector2(game.screenSize.x - 48.0, 48.0);
+    position = Vector2(0, _posY);
+    size = Vector2(game.screenSize.x, 48.0);
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
     _childImage = Sprite(gameImages.fromCache('child.png'));
     _rerender();
@@ -54,7 +54,7 @@ class GamePlayer extends PositionComponent {
         _isMe = isMe,
         _isParent = json['isParent'] ?? false {
     final double _posY = _isMe ? game.screenSize.y - 72.0 : 24.0;
-    position = Vector2(10, _posY);
+    position = Vector2(0, _posY);
     size = Vector2(game.screenSize.x, 48.0);
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
     _childImage = Sprite(gameImages.fromCache('child.png'));
@@ -87,6 +87,7 @@ class GamePlayer extends PositionComponent {
   GamePlayerStatus get status => _status;
   WinResult? get winResult => _winResult;
   bool get isMe => _isMe;
+  String get parentText => _isParent ? '親' : '子';
   String get _text => "$_name : $_points";
   bool get _isMyTurn {
     if (_status != GamePlayerStatus.selectTrash) {
@@ -151,7 +152,9 @@ class GamePlayer extends PositionComponent {
     }
     imageComponent =
         ImageComponent.fromSprite(_isParent ? _parentImage : _childImage);
-    add(imageComponent!..size = Vector2(48, 48));
+    add(imageComponent!
+      ..size = Vector2(48, 48)
+      ..x = _isMe ? 10 : size.x - 58);
   }
 
   int get points => _points;
