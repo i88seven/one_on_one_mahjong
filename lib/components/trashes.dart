@@ -27,7 +27,7 @@ class Trashes {
       _game.gameImages,
       tileKind,
       TileState.trash,
-      isSmallSize: true,
+      tileSizeType: TileSizeType.small,
     );
     _game.add(tileObject
       ..x = smallTileSize.x * (tileCount - 1) + paddingX

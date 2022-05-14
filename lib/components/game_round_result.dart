@@ -84,16 +84,18 @@ class GameRoundResult extends PositionComponent {
     }
 
     _tiles.asMap().forEach((index, tile) {
-      FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);
+      FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result,
+          tileSizeType: TileSizeType.middle);
       add(tileObject
-        ..x = (index + 0.5) * tileSize.x
-        ..y = size.y - tileSize.y - 200);
+        ..x = size.x / 2 + middleTileSize.x * (index - 7)
+        ..y = size.y - middleTileSize.y - 200);
     });
 
-    FrontTile tileObject = FrontTile(_gameImages, _winTile, TileState.result);
+    FrontTile tileObject = FrontTile(_gameImages, _winTile, TileState.result,
+        tileSizeType: TileSizeType.middle);
     add(tileObject
-      ..x = 13.5 * tileSize.x + 5
-      ..y = size.y - tileSize.y - 200);
+      ..x = size.x / 2 + middleTileSize.x * 6 + 5
+      ..y = size.y - middleTileSize.y - 200);
 
     final _winNameRenderer = TextPaint(
         config: const TextPaintConfig(

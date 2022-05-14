@@ -14,10 +14,10 @@ class FrontTile extends PositionComponent {
   late Sprite _tileImage;
 
   FrontTile(Images gameImages, this.tileKind, this.state,
-      {bool isSmallSize = false}) {
+      {TileSizeType tileSizeType = TileSizeType.large}) {
     final image = gameImages.fromCache("${tileKind.name}.png");
     _tileImage = Sprite(image);
-    size = isSmallSize ? smallTileSize : tileSize;
+    size = tileSizeMap[tileSizeType]!;
   }
 
   @override
