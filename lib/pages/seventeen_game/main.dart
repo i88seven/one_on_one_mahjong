@@ -25,6 +25,7 @@ import 'package:one_on_one_mahjong/components/game_round.dart';
 import 'package:one_on_one_mahjong/components/game_round_result.dart';
 import 'package:one_on_one_mahjong/components/game_text_button.dart';
 import 'package:one_on_one_mahjong/components/hands.dart';
+import 'package:one_on_one_mahjong/components/image_component.dart';
 import 'package:one_on_one_mahjong/components/member.dart';
 import 'package:one_on_one_mahjong/components/other_dealts.dart';
 import 'package:one_on_one_mahjong/components/other_hands.dart';
@@ -72,11 +73,11 @@ class SeventeenGame extends FlameGame with TapDetector {
   GameRoundResult? _gameRoundResult;
   GameDrawnRoundResult? _gameDrawnRoundResult;
   GameStatus _gameStatus = GameStatus.init;
+  ImageComponent? _furitenImage;
   final String _hostUid;
   GameTextButton? _fixHandsButton;
   GameDialog? _gameDialog;
   int _currentOrder = 0; // 0:親, 1:子
-  bool _isFuriten = false;
   Map<AllTileKinds, WinResult> _reachResult = {};
   Function onGameEnd;
 
@@ -147,6 +148,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       ...allWinNameImages,
       'parent.png',
       'child.png',
+      'furiten.png',
       'drawnRound.png',
       'win.png',
       'lose.png',
@@ -229,7 +231,10 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_gameStatus == GameStatus.newRound &&
         gameData['wind'] != null &&
         gameData['round'] != null) {
-      _isFuriten = false;
+      if (_furitenImage != null) {
+        remove(_furitenImage!);
+        _furitenImage = null;
+      }
       _reachResult = {};
       _gameRound.setRound(wind: gameData['wind'], round: gameData['round']);
       _gamePlayers.asMap().forEach((index, gamePlayer) {
@@ -423,7 +428,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         default:
           _trashesOther.initialize(trashes);
       }
-      if (!_isFuriten &&
+      if (_furitenImage == null &&
           targetTile != null &&
           _reachResult.containsKey(convertRedTile(targetTile))) {
         // リーチの段階では裏ドラはカウントされていないので、ドラの判定し直し
@@ -445,7 +450,11 @@ class SeventeenGame extends FlameGame with TapDetector {
           await _firestoreAccessor.updateGameOnRon(_gamePlayers);
           return;
         } else {
-          _isFuriten = true;
+          _furitenImage = ImageComponent(gameImages, 'furiten.png');
+          add(_furitenImage!
+            ..size = Vector2(48, 48)
+            ..x = 116
+            ..y = screenSize.y - 342);
         }
       }
       final dealtsJson = otherTilesData['dealts'];
@@ -735,7 +744,11 @@ class SeventeenGame extends FlameGame with TapDetector {
     );
 
     if (_reachResult.containsKey(convertRedTile(tile.tileKind))) {
-      _isFuriten = true;
+      _furitenImage = ImageComponent(gameImages, 'furiten.png');
+      add(_furitenImage!
+        ..size = Vector2(48, 48)
+        ..x = 116
+        ..y = screenSize.y - 342);
     }
     await _firestoreAccessor.updateCurrentOrder(_currentOrder);
 

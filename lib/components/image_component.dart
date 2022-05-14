@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class ImageComponent extends PositionComponent {
   late Sprite _imageSprite;
 
-  ImageComponent(Images gameImages, Vector2 size, String fileName) {
+  ImageComponent(Images gameImages, String fileName) {
     final image = gameImages.fromCache(fileName);
     _imageSprite = Sprite(image);
   }
