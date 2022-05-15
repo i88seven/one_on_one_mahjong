@@ -51,10 +51,14 @@ class GameUserStatistics {
   int get loseGame => _loseGame;
   int get drawGame => _drawGame;
   int get disconnectionGame => _totalGame - _winGame - _loseGame - _drawGame;
-  int get winRate => (_winGame / _totalGame * 100).floor();
-  int get loseRate => (_loseGame / _totalGame * 100).floor();
-  int get drawRate => (_drawGame / _totalGame * 100).floor();
-  int get disconnectionRate => (disconnectionGame / _totalGame * 100).floor();
+  int get winRate =>
+      _totalGame != 0 ? (_winGame / _totalGame * 100).floor() : 0;
+  int get loseRate =>
+      _totalGame != 0 ? (_loseGame / _totalGame * 100).floor() : 0;
+  int get drawRate =>
+      _totalGame != 0 ? (_drawGame / _totalGame * 100).floor() : 0;
+  int get disconnectionRate =>
+      _totalGame != 0 ? (disconnectionGame / _totalGame * 100).floor() : 0;
 
   int get totalRound => _totalRound;
   int get drawnRound => _parentDrawnRound + _childDrawnRound;
@@ -69,14 +73,18 @@ class GameUserStatistics {
       _pointAll.toMapWin().values.reduce((sum, value) => sum + value);
   int get losePointAll =>
       _pointAll.toMapLose().values.reduce((sum, value) => sum + value);
-  int get winPointAverage => (winPointAll / winRound).floor();
-  int get losePointAverage => (losePointAll / loseRound).floor();
+  int get winPointAverage =>
+      winRound != 0 ? (winPointAll / winRound).floor() : 0;
+  int get losePointAverage =>
+      loseRound != 0 ? (losePointAll / loseRound).floor() : 0;
   int get winStepAll =>
       _stepAll.toMapWin().values.reduce((sum, value) => sum + value);
   int get loseStepAll =>
       _stepAll.toMapLose().values.reduce((sum, value) => sum + value);
-  double get winStepAverage => (winStepAll / winRound * 100).floor() / 100;
-  double get loseStepAverage => (loseStepAll / loseRound * 100).floor() / 100;
+  double get winStepAverage =>
+      winRound != 0 ? (winStepAll / winRound * 100).floor() / 100 : 0;
+  double get loseStepAverage =>
+      loseRound != 0 ? (loseStepAll / loseRound * 100).floor() / 100 : 0;
 
   void countOnGameStart() {
     _totalGame++;
