@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/game_user/update_name_input.dart';
-import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 
 class UpdateGameUserNamePage extends ConsumerWidget {
@@ -18,10 +17,8 @@ class UpdateGameUserNamePage extends ConsumerWidget {
     Future<void> _updateName(String name) async {
       try {
         await gameUserModel.updateName(name);
-        await Navigator.of(context).pushReplacement(
-          MaterialPageRoute<void>(
-            builder: (context) => const PreparationMainPage(),
-          ),
+        Navigator.of(context).popUntil(
+          (route) => route.isFirst,
         );
       } catch (e) {
         // TODO

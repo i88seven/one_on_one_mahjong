@@ -23,7 +23,7 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
   late GameUserStatistics _gameUserStatistics;
 
   void updateUserName() async {
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       MaterialPageRoute(builder: (context) {
         return UpdateGameUserNamePage(initialName: _gameUser.name);
       }),
@@ -187,6 +187,9 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                       label: const Text('ログアウト'),
                       onPressed: () async {
                         await FirebaseAuth.instance.signOut();
+                        Navigator.of(context).popUntil(
+                          (route) => route.isFirst,
+                        );
                         await Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) {
                             return const LoginPage();
