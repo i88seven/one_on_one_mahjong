@@ -18,6 +18,7 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
   late String _myUid;
   late String _myName;
   bool _hasResult = false;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -55,11 +56,13 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
         if (!_canCreateRoom(snapshot)) {
           setState(() {
             _hasResult = true;
+            _hasError = false;
           });
           return;
         }
         setState(() {
           _hasResult = false;
+          _hasError = false;
         });
         _roomRef.set({
           'hostUid': _myUid,
@@ -86,7 +89,10 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
           _roomRef.delete();
         }
       } catch (e) {
-        // TODO
+        setState(() {
+          _hasResult = false;
+          _hasError = true;
+        });
       }
     }
 
@@ -113,6 +119,17 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
                   padding: EdgeInsets.symmetric(horizontal: 24.0),
                   child: Text(
                     'すでに使われているIDです。別のIDを指定してください。',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      color: AppColor.errorColor,
+                    ),
+                  ),
+                ),
+              if (_hasError)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Text(
+                    'エラーが発生しました。',
                     style: TextStyle(
                       fontSize: 15.0,
                       color: AppColor.errorColor,
