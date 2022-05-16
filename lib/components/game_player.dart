@@ -17,7 +17,6 @@ class GamePlayer extends PositionComponent {
   WinResult? _winResult;
   final bool _isMe;
   int _currentOrder = 0;
-  TextComponent? _textObject;
   bool _isParent;
   late Sprite _parentImage;
   late Sprite _childImage;
@@ -41,7 +40,7 @@ class GamePlayer extends PositionComponent {
     size = Vector2(game.screenSize.x, 48.0);
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
     _childImage = Sprite(gameImages.fromCache('child.png'));
-    _rerender();
+    _rerenderImage();
   }
 
   GamePlayer.fromJson(SeventeenGame game, Images gameImages, bool isMe,
@@ -62,6 +61,7 @@ class GamePlayer extends PositionComponent {
   }
 
   void updateFromJson(json) {
+    bool isParentOld = _isParent;
     _status =
         EnumToString.fromString(GamePlayerStatus.values, json['status']) ??
             GamePlayerStatus.ready;
@@ -79,15 +79,18 @@ class GamePlayer extends PositionComponent {
     } else {
       _winResult = null;
     }
-    _rerender();
+    if (isParentOld != _isParent) {
+      _rerenderImage();
+    }
   }
 
   String get uid => _uid;
   String get name => _name;
+  int get points => _points;
   GamePlayerStatus get status => _status;
   WinResult? get winResult => _winResult;
   bool get isMe => _isMe;
-  String get parentText => _isParent ? '親' : '子';
+  bool get isParent => _isParent;
   String get _text => "$_name : $_points";
   bool get _isMyTurn {
     if (_status != GamePlayerStatus.selectTrash) {
@@ -106,47 +109,41 @@ class GamePlayer extends PositionComponent {
     _status = GamePlayerStatus.selectHands;
     if (shouldParentChange) {
       _isParent = !_isParent;
+      _rerenderImage();
     }
   }
 
   void setStatus(GamePlayerStatus status) {
     _status = status;
-    _rerender(shouldUpdate: true);
   }
 
   void setCurrentOrder(int currentOrder) {
     _currentOrder = currentOrder;
-    _rerender(shouldUpdate: true);
   }
 
   void addPoints(int points) {
     _points += points;
-    _rerender();
   }
 
   void setPoints(int points) {
     _points = points;
-    _rerender();
   }
 
-  void _rerender({bool shouldUpdate = false}) {
-    if (_textObject != null && !shouldUpdate) {
-      _textObject!.text = _text;
-      return;
-    }
-    if (_textObject != null) {
-      _textObject!.removeFromParent();
-    }
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+
     final textColor = _isMyTurn ? AppColor.primaryColorMain : Colors.white;
     final textRenderer = TextPaint(config: TextPaintConfig(color: textColor));
-    _textObject = TextComponent(
+    textRenderer.render(
+      canvas,
       _text,
-      textRenderer: textRenderer,
+      Vector2(size.x / 2, size.y / 2),
+      anchor: Anchor.center,
     );
-    add(_textObject!
-      ..position = Vector2(size.x / 2, size.y / 2)
-      ..anchor = Anchor.center);
+  }
 
+  void _rerenderImage() {
     if (imageComponent != null) {
       remove(imageComponent!);
     }
@@ -156,9 +153,6 @@ class GamePlayer extends PositionComponent {
       ..size = Vector2(48, 48)
       ..x = _isMe ? 10 : size.x - 58);
   }
-
-  int get points => _points;
-  bool get isParent => _isParent;
 
   Map<String, dynamic> toJson() {
     final json = {
