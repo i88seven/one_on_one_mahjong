@@ -1,4 +1,3 @@
-import 'package:flame/assets.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
@@ -49,7 +48,7 @@ class GameResult extends PositionComponent {
     renderResultBackgroud(canvas, size);
 
     final _textRenderer = TextPaint(
-        config: const TextPaintConfig(
+        style: const TextStyle(
             fontSize: 24.0, color: AppColor.gameDialogText));
     _gamePlayers.sort((a, b) => b.points - a.points);
     _gamePlayers.asMap().forEach((index, gamePlayer) {

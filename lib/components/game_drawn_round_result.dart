@@ -126,7 +126,7 @@ class GameDrawnRoundResult extends PositionComponent {
     });
 
     final _nameRenderer = TextPaint(
-        config: const TextPaintConfig(
+        style: const TextStyle(
             fontSize: 24.0, color: AppColor.gameDialogText));
     _nameRenderer.render(
       canvas,
@@ -143,7 +143,7 @@ class GameDrawnRoundResult extends PositionComponent {
     _nameRenderer.render(canvas, _gameRoundName, Vector2(80, size.y / 2 - 70));
 
     final _drawnCaptionRenderer = TextPaint(
-        config: const TextPaintConfig(
+        style: const TextStyle(
             fontSize: 28.0, color: AppColor.gameDialogText));
     _drawnCaptionRenderer.render(
       canvas,

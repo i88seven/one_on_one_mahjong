@@ -60,10 +60,11 @@ class GameRoundResult extends PositionComponent {
     renderResultBackgroud(canvas, size);
 
     final _textRenderer = TextPaint(
-        config: const TextPaintConfig(
+        style: const TextStyle(
             fontSize: 20.0, color: AppColor.gameDialogText));
     _winResult.resultMap.asMap().forEach((int i, ResultRow resultRow) {
-      add(TextComponent(resultRow.toString(),
+      add(TextComponent(
+          text: resultRow.toString(),
           textRenderer: _textRenderer,
           position: Vector2(
               32 + (i > 7 ? size.x / 2 : 0), (i > 7 ? i - 8 : i) * 28 + 60)));
@@ -98,7 +99,7 @@ class GameRoundResult extends PositionComponent {
       ..y = size.y - middleTileSize.y - 200);
 
     final _winNameRenderer = TextPaint(
-        config: const TextPaintConfig(
+        style: const TextStyle(
             fontSize: 28.0, color: AppColor.gameDialogText));
     _winNameRenderer.render(
       canvas,

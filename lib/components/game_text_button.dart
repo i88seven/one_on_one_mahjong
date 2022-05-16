@@ -19,7 +19,7 @@ class GameTextButton extends PositionComponent {
   @override
   void render(Canvas canvas) {
     final textRenderer = TextPaint(
-      config: const TextPaintConfig(
+      style: const TextStyle(
         fontSize: 16,
         color: AppColor.gameDialogText,
       ),
