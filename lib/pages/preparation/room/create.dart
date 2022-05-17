@@ -118,7 +118,7 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.0),
                   child: Text(
-                    'すでに使われているIDです。別のIDを指定してください。',
+                    'すでに使われているIDです。\n別のIDを指定してください。',
                     style: TextStyle(
                       fontSize: 15.0,
                       color: AppColor.errorColor,
