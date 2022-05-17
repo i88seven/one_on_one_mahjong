@@ -45,7 +45,12 @@ class GameRound {
     }
     final textRenderer =
         TextPaint(
-        style: const TextStyle(fontFamily: 'NotoSansJP', color: Colors.white));
+      style: const TextStyle(
+        fontFamily: 'NotoSansJP',
+        fontSize: 24.0,
+        color: Colors.white,
+      ),
+    );
     _textObject = TextComponent(
       text: text,
       textRenderer: textRenderer,
