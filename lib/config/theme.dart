@@ -115,6 +115,7 @@ final themeProvider = Provider((_ref) {
           color: AppColor.primaryBackgroundColor,
         ),
       ),
+      contentPadding: EdgeInsets.zero,
     ),
     cardTheme: const CardTheme(
       shape: RoundedRectangleBorder(
