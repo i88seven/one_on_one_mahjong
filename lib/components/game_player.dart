@@ -58,6 +58,7 @@ class GamePlayer extends PositionComponent {
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
     _childImage = Sprite(gameImages.fromCache('child.png'));
     updateFromJson(json);
+    _rerenderImage();
   }
 
   void updateFromJson(json) {
