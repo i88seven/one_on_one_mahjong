@@ -26,7 +26,10 @@ class AppFontSize {
 }
 
 final themeProvider = Provider((_ref) {
-  final themeData = ThemeData.light();
+  final themeData = ThemeData(
+    fontFamily: 'NotoSansJP',
+    brightness: Brightness.light,
+  );
 
   return themeData.copyWith(
     primaryColor: AppColor.primaryBackgroundColor,
@@ -36,6 +39,7 @@ final themeProvider = Provider((_ref) {
     appBarTheme: themeData.appBarTheme.copyWith(
       backgroundColor: AppColor.primaryBackgroundColor,
       titleTextStyle: const TextStyle(
+        fontFamily: 'NotoSansJP',
         color: AppColor.primaryColorMain,
         fontSize: 22,
         fontWeight: FontWeight.bold,
@@ -103,11 +107,12 @@ final themeProvider = Provider((_ref) {
     ),
     inputDecorationTheme: const InputDecorationTheme(
       labelStyle: TextStyle(
+        fontFamily: 'NotoSansJP',
         color: AppColor.textBaseColor,
       ),
       focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
-        color: AppColor.primaryBackgroundColor,
+        borderSide: BorderSide(
+          color: AppColor.primaryBackgroundColor,
         ),
       ),
     ),

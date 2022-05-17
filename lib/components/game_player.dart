@@ -134,7 +134,8 @@ class GamePlayer extends PositionComponent {
     super.render(canvas);
 
     final textColor = _isMyTurn ? AppColor.primaryColorMain : Colors.white;
-    final textRenderer = TextPaint(style: TextStyle(color: textColor));
+    final textRenderer =
+        TextPaint(style: TextStyle(fontFamily: 'NotoSansJP', color: textColor));
     textRenderer.render(
       canvas,
       _text,

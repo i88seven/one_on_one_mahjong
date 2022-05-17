@@ -47,6 +47,7 @@ class GameDialog extends PositionComponent {
         Paint()..color = AppColor.gameDialogBackground);
     final _textRenderer = TextPaint(
       style: const TextStyle(
+        fontFamily: 'NotoSansJP',
         fontSize: 20.0,
         color: AppColor.gameDialogText,
       ),

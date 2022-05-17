@@ -49,7 +49,11 @@ class GameResult extends PositionComponent {
 
     final _textRenderer = TextPaint(
         style: const TextStyle(
-            fontSize: 24.0, color: AppColor.gameDialogText));
+        fontFamily: 'NotoSansJP',
+        fontSize: 24.0,
+        color: AppColor.gameDialogText,
+      ),
+    );
     _gamePlayers.sort((a, b) => b.points - a.points);
     _gamePlayers.asMap().forEach((index, gamePlayer) {
       final _text = "${gamePlayer.name} : ${gamePlayer.points}";

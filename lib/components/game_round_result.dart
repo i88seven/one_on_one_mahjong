@@ -61,7 +61,11 @@ class GameRoundResult extends PositionComponent {
 
     final _textRenderer = TextPaint(
         style: const TextStyle(
-            fontSize: 20.0, color: AppColor.gameDialogText));
+        fontFamily: 'NotoSansJP',
+        fontSize: 20.0,
+        color: AppColor.gameDialogText,
+      ),
+    );
     _winResult.resultMap.asMap().forEach((int i, ResultRow resultRow) {
       add(TextComponent(
           text: resultRow.toString(),
@@ -100,7 +104,11 @@ class GameRoundResult extends PositionComponent {
 
     final _winNameRenderer = TextPaint(
         style: const TextStyle(
-            fontSize: 28.0, color: AppColor.gameDialogText));
+        fontFamily: 'NotoSansJP',
+        fontSize: 28.0,
+        color: AppColor.gameDialogText,
+      ),
+    );
     _winNameRenderer.render(
       canvas,
       captionMap[_winResult.winName] ?? 'エラー',

@@ -43,3 +43,10 @@ flutter:
     - assets/icons/
     - assets/audio/
     - .env
+
+  fonts:
+    - family: NotoSansJP
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Regular.otf
+        - asset: assets/fonts/NotoSansJP-Bold.otf
+          weight: 700

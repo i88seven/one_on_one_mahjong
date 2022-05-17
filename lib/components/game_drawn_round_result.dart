@@ -127,7 +127,11 @@ class GameDrawnRoundResult extends PositionComponent {
 
     final _nameRenderer = TextPaint(
         style: const TextStyle(
-            fontSize: 24.0, color: AppColor.gameDialogText));
+        fontFamily: 'NotoSansJP',
+        fontSize: 24.0,
+        color: AppColor.gameDialogText,
+      ),
+    );
     _nameRenderer.render(
       canvas,
       _meName,
@@ -144,7 +148,11 @@ class GameDrawnRoundResult extends PositionComponent {
 
     final _drawnCaptionRenderer = TextPaint(
         style: const TextStyle(
-            fontSize: 28.0, color: AppColor.gameDialogText));
+        fontFamily: 'NotoSansJP',
+        fontSize: 28.0,
+        color: AppColor.gameDialogText,
+      ),
+    );
     _drawnCaptionRenderer.render(
       canvas,
       '流局',

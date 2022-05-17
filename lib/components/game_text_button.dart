@@ -20,6 +20,7 @@ class GameTextButton extends PositionComponent {
   void render(Canvas canvas) {
     final textRenderer = TextPaint(
       style: const TextStyle(
+        fontFamily: 'NotoSansJP',
         fontSize: 16,
         color: AppColor.gameDialogText,
       ),
