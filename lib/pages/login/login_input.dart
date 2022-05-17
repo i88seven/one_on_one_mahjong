@@ -1,4 +1,5 @@
 
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +17,14 @@ class LoginInput extends StatefulWidget {
 class _LoginInputState extends State<LoginInput> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
   String infoText = '';
 
   Future<void> _onCreateAccount() async {
     try {
+      setState(() {
+        infoText = '';
+      });
       final FirebaseAuth auth = FirebaseAuth.instance;
       final result = await auth.createUserWithEmailAndPassword(
         email: _email.text,
@@ -42,6 +47,9 @@ class _LoginInputState extends State<LoginInput> {
 
   Future<void> _onLogin() async {
     try {
+      setState(() {
+        infoText = '';
+      });
       final FirebaseAuth auth = FirebaseAuth.instance;
       final result = await auth.signInWithEmailAndPassword(
         email: _email.text,
@@ -57,45 +65,76 @@ class _LoginInputState extends State<LoginInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          TextFormField(
-            controller: _email,
-            decoration: const InputDecoration(labelText: 'メールアドレス'),
-          ),
-          TextFormField(
-            controller: _password,
-            decoration: const InputDecoration(labelText: 'パスワード'),
-            obscureText: true,
-          ),
-          Container(
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              infoText,
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              child: const Text('ユーザー登録'),
-              onPressed: () async {
-                await _onCreateAccount();
+    return Form(
+      key: _key,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextFormField(
+              controller: _email,
+              decoration: const InputDecoration(labelText: 'メールアドレス'),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              maxLength: 255,
+              validator: (value) {
+                if (value == null || value == '') {
+                  return '入力してください';
+                }
+                if (!EmailValidator.validate(value)) {
+                  return '不正なメールアドレスです';
+                }
+                return null;
               },
             ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              child: const Text('ログイン'),
-              onPressed: () async {
-                await _onLogin();
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _password,
+              decoration: const InputDecoration(labelText: 'パスワード'),
+              obscureText: true,
+              maxLength: 32,
+              validator: (value) {
+                if (value == null || value == '') {
+                  return '入力してください';
+                }
+                if (value.length < 8) {
+                  return '8文字以上入力してください';
+                }
+                return null;
               },
             ),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                infoText,
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                child: const Text('ユーザー登録'),
+                onPressed: () async {
+                  if (!_key.currentState!.validate()) {
+                    return;
+                  }
+                  await _onCreateAccount();
+                },
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                child: const Text('ログイン'),
+                onPressed: () async {
+                  if (!_key.currentState!.validate()) {
+                    return;
+                  }
+                  await _onLogin();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
