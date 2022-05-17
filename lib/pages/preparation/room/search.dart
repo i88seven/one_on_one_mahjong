@@ -72,12 +72,12 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
                     children: [
                       const SizedBox(height: 60),
                       Text(
-                        "部屋ID: $_roomId",
+                        "部屋ID : $_roomId",
                         style: const TextStyle(fontSize: 18.0),
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        "リーダー: ${_host?.name}",
+                        "リーダー : ${_host?.name}",
                         style: const TextStyle(fontSize: 18.0),
                       ),
                     ],

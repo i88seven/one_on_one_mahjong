@@ -94,8 +94,8 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
                             itemBuilder: (BuildContext context, index) {
                               String _namePrefix =
                                   myUid == _memberList[index].uid
-                                      ? 'あなたの名前: '
-                                      : '相手の名前: ';
+                                      ? 'あなたの名前 : '
+                                      : '相手の名前 : ';
                               return ListTile(
                                 title:
                                     Text(_namePrefix + _memberList[index].name),
