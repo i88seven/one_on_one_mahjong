@@ -19,6 +19,7 @@ class GameRoundResult extends PositionComponent {
   final Images _gameImages;
   late final GameTextButton _button;
   final WinResult _winResult;
+  final bool _isWinner;
   final List<AllTileKinds> _tiles;
   final AllTileKinds _winTile;
   final List<AllTileKinds> _doras;
@@ -27,10 +28,12 @@ class GameRoundResult extends PositionComponent {
     required SeventeenGame game,
     required Vector2 screenSize,
     required WinResult winResult,
+    required bool isWinner,
     required List<AllTileKinds> tiles,
     required AllTileKinds winTile,
     required List<AllTileKinds> doras,
   })  : _winResult = winResult,
+        _isWinner = isWinner,
         _tiles = tiles,
         _winTile = winTile,
         _doras = doras,
@@ -136,7 +139,23 @@ class GameRoundResult extends PositionComponent {
     _winNameRenderer.render(
       canvas,
       captionMap[_winResult.winName] ?? 'エラー',
-      Vector2(size.x - 124, size.y - 136),
+      Vector2(size.x - 124, size.y - 156),
+      anchor: Anchor.topCenter,
+    );
+    final _winPointRenderer = TextPaint(
+      style: TextStyle(
+        fontFamily: 'NotoSansJP',
+        fontSize: 20.0,
+        fontWeight: FontWeight.bold,
+        color: _isWinner
+            ? AppColor.gameDialogTextWin
+            : AppColor.gameDialogTextLose,
+      ),
+    );
+    _winPointRenderer.render(
+      canvas,
+      (_isWinner ? '+' : '-') + _winResult.winPoints.toString() + '点',
+      Vector2(size.x - 124, size.y - 124),
       anchor: Anchor.topCenter,
     );
   }

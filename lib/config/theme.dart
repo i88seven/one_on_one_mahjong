@@ -7,6 +7,8 @@ class AppColor {
   static const primaryGameButton = Color(0xFFBAECD2);
   static const gameDialogBackground = Color(0xFFFFFFFF);
   static const gameDialogText = Color(0xFF4C3B3B);
+  static const gameDialogTextWin = Color(0xFFDD84B2);
+  static const gameDialogTextLose = Color(0xFF6EA5D7);
   static const gradientBackground = [
     Color(0xFF007D3C),
     Color(0xFFBAECD2),

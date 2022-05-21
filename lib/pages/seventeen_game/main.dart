@@ -288,6 +288,7 @@ class SeventeenGame extends FlameGame with TapDetector {
             game: this,
             screenSize: screenSize,
             winResult: winner.winResult!,
+            isWinner: winner.isMe,
             tiles: winnerHands,
             winTile: targetTile,
             doras: _doras.tiles);
