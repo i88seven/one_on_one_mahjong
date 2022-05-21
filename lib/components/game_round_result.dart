@@ -133,6 +133,7 @@ class GameRoundResult extends PositionComponent {
         style: const TextStyle(
         fontFamily: 'NotoSansJP',
         fontSize: 28.0,
+        fontWeight: FontWeight.bold,
         color: AppColor.gameDialogText,
       ),
     );
