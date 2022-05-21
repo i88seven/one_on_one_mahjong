@@ -2,6 +2,9 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:one_on_one_mahjong/config/theme.dart';
 
+final biggerIconSize = Vector2(12.0, 12.0);
+final smallerIconSize = Vector2(8.0, 8.0);
+
 void renderResultBackgroud(Canvas canvas, Vector2 size) {
   const primaryOuterBorderSide = BorderSide(
     color: AppColor.primaryColorMain,
@@ -66,24 +69,26 @@ void renderResultBackgroud(Canvas canvas, Vector2 size) {
     Paint()..color = AppColor.gameDialogBackground,
   );
 
-  _renderTopRightIcon(canvas, size);
-  _renderBottomLeftIcon(canvas, size);
+  _renderSideIcon(canvas, size, Vector2(size.x - bodyPadding, bodyPadding));
+  _renderSideIcon(
+      canvas,
+      size,
+      Vector2(bodyPadding + biggerIconSize.x * 2,
+          size.y - bodyPadding - biggerIconSize.y * 2));
 }
 
-void _renderTopRightIcon(Canvas canvas, Vector2 size) {
-  const bodyPadding = 16.0;
+// define as position of center
+void _renderSideIcon(Canvas canvas, Vector2 size, Vector2 position) {
   const iconBorderSide = BorderSide(
     color: AppColor.primaryColorMain,
     width: 1,
   );
-  final biggerIconSize = Vector2(12.0, 12.0);
-  final smallerIconSize = Vector2(8.0, 8.0);
 
   canvas.drawRect(
     Rect.fromCenter(
       center: Offset(
-        size.x - bodyPadding - biggerIconSize.x / 2,
-        bodyPadding + biggerIconSize.y / 2,
+        position.x - biggerIconSize.x / 2,
+        position.y + biggerIconSize.y / 2,
       ),
       width: biggerIconSize.x,
       height: biggerIconSize.y,
@@ -94,8 +99,8 @@ void _renderTopRightIcon(Canvas canvas, Vector2 size) {
     canvas,
     Rect.fromCenter(
       center: Offset(
-        size.x - bodyPadding - biggerIconSize.x / 2,
-        bodyPadding + biggerIconSize.y / 2,
+        position.x - biggerIconSize.x / 2,
+        position.y + biggerIconSize.y / 2,
       ),
       width: biggerIconSize.x,
       height: biggerIconSize.y,
@@ -109,8 +114,8 @@ void _renderTopRightIcon(Canvas canvas, Vector2 size) {
   canvas.drawRect(
     Rect.fromCenter(
       center: Offset(
-        size.x - bodyPadding - biggerIconSize.x - biggerIconSize.x / 2,
-        bodyPadding + biggerIconSize.y + biggerIconSize.y / 2,
+        position.x - biggerIconSize.x - biggerIconSize.x / 2,
+        position.y + biggerIconSize.y + biggerIconSize.y / 2,
       ),
       width: biggerIconSize.x,
       height: biggerIconSize.y,
@@ -121,8 +126,8 @@ void _renderTopRightIcon(Canvas canvas, Vector2 size) {
     canvas,
     Rect.fromCenter(
       center: Offset(
-        size.x - bodyPadding - biggerIconSize.x - biggerIconSize.x / 2,
-        bodyPadding + biggerIconSize.y + biggerIconSize.y / 2,
+        position.x - biggerIconSize.x - biggerIconSize.x / 2,
+        position.y + biggerIconSize.y + biggerIconSize.y / 2,
       ),
       width: biggerIconSize.x,
       height: biggerIconSize.y,
@@ -137,8 +142,8 @@ void _renderTopRightIcon(Canvas canvas, Vector2 size) {
     canvas,
     Rect.fromCenter(
       center: Offset(
-        size.x - bodyPadding - biggerIconSize.x - smallerIconSize.x / 2,
-        bodyPadding + biggerIconSize.y - smallerIconSize.y / 2,
+        position.x - biggerIconSize.x - smallerIconSize.x / 2,
+        position.y + biggerIconSize.y - smallerIconSize.y / 2,
       ),
       width: smallerIconSize.x,
       height: smallerIconSize.y,
@@ -153,104 +158,8 @@ void _renderTopRightIcon(Canvas canvas, Vector2 size) {
     canvas,
     Rect.fromCenter(
       center: Offset(
-        size.x - bodyPadding - biggerIconSize.x + smallerIconSize.x / 2,
-        bodyPadding + biggerIconSize.y + smallerIconSize.y / 2,
-      ),
-      width: smallerIconSize.x,
-      height: smallerIconSize.y,
-    ),
-    top: iconBorderSide,
-    right: iconBorderSide,
-    bottom: iconBorderSide,
-    left: iconBorderSide,
-  );
-}
-
-void _renderBottomLeftIcon(Canvas canvas, Vector2 size) {
-  const bodyPadding = 16.0;
-  const iconBorderSide = BorderSide(
-    color: AppColor.primaryColorMain,
-    width: 1,
-  );
-  final biggerIconSize = Vector2(12.0, 12.0);
-  final smallerIconSize = Vector2(8.0, 8.0);
-
-  canvas.drawRect(
-    Rect.fromCenter(
-      center: Offset(
-        bodyPadding + biggerIconSize.x / 2,
-        size.y - bodyPadding - biggerIconSize.y / 2,
-      ),
-      width: biggerIconSize.x,
-      height: biggerIconSize.y,
-    ),
-    Paint()..color = AppColor.primaryBackgroundColor,
-  );
-  paintBorder(
-    canvas,
-    Rect.fromCenter(
-      center: Offset(
-        bodyPadding + biggerIconSize.x / 2,
-        size.y - bodyPadding - biggerIconSize.y / 2,
-      ),
-      width: biggerIconSize.x,
-      height: biggerIconSize.y,
-    ),
-    top: iconBorderSide,
-    right: iconBorderSide,
-    bottom: iconBorderSide,
-    left: iconBorderSide,
-  );
-
-  canvas.drawRect(
-    Rect.fromCenter(
-      center: Offset(
-        bodyPadding + biggerIconSize.x + biggerIconSize.x / 2,
-        size.y - bodyPadding - biggerIconSize.y - biggerIconSize.y / 2,
-      ),
-      width: biggerIconSize.x,
-      height: biggerIconSize.y,
-    ),
-    Paint()..color = AppColor.primaryBackgroundColor,
-  );
-  paintBorder(
-    canvas,
-    Rect.fromCenter(
-      center: Offset(
-        bodyPadding + biggerIconSize.x + biggerIconSize.x / 2,
-        size.y - bodyPadding - biggerIconSize.y - biggerIconSize.y / 2,
-      ),
-      width: biggerIconSize.x,
-      height: biggerIconSize.y,
-    ),
-    top: iconBorderSide,
-    right: iconBorderSide,
-    bottom: iconBorderSide,
-    left: iconBorderSide,
-  );
-
-  paintBorder(
-    canvas,
-    Rect.fromCenter(
-      center: Offset(
-        bodyPadding + biggerIconSize.x - smallerIconSize.x / 2,
-        size.y - bodyPadding - biggerIconSize.y - smallerIconSize.y / 2,
-      ),
-      width: smallerIconSize.x,
-      height: smallerIconSize.y,
-    ),
-    top: iconBorderSide,
-    right: iconBorderSide,
-    bottom: iconBorderSide,
-    left: iconBorderSide,
-  );
-
-  paintBorder(
-    canvas,
-    Rect.fromCenter(
-      center: Offset(
-        bodyPadding + biggerIconSize.x + smallerIconSize.x / 2,
-        size.y - bodyPadding - biggerIconSize.y + smallerIconSize.y / 2,
+        position.x - biggerIconSize.x + smallerIconSize.x / 2,
+        position.y + biggerIconSize.y + smallerIconSize.y / 2,
       ),
       width: smallerIconSize.x,
       height: smallerIconSize.y,
