@@ -73,6 +73,30 @@ class GameRoundResult extends PositionComponent {
           position: Vector2(
               32 + (i > 7 ? size.x / 2 : 0), (i > 7 ? i - 8 : i) * 28 + 60)));
     });
+    if (_winResult.yakumanCount == 0) {
+      final _textRendererBold = TextPaint(
+        style: const TextStyle(
+          fontFamily: 'NotoSansJP',
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          color: AppColor.gameDialogText,
+        ),
+      );
+      _textRendererBold.render(
+        canvas,
+        _winResult.hans.toString() + '翻',
+        Vector2(size.x / 2, 308),
+        anchor: Anchor.topCenter,
+      );
+      canvas.drawRect(
+        Rect.fromCenter(
+          center: Offset(size.x / 2, 335),
+          width: 70,
+          height: 3,
+        ),
+        Paint()..color = AppColor.primaryGameButton,
+      );
+    }
 
     for (var i = 0; i < 4; i++) {
       PositionComponent tile;
