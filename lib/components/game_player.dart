@@ -35,7 +35,7 @@ class GamePlayer extends PositionComponent {
         _status = status,
         _isMe = isMe,
         _isParent = isParent {
-    final double _posY = _isMe ? game.screenSize.y - 72.0 : 24.0;
+    final double _posY = _isMe ? game.screenSize.y - 74.0 : 26.0;
     position = Vector2(0, _posY);
     size = Vector2(game.screenSize.x, 48.0);
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
@@ -52,7 +52,7 @@ class GamePlayer extends PositionComponent {
                 GamePlayerStatus.ready,
         _isMe = isMe,
         _isParent = json['isParent'] ?? false {
-    final double _posY = _isMe ? game.screenSize.y - 72.0 : 24.0;
+    final double _posY = _isMe ? game.screenSize.y - 74.0 : 26.0;
     position = Vector2(0, _posY);
     size = Vector2(game.screenSize.x, 48.0);
     _parentImage = Sprite(gameImages.fromCache('parent.png'));
@@ -159,7 +159,7 @@ class GamePlayer extends PositionComponent {
         ImageComponent.fromSprite(_isParent ? _parentImage : _childImage);
     add(imageComponent!
       ..size = Vector2(48, 48)
-      ..x = _isMe ? 10 : size.x - 58);
+      ..x = _isMe ? 14 : size.x - 62);
   }
 
   Map<String, dynamic> toJson() {

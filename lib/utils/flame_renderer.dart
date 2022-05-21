@@ -77,6 +77,30 @@ void renderResultBackgroud(Canvas canvas, Vector2 size) {
           size.y - bodyPadding - biggerIconSize.y * 2));
 }
 
+void renderGameBackgroud(Canvas canvas, Vector2 size) {
+  final padding = Vector2(12.0, 24.0);
+  const gameBorderSide = BorderSide(
+    color: AppColor.primaryColorMain,
+    width: 2,
+  );
+  paintBorder(
+    canvas,
+    Rect.fromLTRB(padding.x, padding.y, size.x - padding.x, size.y - padding.y),
+    top: gameBorderSide,
+    right: gameBorderSide,
+    bottom: gameBorderSide,
+    left: gameBorderSide,
+  );
+
+  _renderSideIcon(canvas, size,
+      Vector2(padding.x + biggerIconSize.x, padding.y - biggerIconSize.y));
+  _renderSideIcon(
+      canvas,
+      size,
+      Vector2(size.x - padding.x + biggerIconSize.x,
+          size.y - padding.y - biggerIconSize.y));
+}
+
 // define as position of center
 void _renderSideIcon(Canvas canvas, Vector2 size, Vector2 position) {
   const iconBorderSide = BorderSide(
@@ -138,6 +162,17 @@ void _renderSideIcon(Canvas canvas, Vector2 size, Vector2 position) {
     left: iconBorderSide,
   );
 
+  canvas.drawRect(
+    Rect.fromCenter(
+      center: Offset(
+        position.x - biggerIconSize.x - smallerIconSize.x / 2,
+        position.y + biggerIconSize.y - smallerIconSize.y / 2,
+      ),
+      width: smallerIconSize.x,
+      height: smallerIconSize.y,
+    ),
+    Paint()..color = const Color(0xFFFFFFFF),
+  );
   paintBorder(
     canvas,
     Rect.fromCenter(
@@ -154,6 +189,17 @@ void _renderSideIcon(Canvas canvas, Vector2 size, Vector2 position) {
     left: iconBorderSide,
   );
 
+  canvas.drawRect(
+    Rect.fromCenter(
+      center: Offset(
+        position.x - biggerIconSize.x + smallerIconSize.x / 2,
+        position.y + biggerIconSize.y + smallerIconSize.y / 2,
+      ),
+      width: smallerIconSize.x,
+      height: smallerIconSize.y,
+    ),
+    Paint()..color = const Color(0xFFFFFFFF),
+  );
   paintBorder(
     canvas,
     Rect.fromCenter(

@@ -17,6 +17,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_on_one_mahjong/components/dealts.dart';
 import 'package:one_on_one_mahjong/components/doras.dart';
 import 'package:one_on_one_mahjong/components/front_tile.dart';
+import 'package:one_on_one_mahjong/components/game_background.dart';
 import 'package:one_on_one_mahjong/components/game_dialog.dart';
 import 'package:one_on_one_mahjong/components/game_drawn_round_result.dart';
 import 'package:one_on_one_mahjong/components/game_player.dart';
@@ -92,7 +93,6 @@ class SeventeenGame extends FlameGame with TapDetector {
     _handsOther = OtherHands(this);
     _trashesMe = Trashes(this, true);
     _trashesOther = Trashes(this, false);
-    // this.add(GameBackground(this));
   }
 
   Future<void> initializeHost() async {
@@ -143,6 +143,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     List<String> allWinNameImages =
         WinName.values.map((winName) => "${winName.name}.png").toList();
     await gameImages.loadAll([
+      'gameBackground.png',
       'tile-back.png',
       ...allTileImages,
       ...allWinNameImages,
@@ -154,6 +155,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       'lose.png',
       'draw.png',
     ]);
+    add(GameBackground(game: this, gameImages: gameImages));
     String adUnitId = dotenv.env['AD_UNIT_ID'] ?? '';
     InterstitialAd.load(
         adUnitId: adUnitId,
