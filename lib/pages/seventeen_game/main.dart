@@ -58,6 +58,7 @@ class SeventeenGame extends FlameGame with TapDetector {
   AudioPlayer? _prepareBgmPlayer;
   AudioPlayer? _battleBgmPlayer;
   final String _myUid;
+  final bool _isPlayMusic;
   final String _roomId;
   bool _isTapping = false;
   Vector2 screenSize;
@@ -84,8 +85,8 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   static const playerCount = 2;
 
-  SeventeenGame(this._roomId, this._myUid, this._hostUid, this.screenSize,
-      this.onGameEnd, this.gameUserStatisticsModel) {
+  SeventeenGame(this._roomId, this._myUid, this._isPlayMusic, this._hostUid,
+      this.screenSize, this.onGameEnd, this.gameUserStatisticsModel) {
     _dealtsMe = Dealts(this);
     _dealtsOther = OtherDeals(game: this);
     _doras = Doras(game: this);
@@ -836,6 +837,6 @@ class SeventeenGame extends FlameGame with TapDetector {
 
   // Android では BGM を流すと大量のログが流れるので開発中は BGM を OFF
   bool get _canPlayBgm {
-    return dotenv.env['MODE'] != 'dev' || !Platform.isAndroid;
+    return _isPlayMusic && (dotenv.env['MODE'] != 'dev' || !Platform.isAndroid);
   }
 }

@@ -25,6 +25,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
   late StreamSubscription _changeSubscription;
   late StreamSubscription _changeMember;
   late String myUid;
+  late bool _isPlayMusic;
   List<Member> _memberList = [];
   Member? _hostMember;
 
@@ -68,6 +69,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       child: Consumer(builder: (context, ref, child) {
         final gameUserModel = ref.watch(gameUserProvider);
         myUid = gameUserModel.gameUser.uid;
+        _isPlayMusic = gameUserModel.gameUser.isPlayMusic;
         _gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
 
         return Scaffold(
@@ -168,6 +170,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       final game = SeventeenGame(
         widget.roomId,
         myUid,
+        _isPlayMusic,
         _hostMember!.uid,
         Vector2(screenSize.width, screenSize.height),
         _onGameEnd,
