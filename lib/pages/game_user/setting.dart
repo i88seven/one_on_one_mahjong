@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/preparation_background.dart';
-import 'package:one_on_one_mahjong/pages/game_user/update_name_input.dart';
+import 'package:one_on_one_mahjong/pages/game_user/setting_input.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 
-class UpdateGameUserNamePage extends ConsumerWidget {
+class SettingPage extends ConsumerWidget {
   final String? _initialName;
-  const UpdateGameUserNamePage({String? initialName, Key? key})
+  final bool? _initialIsPlayMusic;
+  const SettingPage({String? initialName, bool? initialIsPlayMusic, Key? key})
       : _initialName = initialName,
+        _initialIsPlayMusic = initialIsPlayMusic,
         super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameUserModel = ref.read(gameUserProvider);
 
-    Future<void> _updateName(String name) async {
+    Future<void> _updateSetting(String name, bool isPlayMusic) async {
       try {
-        await gameUserModel.updateName(name);
+        await gameUserModel.update(name, isPlayMusic);
         Navigator.of(context).popUntil(
           (route) => route.isFirst,
         );
@@ -27,7 +29,7 @@ class UpdateGameUserNamePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('名前の変更'),
+        title: const Text('設定変更'),
       ),
       body: Stack(
         children: [
@@ -36,9 +38,10 @@ class UpdateGameUserNamePage extends ConsumerWidget {
             padding: const EdgeInsets.all(8),
             scrollDirection: Axis.vertical,
             children: <Widget>[
-              GameUserNameInput(
-                onSubmit: _updateName,
+              SettingInput(
+                onSubmit: _updateSetting,
                 initialName: _initialName,
+                initialIsPlayMusic: _initialIsPlayMusic,
               ),
             ],
           ),

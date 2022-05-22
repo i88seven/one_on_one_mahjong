@@ -14,10 +14,11 @@ class GameUserModel extends ChangeNotifier {
         FirebaseFirestore.instance.collection('users').doc(uid);
     await userRef.set({
       'name': '',
+      'isPlayMusic': true,
       'createdAt': Timestamp.now(),
       'updatedAt': Timestamp.now(),
     });
-    gameUser.updateFromJson({'uid': uid, 'name': ''});
+    gameUser.updateFromJson({'uid': uid, 'name': '', 'isPlayMusic': true});
     notifyListeners();
   }
 
@@ -25,18 +26,27 @@ class GameUserModel extends ChangeNotifier {
     DocumentReference userRef =
         FirebaseFirestore.instance.collection('users').doc(uid);
     final userData = await userRef.get();
-    gameUser.updateFromJson({'uid': uid, 'name': userData['name']});
+    gameUser.updateFromJson({
+      'uid': uid,
+      'name': userData['name'],
+      'isPlayMusic': userData['isPlayMusic'],
+    });
     notifyListeners();
   }
 
-  Future<void> updateName(String name) async {
+  Future<void> update(String name, bool isPlayMusic) async {
     DocumentReference userRef =
         FirebaseFirestore.instance.collection('users').doc(gameUser.uid);
     await userRef.update({
       'name': name,
+      'isPlayMusic': isPlayMusic,
       'updatedAt': Timestamp.now(),
     });
-    gameUser.updateFromJson({...gameUser.toJson(), 'name': name});
+    gameUser.updateFromJson({
+      ...gameUser.toJson(),
+      'name': name,
+      'isPlayMusic': isPlayMusic,
+    });
     notifyListeners();
   }
 }

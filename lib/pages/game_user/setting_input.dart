@@ -1,27 +1,32 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class GameUserNameInput extends StatefulWidget {
-  final Function(String name) onSubmit;
+class SettingInput extends StatefulWidget {
+  final Function(String name, bool isPlayMusic) onSubmit;
   final String? initialName;
+  final bool? initialIsPlayMusic;
 
-  const GameUserNameInput({
+  const SettingInput({
     required this.onSubmit,
     this.initialName,
+    this.initialIsPlayMusic,
     Key? key,
   }) : super(key: key);
 
   @override
-  _GameUserNameInputState createState() => _GameUserNameInputState();
+  _SettingInputState createState() => _SettingInputState();
 }
 
-class _GameUserNameInputState extends State<GameUserNameInput> {
+class _SettingInputState extends State<SettingInput> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _myNameController = TextEditingController();
+  late bool _isPlayMusic;
 
   @override
   void initState() {
     super.initState();
     _myNameController.text = widget.initialName ?? '';
+    _isPlayMusic = widget.initialIsPlayMusic ?? true;
   }
 
   @override
@@ -51,14 +56,29 @@ class _GameUserNameInputState extends State<GameUserNameInput> {
                     return null;
                   },
                 ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const Text("BGMの再生"),
+                    CupertinoSwitch(
+                      value: _isPlayMusic,
+                      onChanged: (isPlayMusic) {
+                        setState(() {
+                          _isPlayMusic = isPlayMusic;
+                        });
+                      },
+                    ),
+                  ],
+                ),
                 Container(
                   padding: const EdgeInsets.only(top: 16.0),
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    child: const Text('名前を決定'),
+                    child: const Text('決定'),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        widget.onSubmit(_myNameController.text);
+                        widget.onSubmit(_myNameController.text, _isPlayMusic);
                       }
                     },
                   ),

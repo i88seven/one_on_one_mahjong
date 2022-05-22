@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
-import 'package:one_on_one_mahjong/pages/game_user/update_name.dart';
+import 'package:one_on_one_mahjong/pages/game_user/setting.dart';
 import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
@@ -22,10 +22,12 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
   late GameUser _gameUser;
   late GameUserStatistics _gameUserStatistics;
 
-  void updateUserName() async {
+  void updateUserSetting() async {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) {
-        return UpdateGameUserNamePage(initialName: _gameUser.name);
+        return SettingPage(
+            initialName: _gameUser.name,
+            initialIsPlayMusic: _gameUser.isPlayMusic);
       }),
     );
   }
@@ -84,9 +86,10 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                   Text("名前 : ${_gameUser.name}"),
                   Container(
                     alignment: Alignment.center,
-                    child: ElevatedButton(
-                      child: const Text('名前の変更'),
-                      onPressed: updateUserName,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.settings),
+                      label: const Text('設定'),
+                      onPressed: updateUserSetting,
                     ),
                   ),
                 ],

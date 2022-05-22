@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_on_one_mahjong/components/preparation_background.dart';
-import 'package:one_on_one_mahjong/pages/game_user/update_name_input.dart';
+import 'package:one_on_one_mahjong/pages/game_user/setting_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
 import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/game_user.dart';
 
+// login page からのみ呼ばれる
 class RegisterGameUserNamePage extends ConsumerWidget {
   final String? _initialName;
   const RegisterGameUserNamePage({String? initialName, Key? key})
@@ -18,10 +19,10 @@ class RegisterGameUserNamePage extends ConsumerWidget {
     final gameUserModel = ref.read(gameUserProvider);
     final gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
 
-    Future<void> _registerName(String name) async {
+    Future<void> _registerName(String name, bool isPlayMusic) async {
       try {
         GameUser _gameUser = gameUserModel.gameUser;
-        gameUserModel.updateName(name);
+        gameUserModel.update(name, isPlayMusic);
 
         await gameUserStatisticsModel.create(_gameUser.uid);
 
@@ -37,7 +38,7 @@ class RegisterGameUserNamePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('名前の変更'),
+        title: const Text('ユーザー設定'),
       ),
       body: Stack(
         children: [
@@ -46,7 +47,7 @@ class RegisterGameUserNamePage extends ConsumerWidget {
             padding: const EdgeInsets.all(8),
             scrollDirection: Axis.vertical,
             children: <Widget>[
-              GameUserNameInput(
+              SettingInput(
                 onSubmit: _registerName,
                 initialName: _initialName,
               ),
