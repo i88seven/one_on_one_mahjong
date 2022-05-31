@@ -157,7 +157,9 @@ class SeventeenGame extends FlameGame with TapDetector {
       'draw.png',
     ]);
     add(GameBackground(game: this, gameImages: gameImages));
-    String adUnitId = dotenv.env['AD_UNIT_ID'] ?? '';
+    String adUnitId = Platform.isIOS
+        ? dotenv.env['AD_UNIT_ID_IOS'] ?? ''
+        : dotenv.env['AD_UNIT_ID_ANDROID'] ?? '';
     InterstitialAd.load(
         adUnitId: adUnitId,
         request: const AdRequest(),
