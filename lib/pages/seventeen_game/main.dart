@@ -212,6 +212,9 @@ class SeventeenGame extends FlameGame with TapDetector {
 
     if (gameData['gameStatus'] != null &&
         _gameStatus.name != gameData['gameStatus']) {
+      if (gameData['gameStatus'] == GameStatus.ron.name && _gameStatus.name != GameStatus.trash.name) {
+        return;
+      }
       await _onChangeGameStatus(gameData);
     }
 
@@ -648,7 +651,6 @@ class SeventeenGame extends FlameGame with TapDetector {
           step: _trashesMe.tileCount,
           doraTrashes: _doraTrashes,
         );
-        remove(_gameRoundResult!.button);
         remove(_gameRoundResult!);
         _gameRoundResult = null;
         _me.setStatus(GamePlayerStatus.waitRound);
@@ -669,7 +671,6 @@ class SeventeenGame extends FlameGame with TapDetector {
           step: maxTrashCount,
           doraTrashes: _doraTrashes,
         );
-        remove(_gameDrawnRoundResult!.button);
         remove(_gameDrawnRoundResult!);
         _gameDrawnRoundResult = null;
         _me.setStatus(GamePlayerStatus.waitRound);

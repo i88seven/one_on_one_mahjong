@@ -9,8 +9,9 @@ import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
   await Firebase.initializeApp();
+  MobileAds.instance.updateRequestConfiguration(
+  RequestConfiguration(testDeviceIds: ['877E396879D2FDF7ABAE6D4AD7933E72']));
   runApp(const ProviderScope(child: OneOnOneMahjongApp()));
 }
 

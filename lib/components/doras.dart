@@ -10,7 +10,7 @@ import 'front_tile.dart';
 class Doras extends PositionComponent {
   final Images _gameImages;
   List<AllTileKinds> _tiles = [];
-  final List<PositionComponent> _tileObjects = [];
+  List<PositionComponent> _tileObjects = [];
 
   Doras({required SeventeenGame game}) : _gameImages = game.gameImages {
     position = Vector2(200, game.screenSize.y - tileSize.y - 300);
@@ -25,6 +25,7 @@ class Doras extends PositionComponent {
 
   void _render() {
     removeAll(_tileObjects);
+    _tileObjects = [];
     FrontTile dora = FrontTile(_gameImages, _tiles[0], TileState.dora);
     for (var i = 0; i < 4; i++) {
       BackTile backTile = BackTile(_gameImages);
