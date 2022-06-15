@@ -4,14 +4,17 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_on_one_mahjong/config/theme.dart';
+import 'package:one_on_one_mahjong/firebase_options.dart';
 import 'package:one_on_one_mahjong/pages/login/login_page.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   MobileAds.instance.updateRequestConfiguration(
   RequestConfiguration(testDeviceIds: ['877E396879D2FDF7ABAE6D4AD7933E72']));
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const ProviderScope(child: OneOnOneMahjongApp()));
 }
 
