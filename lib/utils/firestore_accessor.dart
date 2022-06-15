@@ -90,6 +90,7 @@ class FirestoreAccessor {
       'points-host': gamePlayers[0].points,
       'points-client': gamePlayers[1].points,
       'gameStatus': GameStatus.init.name,
+      'createdAt': Timestamp.now(),
     });
   }
 
