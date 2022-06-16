@@ -44,9 +44,9 @@ class YakuStatistics implements StatisticsItem {
           winResult.resultMap.firstWhereOrNull((result) => result.yaku == yaku);
       return doraResult != null ? doraResult.hans : 0;
     }).toList();
-    _doraAll = countedDoras[0];
-    _uraDoraAll = countedDoras[1];
-    _redFiveAll = countedDoras[2];
+    _doraAll += countedDoras[0];
+    _uraDoraAll += countedDoras[1];
+    _redFiveAll += countedDoras[2];
   }
 
   @override
