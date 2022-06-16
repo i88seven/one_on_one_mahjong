@@ -18,7 +18,7 @@ class GameRound {
 
   int get wind => _wind;
   int get round => _round;
-  bool get isFinalGame => _wind == 4 && _round == 2;
+  bool get isFinalGame => _wind == 2 && _round == 2;
 
   void setRound({required int wind, required int round}) {
     _wind = wind;
@@ -43,8 +43,7 @@ class GameRound {
       _textObject!.text = text;
       return;
     }
-    final textRenderer =
-        TextPaint(
+    final textRenderer = TextPaint(
       style: const TextStyle(
         fontFamily: 'NotoSansJP',
         fontSize: 24.0,
