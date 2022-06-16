@@ -162,15 +162,15 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                     switch (yaku) {
                       case Yaku.dora:
                         currentList.add(
-                            "ドラ合計 : ${_gameUserStatistics.winYaku['doraAll']} 回");
+                            "ドラ合計 : ${_gameUserStatistics.winYaku['doraAll']} 翻");
                         break;
                       case Yaku.uraDora:
                         currentList.add(
-                            "裏ドラ合計 : ${_gameUserStatistics.winYaku['uraDoraAll']} 回");
+                            "裏ドラ合計 : ${_gameUserStatistics.winYaku['uraDoraAll']} 翻");
                         break;
                       case Yaku.redFive:
                         currentList.add(
-                            "赤ドラ合計 : ${_gameUserStatistics.winYaku['redFiveAll']} 回");
+                            "赤ドラ合計 : ${_gameUserStatistics.winYaku['redFiveAll']} 翻");
                         break;
                       default:
                       // NOP
