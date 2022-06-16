@@ -19,8 +19,6 @@ enum Yaku {
   allSimples,
   /* 平和 */
   allRuns,
-  /* 門前自摸 */
-  concealedSelfDraw,
   /* 一発 */
   firstTurnWin,
   /* 河底撈魚 */
@@ -96,8 +94,6 @@ final Map<Yaku, int> hanMap = {
   Yaku.allSimples: 1,
   /* 平和 */
   Yaku.allRuns: 1,
-  /* 門前自摸 */
-  Yaku.concealedSelfDraw: 1,
   /* 一発 */
   Yaku.firstTurnWin: 1,
   /* 河底撈魚 */
@@ -171,7 +167,6 @@ final Map<Yaku, String> nameMap = {
   Yaku.redDragon: '中',
   Yaku.allSimples: '断ヤオ九',
   Yaku.allRuns: '平和',
-  Yaku.concealedSelfDraw: '門前自摸',
   Yaku.firstTurnWin: '一発',
   Yaku.finalTileWin: '河底撈魚',
   Yaku.doubleRun: '一盃口',
