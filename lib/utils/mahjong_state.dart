@@ -28,7 +28,8 @@ class MahjongState {
         isParent = reachMahjongState.isParent;
 
   AllTileKinds get prevalentWindTile {
-    return wind == 1 ? AllTileKinds.j1 : AllTileKinds.j2;
+    AllTileKinds? tile = EnumToString.fromString(AllTileKinds.values, "j$wind");
+    return tile ?? AllTileKinds.j1;
   }
 
   AllTileKinds get seatWindTile {
