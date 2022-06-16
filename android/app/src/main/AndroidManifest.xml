@@ -2,7 +2,7 @@
     package="com.i88seven.one_on_one_mahjong">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-        android:label="one_on_one_mahjong"
+        android:label="タイマン麻雀"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
