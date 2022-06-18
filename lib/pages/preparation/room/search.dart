@@ -54,6 +54,8 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
                 ),
                 if (_hasResult && !_hasRoom)
                   ListView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: const [
                       SizedBox(height: 12),
                       Text(
@@ -64,11 +66,11 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
                         ),
                       ),
                     ],
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
                   ),
                 if (_hasRoom)
                   ListView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       const SizedBox(height: 60),
                       Text(
@@ -81,8 +83,6 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
                         style: const TextStyle(fontSize: 18.0),
                       ),
                     ],
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
                   ),
                 if (_hasRoom)
                   Container(
