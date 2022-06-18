@@ -46,8 +46,8 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
     _changeSubscription = _roomDoc.snapshots().listen(_onChangeRoom);
     _roomDoc.get().then((DocumentSnapshot roomSnapshot) {
       final roomData = roomSnapshot.data()! as Map<String, dynamic>;
-      CollectionReference _membersCollection = _roomDoc.collection('members');
-      _changeMember = _membersCollection.snapshots().listen(_onChangeMember);
+      CollectionReference membersCollection = _roomDoc.collection('members');
+      _changeMember = membersCollection.snapshots().listen(_onChangeMember);
       _hostMember = Member(
         uid: roomData['hostUid'],
         name: roomData['hostName'],
@@ -94,13 +94,13 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (BuildContext context, index) {
-                              String _namePrefix =
+                              String namePrefix =
                                   myUid == _memberList[index].uid
                                       ? 'あなたの名前 : '
                                       : '相手の名前 : ';
                               return ListTile(
                                 title:
-                                    Text(_namePrefix + _memberList[index].name),
+                                    Text(namePrefix + _memberList[index].name),
                               );
                             },
                             itemCount: _memberCount,

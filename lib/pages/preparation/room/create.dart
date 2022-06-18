@@ -49,10 +49,10 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
 
     void _createRoom(String roomId) async {
       try {
-        DocumentReference _roomRef = FirebaseFirestore.instance
+        DocumentReference roomRef = FirebaseFirestore.instance
             .collection('preparationRooms')
             .doc(roomId);
-        DocumentSnapshot snapshot = await _roomRef.get();
+        DocumentSnapshot snapshot = await roomRef.get();
         if (!_canCreateRoom(snapshot)) {
           setState(() {
             _hasResult = true;
@@ -64,14 +64,14 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
           _hasResult = false;
           _hasError = false;
         });
-        _roomRef.set({
+        roomRef.set({
           'hostUid': _myUid,
           'hostName': _myName,
           'status': 'wait',
           'createdAt': Timestamp.now(),
           'updatedAt': Timestamp.now(),
         });
-        _roomRef.collection('members').doc(_myUid).set({'name': _myName});
+        roomRef.collection('members').doc(_myUid).set({'name': _myName});
 
         bool? shouldDelete = await Navigator.of(context).push(
           MaterialPageRoute<bool>(
@@ -82,11 +82,11 @@ class _RoomCreatePageState extends ConsumerState<RoomCreatePage> {
         );
         if (shouldDelete!) {
           QuerySnapshot membersSnapshot =
-              await _roomRef.collection('members').get();
+              await roomRef.collection('members').get();
           for (QueryDocumentSnapshot element in membersSnapshot.docs) {
             element.reference.delete();
           }
-          _roomRef.delete();
+          roomRef.delete();
         }
       } catch (e) {
         setState(() {

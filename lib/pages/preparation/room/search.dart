@@ -105,9 +105,9 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
 
   void _searchRoom(String roomId) async {
     try {
-      DocumentReference _roomRef =
+      DocumentReference roomRef =
           FirebaseFirestore.instance.collection('preparationRooms').doc(roomId);
-      DocumentSnapshot snapshot = await _roomRef.get();
+      DocumentSnapshot snapshot = await roomRef.get();
       if (!snapshot.exists) {
         setState(() {
           _roomId = null;
@@ -132,10 +132,10 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
 
   void _participateGame({roomId}) async {
     try {
-      DocumentReference _roomRef =
+      DocumentReference roomRef =
           FirebaseFirestore.instance.collection('preparationRooms').doc(roomId);
       DocumentReference memberDoc =
-          _roomRef.collection('members').doc(_gameUser.uid);
+          roomRef.collection('members').doc(_gameUser.uid);
       memberDoc.set({'name': _gameUser.name});
 
       bool? shouldDelete = await Navigator.of(context).push(

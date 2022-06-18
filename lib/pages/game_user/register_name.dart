@@ -21,10 +21,10 @@ class RegisterGameUserNamePage extends ConsumerWidget {
 
     Future<void> _registerName(String name, bool isPlayMusic) async {
       try {
-        GameUser _gameUser = gameUserModel.gameUser;
+        GameUser gameUser = gameUserModel.gameUser;
         gameUserModel.update(name, isPlayMusic);
 
-        await gameUserStatisticsModel.create(_gameUser.uid);
+        await gameUserStatisticsModel.create(gameUser.uid);
 
         await Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
