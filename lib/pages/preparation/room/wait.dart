@@ -112,7 +112,7 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
                               child: ElevatedButton(
                                 child: const Text('始める'),
                                 onPressed: () async {
-                                  if (_memberCount < 2) {
+                                  if (_memberCount != 2) {
                                     return;
                                   }
                                   _startGame();
@@ -159,6 +159,12 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
       Member member = Member(uid: doc.id, name: memberData['name']);
       return member;
     }).toList();
+    if (memberList.length > 2) {
+      _changeSubscription.cancel();
+      _changeMember.cancel();
+      Navigator.of(context).pop(true);
+      return;
+    }
     setState(() {
       _memberList = memberList;
     });

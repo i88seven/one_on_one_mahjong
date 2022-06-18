@@ -20,7 +20,7 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
   late GameUser _gameUser;
   String? _roomId;
   Member? _host;
-  bool _hasResult = false;
+  String _errorMessage = '';
 
   bool get _hasRoom {
     return _roomId != null && _host != null && _host?.uid != null;
@@ -52,15 +52,15 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
                   onSubmit: _searchRoom,
                   buttonText: '検索',
                 ),
-                if (_hasResult && !_hasRoom)
+                if (_errorMessage != '' && !_hasRoom)
                   ListView(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    children: const [
-                      SizedBox(height: 12),
+                    children: [
+                      const SizedBox(height: 12),
                       Text(
-                        '見つかりませんでした',
-                        style: TextStyle(
+                        _errorMessage,
+                        style: const TextStyle(
                           fontSize: 15.0,
                           color: AppColor.errorColor,
                         ),
@@ -112,7 +112,16 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
         setState(() {
           _roomId = null;
           _host = null;
-          _hasResult = true;
+          _errorMessage = '見つかりませんでした';
+        });
+        return;
+      }
+      final membersSnapshot = await roomRef.collection('members').get();
+      if (membersSnapshot.docs.length > 1) {
+        setState(() {
+          _roomId = null;
+          _host = null;
+          _errorMessage = '部屋に空きがありません';
         });
         return;
       }
@@ -123,7 +132,7 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
           uid: roomData['hostUid'],
           name: roomData['hostName'],
         );
-        _hasResult = true;
+        _errorMessage = '';
       });
     } catch (e) {
       // TODO
@@ -134,6 +143,15 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
     try {
       DocumentReference roomRef =
           FirebaseFirestore.instance.collection('preparationRooms').doc(roomId);
+      final membersSnapshot = await roomRef.collection('members').get();
+      if (membersSnapshot.docs.length > 1) {
+        setState(() {
+          _roomId = null;
+          _host = null;
+          _errorMessage = '部屋に空きがありません';
+        });
+        return;
+      }
       DocumentReference memberDoc =
           roomRef.collection('members').doc(_gameUser.uid);
       memberDoc.set({'name': _gameUser.name});
@@ -151,11 +169,15 @@ class _RoomSearchPageState extends ConsumerState<RoomSearchPage> {
         setState(() {
           _roomId = null;
           _host = null;
-          _hasResult = false;
+          _errorMessage = '';
         });
       }
     } catch (e) {
-      // TODO
+      setState(() {
+        _roomId = null;
+        _host = null;
+        _errorMessage = e.toString();
+      });
     }
   }
 }
