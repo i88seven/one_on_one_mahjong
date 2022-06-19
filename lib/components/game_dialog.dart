@@ -23,13 +23,13 @@ class GameDialog extends PositionComponent {
     final cancelButton = GameTextButton(
       'キャンセル',
       GameButtonKind.dialogCancel,
-      position: Vector2(50, screenSize.y / 2 + 20),
+      position: Vector2(screenSize.x / 2 - 140, screenSize.y / 2 + 20),
       priority: 20,
     );
     final okButton = GameTextButton(
       '確定',
       GameButtonKind.dialogOk,
-      position: Vector2(200, screenSize.y / 2 + 20),
+      position: Vector2(screenSize.x / 2 + 20, screenSize.y / 2 + 20),
       priority: 20,
     );
     _buttons = [cancelButton, okButton];
