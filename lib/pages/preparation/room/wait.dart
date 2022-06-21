@@ -20,7 +20,7 @@ class RoomWaitPage extends StatefulWidget {
 }
 
 class _RoomWaitPageState extends State<RoomWaitPage> {
-  late GameUserStatisticsModel _gameUserStatisticsModel;
+  GameUserStatisticsModel? _gameUserStatisticsModel;
   late DocumentReference _roomDoc;
   late StreamSubscription _changeSubscription;
   late StreamSubscription _changeMember;
@@ -70,7 +70,9 @@ class _RoomWaitPageState extends State<RoomWaitPage> {
         final gameUserModel = ref.watch(gameUserProvider);
         myUid = gameUserModel.gameUser.uid;
         _isPlayMusic = gameUserModel.gameUser.isPlayMusic;
-        _gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
+        if (!gameUserModel.gameUser.isAnonymously) {
+          _gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
+        }
 
         return Scaffold(
           appBar: AppBar(

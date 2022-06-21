@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/config/theme.dart';
 import 'package:one_on_one_mahjong/constants/yaku.dart';
@@ -21,6 +22,7 @@ class UserDetailPage extends ConsumerStatefulWidget {
 class _UserDetailPageState extends ConsumerState<UserDetailPage> {
   late GameUser _gameUser;
   late GameUserStatistics _gameUserStatistics;
+  final LocalStorage _storage = LocalStorage('one_one_one_mahjong');
 
   void updateUserSetting() async {
     Navigator.of(context).push(
@@ -65,6 +67,9 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
     _gameUser = gameUserModel.gameUser;
     final gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
     _gameUserStatistics = gameUserStatisticsModel.gameUserStatistics;
+    Future(() async {
+      await _storage.ready;
+    });
   }
 
   @override
@@ -95,7 +100,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              ExpansionTile(
+              !_gameUser.isAnonymously
+                  ? ExpansionTile(
                 expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                 initiallyExpanded: true,
                 childrenPadding: const EdgeInsets.only(
@@ -113,8 +119,10 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                   "負け : ${_gameUserStatistics.loseGame} 回 (${_gameUserStatistics.loseRate} %)",
                   "引き分け : ${_gameUserStatistics.drawGame} 回 (${_gameUserStatistics.drawRate} %)",
                 ]),
-              ),
-              ExpansionTile(
+                    )
+                  : Container(),
+              !_gameUser.isAnonymously
+                  ? ExpansionTile(
                 expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                 initiallyExpanded: true,
                 childrenPadding: const EdgeInsets.only(
@@ -141,8 +149,10 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                   "平均勝ち歩数 : ${_gameUserStatistics.winStepAverage} 歩",
                   "平均負け歩数 : ${_gameUserStatistics.loseStepAverage} 歩",
                 ]),
-              ),
-              ExpansionTile(
+                    )
+                  : Container(),
+              !_gameUser.isAnonymously
+                  ? ExpansionTile(
                 expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                 initiallyExpanded: false,
                 childrenPadding: const EdgeInsets.only(
@@ -178,7 +188,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                     return currentList;
                   }),
                 ]),
-              ),
+                    )
+                  : Container(),
               const SizedBox(height: 52),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -190,6 +201,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                       label: const Text('ログアウト'),
                       onPressed: () async {
                         await FirebaseAuth.instance.signOut();
+                        _storage.deleteItem('myName');
+                        _storage.deleteItem('isPlayMusic');
                         Navigator.of(context).popUntil(
                           (route) => route.isFirst,
                         );

@@ -34,14 +34,27 @@ class GameUserModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> update(String name, bool isPlayMusic) async {
-    DocumentReference userRef =
-        FirebaseFirestore.instance.collection('users').doc(gameUser.uid);
-    await userRef.update({
+  Future<void> loginAnonymously(
+      String uid, String? name, bool? isPlayMusic) async {
+    gameUser.updateFromJson({
+      'uid': uid,
       'name': name,
       'isPlayMusic': isPlayMusic,
-      'updatedAt': Timestamp.now(),
+      'isAnonymously': true,
     });
+    notifyListeners();
+  }
+
+  Future<void> update(String name, bool isPlayMusic) async {
+    if (!gameUser.isAnonymously) {
+      DocumentReference userRef =
+          FirebaseFirestore.instance.collection('users').doc(gameUser.uid);
+      await userRef.update({
+        'name': name,
+        'isPlayMusic': isPlayMusic,
+        'updatedAt': Timestamp.now(),
+      });
+    }
     gameUser.updateFromJson({
       ...gameUser.toJson(),
       'name': name,

@@ -6,8 +6,14 @@ import 'package:flutter/material.dart';
 class LoginInput extends StatefulWidget {
   final Function(String uid) onCreate;
   final Function(String uid) onLogin;
+  final Function(String uid) onLoginAnonymously;
 
-  const LoginInput({required this.onCreate, required this.onLogin, Key? key})
+  const LoginInput({
+    required this.onCreate,
+    required this.onLogin,
+    required this.onLoginAnonymously,
+    Key? key,
+  })
       : super(key: key);
 
   @override
@@ -56,6 +62,21 @@ class _LoginInputState extends State<LoginInput> {
         password: _password.text,
       );
       await widget.onLogin(result.user!.uid);
+    } catch (e) {
+      setState(() {
+        infoText = "ログインに失敗しました：${e.toString()}";
+      });
+    }
+  }
+
+  Future<void> _onLoginAnonymously() async {
+    try {
+      setState(() {
+        infoText = '';
+      });
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final result = await auth.signInAnonymously();
+      await widget.onLoginAnonymously(result.user!.uid);
     } catch (e) {
       setState(() {
         infoText = "ログインに失敗しました：${e.toString()}";
@@ -130,6 +151,16 @@ class _LoginInputState extends State<LoginInput> {
                     return;
                   }
                   await _onLogin();
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                child: const Text('匿名ユーザーで使用'),
+                onPressed: () async {
+                  await _onLoginAnonymously();
                 },
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/game_user/setting_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
@@ -23,9 +24,15 @@ class RegisterGameUserNamePage extends ConsumerWidget {
       try {
         GameUser gameUser = gameUserModel.gameUser;
         gameUserModel.update(name, isPlayMusic);
-
-        await gameUserStatisticsModel.create(gameUser.uid);
-
+        if (gameUser.isAnonymously) {
+          LocalStorage storage = LocalStorage('one_one_one_mahjong');
+          await storage.ready;
+          storage.setItem('myName', name);
+          storage.setItem('isPlayMusic', isPlayMusic);
+        }
+        if (!gameUser.isAnonymously) {
+          await gameUserStatisticsModel.create(gameUser.uid);
+        }
         await Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
             builder: (context) => const PreparationMainPage(),

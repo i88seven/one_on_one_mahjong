@@ -52,7 +52,7 @@ const maxTrashCount = 17;
 class SeventeenGame extends FlameGame with TapDetector {
   late FirestoreAccessor _firestoreAccessor;
   late final InterstitialAd _interstitialAd;
-  GameUserStatisticsModel gameUserStatisticsModel;
+  GameUserStatisticsModel? gameUserStatisticsModel;
   Images gameImages = Images();
   final AudioCache _audioCache = AudioCache();
   AudioPlayer? _prepareBgmPlayer;
@@ -189,7 +189,7 @@ class SeventeenGame extends FlameGame with TapDetector {
     add(_doras);
     add(_handsMe);
     _firestoreAccessor.listenOnChangeGame(_onChangeGame);
-    await gameUserStatisticsModel.countOnGameStart(uid: _myUid);
+    await gameUserStatisticsModel?.countOnGameStart(uid: _myUid);
     _handsOther.initialize();
   }
 
@@ -557,7 +557,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       myPoints: _me.points,
     );
     add(_gameResult!);
-    await gameUserStatisticsModel.countOnGameEnd(
+    await gameUserStatisticsModel?.countOnGameEnd(
       uid: _myUid,
       pointDiff: _me.points - _other.points,
     );
@@ -643,7 +643,7 @@ class SeventeenGame extends FlameGame with TapDetector {
         final winner = _gamePlayers
             .firstWhereOrNull((gamePlayer) => gamePlayer.winResult != null);
         final isWinner = winner?.uid == _me.uid;
-        await gameUserStatisticsModel.countOnRoundEnd(
+        await gameUserStatisticsModel?.countOnRoundEnd(
           uid: _myUid,
           isParent: _me.isParent,
           isWinner: isWinner,
@@ -663,7 +663,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       }
       if (c is GameDrawnRoundResult &&
           c.button.toRect().contains(info.eventPosition.global.toOffset())) {
-        await gameUserStatisticsModel.countOnRoundEnd(
+        await gameUserStatisticsModel?.countOnRoundEnd(
           uid: _myUid,
           isParent: _me.isParent,
           isWinner: true,
