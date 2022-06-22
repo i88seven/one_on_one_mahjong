@@ -440,7 +440,7 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (_furitenImage == null &&
           targetTile != null &&
           _reachResult.containsKey(convertRedTile(targetTile))) {
-        // リーチの段階では裏ドラはカウントされていないので、ドラの判定し直し
+        // 牌選択の段階では裏ドラはカウントされていないので、ドラの判定し直し
         final winResult = _reachResult[convertRedTile(targetTile)]!;
         if (winResult.yakumanCount == 0) {
           final winTiles = [..._handsMe.tiles, targetTile];
