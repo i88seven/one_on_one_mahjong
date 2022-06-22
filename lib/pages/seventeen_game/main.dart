@@ -786,21 +786,25 @@ class SeventeenGame extends FlameGame with TapDetector {
     if (_myUid == _hostUid) {
       await _firestoreAccessor.deleteGame();
     }
-    _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('$ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-      },
-      onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
-    );
-    _interstitialAd.show();
-    onGameEnd();
+    try {
+      _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+        onAdShowedFullScreenContent: (InterstitialAd ad) =>
+            print('$ad onAdShowedFullScreenContent.'),
+        onAdDismissedFullScreenContent: (InterstitialAd ad) {
+          print('$ad onAdDismissedFullScreenContent.');
+          ad.dispose();
+        },
+        onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+          print('$ad onAdFailedToShowFullScreenContent: $error');
+          ad.dispose();
+        },
+        onAdImpression: (InterstitialAd ad) =>
+            print('$ad impression occurred.'),
+      );
+      await _interstitialAd.show();
+    } finally {
+      onGameEnd();
+    }
   }
 
   void _fetchReachResult() {
