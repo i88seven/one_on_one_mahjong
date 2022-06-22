@@ -1,8 +1,8 @@
 enum ReachState {
   none, // テンパイになっていない
   notEnough, // テンパイにはなっているが翻が足りない
-  confirmed, // アガリ牌によっては満貫
-  undecided, // 満貫確定
+  confirmed, // 満貫確定
+  undecided, // アガリ牌によっては満貫
 }
 
 Map<ReachState, String> reachStateTextMap = {
