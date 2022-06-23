@@ -199,15 +199,15 @@ class FirestoreAccessor {
     });
   }
 
-  Future<List<AllTileKinds>> fetchWinnerHands(String winnerUid) async {
+  Future<List<AllTileKinds>> fetchPlayerHands(String uid) async {
     final tilesSnapshot =
-        await _gameDoc.collection('player_tiles').doc(winnerUid).get();
-    Map<String, dynamic>? winnerTilesData = tilesSnapshot.data();
-    if (winnerTilesData == null) {
+        await _gameDoc.collection('player_tiles').doc(uid).get();
+    Map<String, dynamic>? tilesData = tilesSnapshot.data();
+    if (tilesData == null) {
       return [];
     }
 
-    final handsJson = winnerTilesData['hands'] as List<dynamic>?;
+    final handsJson = tilesData['hands'] as List<dynamic>?;
     if (handsJson is List<dynamic>) {
       return handsJson
           .map((tileString) =>

@@ -17,6 +17,7 @@ class GameDrawnRoundResult extends PositionComponent {
   final Images _gameImages;
   late final GameTextButton _button;
   final List<AllTileKinds> _trashesOther;
+  final List<AllTileKinds> _handsOther;
   final List<AllTileKinds> _trashesMe;
   final List<AllTileKinds> _handsMe;
   final List<AllTileKinds> _doras;
@@ -28,6 +29,7 @@ class GameDrawnRoundResult extends PositionComponent {
     required SeventeenGame game,
     required Vector2 screenSize,
     required List<AllTileKinds> trashesOther,
+    required List<AllTileKinds> handsOther,
     required List<AllTileKinds> trashesMe,
     required List<AllTileKinds> handsMe,
     required List<AllTileKinds> doras,
@@ -35,6 +37,7 @@ class GameDrawnRoundResult extends PositionComponent {
     required String otherName,
     required String gameRoundName,
   })  : _trashesOther = trashesOther,
+        _handsOther = handsOther,
         _trashesMe = trashesMe,
         _handsMe = handsMe,
         _doras = doras,
@@ -112,11 +115,12 @@ class GameDrawnRoundResult extends PositionComponent {
     });
 
     // 相手の手配
-    for (var i = 0; i < 13; i++) {
-      add(BackTile(_gameImages)
-        ..x = size.x / 2 + tileSize.x * (i - 6.5)
+    _handsOther.asMap().forEach((index, tile) {
+      FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);
+      add(tileObject
+        ..x = size.x / 2 + tileSize.x * (index - 6.5)
         ..y = 96);
-    }
+    });
 
     _handsMe.asMap().forEach((index, tile) {
       FrontTile tileObject = FrontTile(_gameImages, tile, TileState.result);

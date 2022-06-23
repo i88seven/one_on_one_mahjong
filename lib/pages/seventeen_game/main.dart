@@ -289,7 +289,7 @@ class SeventeenGame extends FlameGame with TapDetector {
           ? _trashesOther.tiles.last
           : _trashesMe.tiles.last;
       List<AllTileKinds> winnerHands = winner != null
-          ? await _firestoreAccessor.fetchWinnerHands(winner.uid)
+          ? await _firestoreAccessor.fetchPlayerHands(winner.uid)
           : [];
       if (winner != null && _gameRoundResult == null) {
         _gameRoundResult = GameRoundResult(
@@ -313,10 +313,13 @@ class SeventeenGame extends FlameGame with TapDetector {
         _me.status == GamePlayerStatus.roundResult &&
         _other.status == GamePlayerStatus.roundResult &&
         _gameDrawnRoundResult == null) {
+      List<AllTileKinds> handsOther =
+          await _firestoreAccessor.fetchPlayerHands(_other.uid);
       _gameDrawnRoundResult = GameDrawnRoundResult(
         game: this,
         screenSize: screenSize,
         trashesOther: _trashesOther.tiles,
+        handsOther: handsOther,
         trashesMe: _trashesMe.tiles,
         handsMe: _handsMe.tiles,
         doras: _doras.tiles,
