@@ -753,7 +753,8 @@ class SeventeenGame extends FlameGame with TapDetector {
       gamePlayers: _gamePlayers,
     );
 
-    if (_reachResult.containsKey(convertRedTile(tile.tileKind))) {
+    if (_furitenImage == null &&
+        _reachResult.containsKey(convertRedTile(tile.tileKind))) {
       _furitenImage = ImageComponent(gameImages, 'furiten.png');
       add(_furitenImage!
         ..size = Vector2(48, 48)
