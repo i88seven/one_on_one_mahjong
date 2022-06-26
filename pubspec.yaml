@@ -30,6 +30,8 @@ dependencies:
   flutter_svg: ^1.1.0
   email_validator: ^2.0.1
   flutter_launcher_icons: ^0.9.3
+  google_sign_in: ^5.3.3
+  flutter_signin_button: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,8 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginInput extends StatefulWidget {
   final Function(String uid) onCreate;
@@ -13,8 +15,7 @@ class LoginInput extends StatefulWidget {
     required this.onLogin,
     required this.onLoginAnonymously,
     Key? key,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   @override
   _LoginInputState createState() => _LoginInputState();
@@ -62,6 +63,35 @@ class _LoginInputState extends State<LoginInput> {
         password: _password.text,
       );
       await widget.onLogin(result.user!.uid);
+    } catch (e) {
+      setState(() {
+        infoText = "ログインに失敗しました：${e.toString()}";
+      });
+    }
+  }
+
+  Future<void> _onGoogleLogin() async {
+    try {
+      setState(() {
+        infoText = '';
+      });
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        throw 'googleUser is not found';
+      }
+      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final result = await auth.signInWithCredential(credential);
+      if (result.additionalUserInfo!.isNewUser) {
+        await widget.onCreate(result.user!.uid);
+      } else {
+        await widget.onLogin(result.user!.uid);
+      }
     } catch (e) {
       setState(() {
         infoText = "ログインに失敗しました：${e.toString()}";
@@ -155,6 +185,15 @@ class _LoginInputState extends State<LoginInput> {
               ),
             ),
             const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: SignInButton(
+                Buttons.GoogleDark,
+                onPressed: () async {
+                  await _onGoogleLogin();
+                },
+              ),
+            ),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(

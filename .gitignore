@@ -50,3 +50,5 @@ app.*.map.json
 # Firebase
 .firebase/hosting*
 firestore.rules
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
