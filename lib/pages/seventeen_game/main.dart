@@ -174,7 +174,11 @@ class SeventeenGame extends FlameGame with TapDetector {
         ));
     if (_canPlayBgm) {
       _prepareBgmPlayer =
-          await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+          await _audioCache.loop(
+        'audio/prepare_bgm.wav',
+        volume: 0.8,
+        isNotification: true,
+      );
     }
 
     _gameRound = GameRound(this, 1, 1);
@@ -277,7 +281,10 @@ class SeventeenGame extends FlameGame with TapDetector {
       });
       if (_canPlayBgm) {
         await _prepareBgmPlayer?.stop();
-        _battleBgmPlayer = await _audioCache.loop('audio/battle_bgm.wav');
+        _battleBgmPlayer = await _audioCache.loop(
+          'audio/battle_bgm.wav',
+          isNotification: true,
+        );
       }
       _dealtsOther.initialize(21);
     }
@@ -304,7 +311,11 @@ class SeventeenGame extends FlameGame with TapDetector {
         if (_canPlayBgm) {
           await _battleBgmPlayer?.stop();
           _prepareBgmPlayer =
-              await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+              await _audioCache.loop(
+            'audio/prepare_bgm.wav',
+            volume: 0.8,
+            isNotification: true,
+          );
         }
       }
     }
@@ -331,7 +342,11 @@ class SeventeenGame extends FlameGame with TapDetector {
       if (_canPlayBgm) {
         await _battleBgmPlayer?.stop();
         _prepareBgmPlayer =
-            await _audioCache.loop('audio/prepare_bgm.wav', volume: 0.8);
+            await _audioCache.loop(
+          'audio/prepare_bgm.wav',
+          volume: 0.8,
+          isNotification: true,
+        );
       }
       return;
     }
