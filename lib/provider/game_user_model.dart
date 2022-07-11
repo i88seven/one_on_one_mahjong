@@ -62,4 +62,9 @@ class GameUserModel extends ChangeNotifier {
     });
     notifyListeners();
   }
+
+  void logout() {
+    gameUser = GameUser('', '');
+    notifyListeners();
+  }
 }

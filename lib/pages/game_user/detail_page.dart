@@ -202,6 +202,7 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                         await FirebaseAuth.instance.signOut();
                         _storage.deleteItem('myName');
                         _storage.deleteItem('isPlayMusic');
+                        _gameUserModel.logout();
                         Navigator.of(context).popUntil(
                           (route) => route.isFirst,
                         );
