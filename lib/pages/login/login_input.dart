@@ -1,9 +1,11 @@
+import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginInput extends StatefulWidget {
   final Function(String uid) onCreate;
@@ -63,6 +65,44 @@ class _LoginInputState extends State<LoginInput> {
         password: _password.text,
       );
       await widget.onLogin(result.user!.uid);
+    } catch (e) {
+      setState(() {
+        infoText = "ログインに失敗しました：${e.toString()}";
+      });
+    }
+  }
+
+  Future<void> _onAppleLogin() async {
+    try {
+      if (!Platform.isIOS) {
+        setState(() {
+          infoText = "ログインに失敗しました：iOS以外でAppleログインはできません";
+        });
+        return;
+      }
+      setState(() {
+        infoText = '';
+      });
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      OAuthProvider oauthProvider = OAuthProvider('apple.com');
+      final credential = oauthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final result = await auth.signInWithCredential(credential);
+      if (result.additionalUserInfo!.isNewUser) {
+        await widget.onCreate(result.user!.uid);
+      } else {
+        await widget.onLogin(result.user!.uid);
+      }
     } catch (e) {
       setState(() {
         infoText = "ログインに失敗しました：${e.toString()}";
@@ -185,6 +225,17 @@ class _LoginInputState extends State<LoginInput> {
               ),
             ),
             const SizedBox(height: 24),
+            Platform.isIOS
+                ? SizedBox(
+                    width: double.infinity,
+                    child: SignInButton(
+                      Buttons.Apple,
+                      onPressed: () async {
+                        await _onAppleLogin();
+                      },
+                    ),
+                  )
+                : Container(),
             SizedBox(
               width: double.infinity,
               child: SignInButton(
