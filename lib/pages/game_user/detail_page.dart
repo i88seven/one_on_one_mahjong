@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localstorage/localstorage.dart';
@@ -57,6 +58,43 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
       );
     }
     return result;
+  }
+
+  void showUserDeleteDialog() async {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return CupertinoAlertDialog(
+          title: const Text('ユーザー削除'),
+          content: const Text('アカウントと計測データは削除され、元に戻すことはできません。\nよろしいですか？'),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('キャンセル'),
+            ),
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              onPressed: () async {
+                await _gameUserModel.delete();
+                await FirebaseAuth.instance.currentUser?.delete();
+                await FirebaseAuth.instance.signOut();
+                _storage.deleteItem('myName');
+                _storage.deleteItem('isPlayMusic');
+                Navigator.of(context).popUntil(
+                  (route) => route.isFirst,
+                );
+                await Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) {
+                    return const LoginPage();
+                  }),
+                );
+              },
+              child: const Text('削除'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -216,6 +254,23 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                   ),
                 ],
               ),
+              !_gameUserModel.gameUser.isAnonymously
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: ElevatedButton.icon(
+                                icon: const Icon(Icons.warning),
+                                label: const Text('ユーザー削除'),
+                                onPressed: showUserDeleteDialog,
+                              ),
+                            )),
+                      ],
+                    )
+                  : Container(),
             ],
           ),
         ],

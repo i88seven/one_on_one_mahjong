@@ -63,6 +63,15 @@ class GameUserModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> delete() async {
+    if (!gameUser.isAnonymously) {
+      DocumentReference userRef =
+          FirebaseFirestore.instance.collection('users').doc(gameUser.uid);
+      await userRef.delete();
+    }
+    logout();
+  }
+
   void logout() {
     gameUser = GameUser('', '');
     notifyListeners();
