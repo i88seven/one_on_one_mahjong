@@ -84,10 +84,7 @@ class _LoginInputState extends State<LoginInput> {
         infoText = '';
       });
       final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
+        scopes: [],
       );
 
       OAuthProvider oauthProvider = OAuthProvider('apple.com');
