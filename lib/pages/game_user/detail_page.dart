@@ -46,13 +46,12 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
               alignment: Alignment.centerLeft,
               child: Text(textList[i * 2]),
             ),
-            textList.length > i * 2 + 1
-                ? Container(
+            if (textList.length > i * 2 + 1)
+              Container(
                     width: (MediaQuery.of(context).size.width - 48) * 0.5,
                     alignment: Alignment.centerLeft,
                     child: Text(textList[i * 2 + 1]),
-                  )
-                : Container(),
+              ),
           ],
         ),
       );
@@ -136,8 +135,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              !_gameUserModel.gameUser.isAnonymously
-                  ? ExpansionTile(
+              if (!_gameUserModel.gameUser.isAnonymously)
+                ExpansionTile(
                       expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                       initiallyExpanded: true,
                       childrenPadding: const EdgeInsets.only(
@@ -155,10 +154,9 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                         "負け : ${_gameUserStatistics.loseGame} 回 (${_gameUserStatistics.loseRate} %)",
                         "引き分け : ${_gameUserStatistics.drawGame} 回 (${_gameUserStatistics.drawRate} %)",
                       ]),
-                    )
-                  : Container(),
-              !_gameUserModel.gameUser.isAnonymously
-                  ? ExpansionTile(
+                ),
+              if (!_gameUserModel.gameUser.isAnonymously)
+                ExpansionTile(
                       expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                       initiallyExpanded: true,
                       childrenPadding: const EdgeInsets.only(
@@ -185,10 +183,9 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                         "平均勝ち歩数 : ${_gameUserStatistics.winStepAverage} 歩",
                         "平均負け歩数 : ${_gameUserStatistics.loseStepAverage} 歩",
                       ]),
-                    )
-                  : Container(),
-              !_gameUserModel.gameUser.isAnonymously
-                  ? ExpansionTile(
+                ),
+              if (!_gameUserModel.gameUser.isAnonymously)
+                ExpansionTile(
                       expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                       initiallyExpanded: false,
                       childrenPadding: const EdgeInsets.only(
@@ -225,8 +222,7 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                           return currentList;
                         }),
                       ]),
-                    )
-                  : Container(),
+                ),
               const SizedBox(height: 52),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -254,8 +250,8 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                   ),
                 ],
               ),
-              !_gameUserModel.gameUser.isAnonymously
-                  ? Row(
+              if (!_gameUserModel.gameUser.isAnonymously)
+                Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
@@ -269,8 +265,7 @@ class _UserDetailPageState extends ConsumerState<UserDetailPage> {
                               ),
                             )),
                       ],
-                    )
-                  : Container(),
+                ),
             ],
           ),
         ],

@@ -222,17 +222,16 @@ class _LoginInputState extends State<LoginInput> {
               ),
             ),
             const SizedBox(height: 24),
-            Platform.isIOS
-                ? SizedBox(
-                    width: double.infinity,
-                    child: SignInButton(
-                      Buttons.Apple,
-                      onPressed: () async {
-                        await _onAppleLogin();
-                      },
-                    ),
-                  )
-                : Container(),
+            if (Platform.isIOS)
+              SizedBox(
+                width: double.infinity,
+                child: SignInButton(
+                  Buttons.Apple,
+                  onPressed: () async {
+                    await _onAppleLogin();
+                  },
+                ),
+              ),
             SizedBox(
               width: double.infinity,
               child: SignInButton(
