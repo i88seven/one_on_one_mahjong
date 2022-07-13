@@ -837,8 +837,8 @@ class SeventeenGame extends FlameGame with TapDetector {
   }
 
   bool get _isDrawnRound =>
-      _trashesOther.tileCount == maxTrashCount &&
-      _trashesMe.tileCount == maxTrashCount &&
+      _trashesOther.tileCount >= maxTrashCount &&
+      _trashesMe.tileCount >= maxTrashCount &&
       _currentOrder == 0 &&
       _me.isParent;
   bool get _isFirstTurnWin => _trashesOther.tileCount == 1;
