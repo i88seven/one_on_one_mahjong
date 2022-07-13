@@ -9,16 +9,16 @@ final gameUserProvider =
 class GameUserModel extends ChangeNotifier {
   GameUser gameUser = GameUser('', '');
 
-  Future<void> create(String uid) async {
+  Future<void> create(String uid, String name) async {
     DocumentReference userRef =
         FirebaseFirestore.instance.collection('users').doc(uid);
     await userRef.set({
-      'name': '',
+      'name': name,
       'isPlayMusic': true,
       'createdAt': Timestamp.now(),
       'updatedAt': Timestamp.now(),
     });
-    gameUser.updateFromJson({'uid': uid, 'name': '', 'isPlayMusic': true});
+    gameUser.updateFromJson({'uid': uid, 'name': name, 'isPlayMusic': true});
     notifyListeners();
   }
 

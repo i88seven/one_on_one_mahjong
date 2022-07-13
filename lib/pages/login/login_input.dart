@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginInput extends StatefulWidget {
-  final Function(String uid) onCreate;
+  final Function(String uid, {String name}) onCreate;
   final Function(String uid) onLogin;
   final Function(String uid) onLoginAnonymously;
 
@@ -84,7 +84,7 @@ class _LoginInputState extends State<LoginInput> {
         infoText = '';
       });
       final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [],
+        scopes: [AppleIDAuthorizationScopes.fullName],
       );
 
       OAuthProvider oauthProvider = OAuthProvider('apple.com');
@@ -96,7 +96,9 @@ class _LoginInputState extends State<LoginInput> {
       final FirebaseAuth auth = FirebaseAuth.instance;
       final result = await auth.signInWithCredential(credential);
       if (result.additionalUserInfo!.isNewUser) {
-        await widget.onCreate(result.user!.uid);
+        final fullName =
+            "${appleCredential.familyName} ${appleCredential.givenName}";
+        await widget.onCreate(result.user!.uid, name: fullName);
       } else {
         await widget.onLogin(result.user!.uid);
       }

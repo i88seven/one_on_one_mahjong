@@ -15,12 +15,14 @@ class LoginPage extends ConsumerWidget {
     final gameUserModel = ref.watch(gameUserProvider);
     final gameUserStatisticsModel = ref.watch(gameUserStatisticsProvider);
 
-    Future<void> _onCreate(String uid) async {
-      await gameUserModel.create(uid);
+    Future<void> _onCreate(String uid, {String name = ''}) async {
+      await gameUserModel.create(uid, name);
       await gameUserStatisticsModel.create(uid);
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) {
-          return const RegisterGameUserNamePage();
+          return RegisterGameUserNamePage(
+            initialName: name,
+          );
         }),
       );
     }
