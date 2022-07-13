@@ -17,6 +17,7 @@ class LoginPage extends ConsumerWidget {
 
     Future<void> _onCreate(String uid) async {
       await gameUserModel.create(uid);
+      await gameUserStatisticsModel.create(uid);
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) {
           return const RegisterGameUserNamePage();

@@ -5,7 +5,6 @@ import 'package:one_on_one_mahjong/components/preparation_background.dart';
 import 'package:one_on_one_mahjong/pages/game_user/setting_input.dart';
 import 'package:one_on_one_mahjong/pages/preparation/main.dart';
 import 'package:one_on_one_mahjong/provider/game_user_model.dart';
-import 'package:one_on_one_mahjong/provider/game_user_statistics_model.dart';
 import 'package:one_on_one_mahjong/types/game_user.dart';
 
 // login page からのみ呼ばれる
@@ -18,7 +17,6 @@ class RegisterGameUserNamePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameUserModel = ref.read(gameUserProvider);
-    final gameUserStatisticsModel = ref.read(gameUserStatisticsProvider);
 
     Future<void> _registerName(String name, bool isPlayMusic) async {
       try {
@@ -29,9 +27,6 @@ class RegisterGameUserNamePage extends ConsumerWidget {
           await storage.ready;
           storage.setItem('myName', name);
           storage.setItem('isPlayMusic', isPlayMusic);
-        }
-        if (!gameUser.isAnonymously) {
-          await gameUserStatisticsModel.create(gameUser.uid);
         }
         await Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
